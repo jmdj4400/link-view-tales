@@ -24,31 +24,37 @@ const getSourceIcon = (source: string) => {
 
 export function TrafficSources({ sources, timeRange }: TrafficSourcesProps) {
   return (
-    <Card>
+    <Card className="border-2">
       <CardHeader>
-        <CardTitle>Traffic Sources</CardTitle>
-        <CardDescription>
+        <CardTitle className="text-xl">Traffic Sources</CardTitle>
+        <CardDescription className="text-base">
           Where your clicks are coming from ({timeRange === '7d' ? 'last 7 days' : 'last 30 days'})
         </CardDescription>
       </CardHeader>
       <CardContent>
         {sources.length === 0 ? (
-          <div className="text-center py-8 text-muted-foreground">
-            No traffic data yet
+          <div className="text-center py-12 text-muted-foreground">
+            <div className="mb-3 text-4xl">🌍</div>
+            <p className="font-medium">No traffic data yet</p>
+            <p className="text-sm mt-1">Share your links to see where visitors come from</p>
           </div>
         ) : (
-          <div className="space-y-4">
-            <ResponsiveContainer width="100%" height={200}>
+          <div className="space-y-6">
+            <ResponsiveContainer width="100%" height={220}>
               <BarChart data={sources}>
-                <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                <CartesianGrid strokeDasharray="3 3" className="stroke-border" opacity={0.3} />
                 <XAxis 
                   dataKey="source" 
                   className="text-xs"
                   tick={{ fill: 'hsl(var(--muted-foreground))' }}
+                  tickLine={false}
+                  axisLine={false}
                 />
                 <YAxis 
                   className="text-xs"
                   tick={{ fill: 'hsl(var(--muted-foreground))' }}
+                  tickLine={false}
+                  axisLine={false}
                 />
                 <Tooltip 
                   contentStyle={{
@@ -56,27 +62,30 @@ export function TrafficSources({ sources, timeRange }: TrafficSourcesProps) {
                     border: '1px solid hsl(var(--border))',
                     borderRadius: '8px',
                   }}
+                  cursor={{ fill: 'hsl(var(--muted))', opacity: 0.3 }}
                 />
                 <Bar 
                   dataKey="clicks" 
                   fill="hsl(var(--primary))" 
-                  radius={[4, 4, 0, 0]}
+                  radius={[8, 8, 0, 0]}
                 />
               </BarChart>
             </ResponsiveContainer>
             
-            <div className="space-y-2">
-              {sources.map((source) => (
-                <div key={source.source} className="flex items-center justify-between py-2 border-b last:border-0">
-                  <div className="flex items-center gap-2">
-                    {getSourceIcon(source.source)}
+            <div className="space-y-3">
+              {sources.map((source, idx) => (
+                <div key={source.source} className="flex items-center justify-between py-3 border-b last:border-0">
+                  <div className="flex items-center gap-3">
+                    <div className={`p-2 rounded-lg ${idx === 0 ? 'bg-primary/10' : 'bg-muted'}`}>
+                      {getSourceIcon(source.source)}
+                    </div>
                     <span className="font-medium">{source.source}</span>
                   </div>
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-4">
                     <span className="text-sm text-muted-foreground">
                       {source.percentage.toFixed(1)}%
                     </span>
-                    <span className="font-bold">{source.clicks}</span>
+                    <span className="font-bold text-lg">{source.clicks}</span>
                   </div>
                 </div>
               ))}

@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { AnalyticsChart } from "@/components/analytics/AnalyticsChart";
 import { TopLinksTable } from "@/components/analytics/TopLinksTable";
 import { TrafficSources } from "@/components/analytics/TrafficSources";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export default function Dashboard() {
   const { user, signOut, loading, subscriptionStatus, refreshSubscription } = useAuth();
@@ -181,12 +182,16 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gradient-subtle">
       {/* Navigation */}
-      <nav className="border-b">
+      <nav className="border-b backdrop-blur-sm bg-background/80 sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-primary">LinkPeek</h1>
           <div className="flex items-center gap-2">
+            <div className="w-8 h-8 gradient-primary rounded-lg"></div>
+            <h1 className="text-2xl font-bold">LinkPeek</h1>
+          </div>
+          <div className="flex items-center gap-2">
+            <ThemeToggle />
             <Button variant="ghost" size="sm" onClick={() => navigate('/settings/profile')}>
               <Settings className="h-4 w-4 mr-2" />
               Settings
@@ -199,80 +204,92 @@ export default function Dashboard() {
         </div>
       </nav>
 
-      <div className="container mx-auto px-4 py-8 max-w-6xl">
+      <div className="container mx-auto px-4 py-8 max-w-7xl">
         {/* Header */}
-        <div className="mb-8">
-          <h2 className="text-3xl font-bold mb-2">Welcome back!</h2>
-          <p className="text-muted-foreground">Here's your LinkPeek overview</p>
+        <div className="mb-10 animate-fade-in">
+          <h2 className="text-4xl font-bold mb-2">Welcome back! 👋</h2>
+          <p className="text-lg text-muted-foreground">Here's your LinkPeek analytics overview</p>
         </div>
 
         {/* Time Range Toggle */}
-        <Tabs value={timeRange} onValueChange={(v) => setTimeRange(v as '7d' | '30d')} className="mb-6">
-          <TabsList>
-            <TabsTrigger value="7d">Last 7 Days</TabsTrigger>
-            <TabsTrigger value="30d">Last 30 Days</TabsTrigger>
+        <Tabs value={timeRange} onValueChange={(v) => setTimeRange(v as '7d' | '30d')} className="mb-8">
+          <TabsList className="bg-card shadow-sm">
+            <TabsTrigger value="7d" className="px-6">Last 7 Days</TabsTrigger>
+            <TabsTrigger value="30d" className="px-6">Last 30 Days</TabsTrigger>
           </TabsList>
         </Tabs>
 
         {/* Metrics Cards */}
-        <div className="grid md:grid-cols-3 gap-6 mb-8">
-          <Card>
-            <CardHeader className="pb-2">
-              <CardDescription className="flex items-center gap-2">
-                <Eye className="h-4 w-4" />
+        <div className="grid md:grid-cols-3 gap-6 mb-10 animate-slide-up">
+          <Card className="border-2 hover:border-primary/50 transition-all hover:shadow-elegant">
+            <CardHeader className="pb-3">
+              <CardDescription className="flex items-center gap-2 text-sm font-medium">
+                <div className="p-2 bg-primary/10 rounded-lg">
+                  <Eye className="h-4 w-4 text-primary" />
+                </div>
                 Page Views
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold">{metrics.views}</div>
+              <div className="text-4xl font-bold">{metrics.views.toLocaleString()}</div>
+              <p className="text-xs text-muted-foreground mt-1">Total profile visits</p>
             </CardContent>
           </Card>
-          <Card>
-            <CardHeader className="pb-2">
-              <CardDescription className="flex items-center gap-2">
-                <MousePointerClick className="h-4 w-4" />
+          <Card className="border-2 hover:border-primary/50 transition-all hover:shadow-elegant">
+            <CardHeader className="pb-3">
+              <CardDescription className="flex items-center gap-2 text-sm font-medium">
+                <div className="p-2 bg-primary/10 rounded-lg">
+                  <MousePointerClick className="h-4 w-4 text-primary" />
+                </div>
                 Link Clicks
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold">{metrics.clicks}</div>
+              <div className="text-4xl font-bold">{metrics.clicks.toLocaleString()}</div>
+              <p className="text-xs text-muted-foreground mt-1">Total link interactions</p>
             </CardContent>
           </Card>
-          <Card>
-            <CardHeader className="pb-2">
-              <CardDescription className="flex items-center gap-2">
-                <TrendingUp className="h-4 w-4" />
+          <Card className="border-2 hover:border-primary/50 transition-all hover:shadow-elegant">
+            <CardHeader className="pb-3">
+              <CardDescription className="flex items-center gap-2 text-sm font-medium">
+                <div className="p-2 bg-primary/10 rounded-lg">
+                  <TrendingUp className="h-4 w-4 text-primary" />
+                </div>
                 Click-Through Rate
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold">{metrics.ctr}%</div>
+              <div className="text-4xl font-bold">{metrics.ctr}%</div>
+              <p className="text-xs text-muted-foreground mt-1">Engagement ratio</p>
             </CardContent>
           </Card>
         </div>
 
         {/* Analytics Chart */}
-        <div className="mb-8">
+        <div className="mb-10">
           <AnalyticsChart data={chartData} timeRange={timeRange} />
         </div>
 
         {/* Top Links & Traffic Sources */}
-        <div className="grid lg:grid-cols-2 gap-6 mb-8">
+        <div className="grid lg:grid-cols-2 gap-6 mb-10">
           <TopLinksTable links={topLinks} timeRange={timeRange} />
           <TrafficSources sources={trafficSources} timeRange={timeRange} />
         </div>
 
         {/* Quick Actions */}
         <div className="grid md:grid-cols-2 gap-6">
-          <Card>
+          <Card className="border-2 hover:border-primary/50 transition-all hover:shadow-elegant">
             <CardHeader>
-              <CardTitle>Your Links</CardTitle>
-              <CardDescription>{links.length} active links</CardDescription>
+              <CardTitle className="flex items-center gap-2">
+                <LinkIcon className="h-5 w-5 text-primary" />
+                Your Links
+              </CardTitle>
+              <CardDescription className="text-base">{links.length} active links</CardDescription>
             </CardHeader>
             <CardContent className="space-y-2">
               <Button
-                className="w-full"
-                variant="outline"
+                className="w-full gradient-primary"
+                size="lg"
                 onClick={() => navigate('/settings/links')}
               >
                 <LinkIcon className="h-4 w-4 mr-2" />
@@ -281,14 +298,18 @@ export default function Dashboard() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="border-2 hover:border-primary/50 transition-all hover:shadow-elegant">
             <CardHeader>
-              <CardTitle>Subscription</CardTitle>
-              <CardDescription>Current plan: {getPlanName()}</CardDescription>
+              <CardTitle className="flex items-center gap-2">
+                <CreditCard className="h-5 w-5 text-primary" />
+                Subscription
+              </CardTitle>
+              <CardDescription className="text-base">Current plan: <span className="font-semibold text-foreground">{getPlanName()}</span></CardDescription>
             </CardHeader>
             <CardContent className="space-y-2">
               <Button
                 className="w-full"
+                size="lg"
                 variant="outline"
                 onClick={() => navigate('/billing')}
               >

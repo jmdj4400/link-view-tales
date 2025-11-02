@@ -18,30 +18,32 @@ interface TopLinksTableProps {
 
 export function TopLinksTable({ links, timeRange }: TopLinksTableProps) {
   return (
-    <Card>
+    <Card className="border-2">
       <CardHeader>
-        <CardTitle>Top Performing Links</CardTitle>
-        <CardDescription>
+        <CardTitle className="text-xl">Top Performing Links</CardTitle>
+        <CardDescription className="text-base">
           Your most clicked links in the last {timeRange === '7d' ? '7 days' : '30 days'}
         </CardDescription>
       </CardHeader>
       <CardContent>
         {links.length === 0 ? (
-          <div className="text-center py-8 text-muted-foreground">
-            No link data yet. Share your profile to start tracking!
+          <div className="text-center py-12 text-muted-foreground">
+            <div className="mb-3 text-4xl">📊</div>
+            <p className="font-medium">No link data yet</p>
+            <p className="text-sm mt-1">Share your profile to start tracking!</p>
           </div>
         ) : (
           <Table>
             <TableHeader>
-              <TableRow>
-                <TableHead>Link</TableHead>
-                <TableHead className="text-right">Clicks</TableHead>
-                <TableHead className="text-right">CTR</TableHead>
+              <TableRow className="hover:bg-transparent">
+                <TableHead className="font-semibold">Link</TableHead>
+                <TableHead className="text-right font-semibold">Clicks</TableHead>
+                <TableHead className="text-right font-semibold">CTR</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {links.map((link) => (
-                <TableRow key={link.id}>
+                <TableRow key={link.id} className="hover:bg-muted/50">
                   <TableCell>
                     <div className="flex flex-col gap-1">
                       <div className="font-medium">{link.title}</div>
@@ -51,10 +53,10 @@ export function TopLinksTable({ links, timeRange }: TopLinksTableProps) {
                       </div>
                     </div>
                   </TableCell>
-                  <TableCell className="text-right font-medium">
+                  <TableCell className="text-right font-semibold text-lg">
                     {link.clicks}
                   </TableCell>
-                  <TableCell className="text-right">
+                  <TableCell className="text-right font-medium text-primary">
                     {link.ctr.toFixed(1)}%
                   </TableCell>
                 </TableRow>

@@ -115,11 +115,11 @@ export default function Onboarding() {
         seconds={completionTime}
         onContinue={handleCelebrationContinue}
       />
-      <div className="flex min-h-screen items-center justify-center bg-background p-4">
-        <Card className="w-full max-w-md">
+      <div className="flex min-h-screen items-center justify-center bg-gradient-subtle p-4">
+        <Card className="w-full max-w-md shadow-elegant border-2 animate-fade-in">
         <CardHeader>
-          <CardTitle>Quick Setup - Step {step} of 2</CardTitle>
-          <CardDescription>
+          <CardTitle className="text-2xl font-bold">Quick Setup - Step {step} of 2</CardTitle>
+          <CardDescription className="text-base">
             {step === 1 ? 'Tell us about yourself' : 'Add your first link'}
           </CardDescription>
         </CardHeader>
@@ -136,7 +136,7 @@ export default function Onboarding() {
                   rows={3}
                 />
               </div>
-              <Button type="submit" className="w-full" disabled={isLoading}>
+              <Button type="submit" className="w-full" disabled={isLoading} size="lg">
                 {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                 Next
               </Button>
@@ -164,7 +164,7 @@ export default function Onboarding() {
                   required
                 />
               </div>
-              <Button type="submit" className="w-full" disabled={isLoading}>
+              <Button type="submit" className="w-full gradient-primary" disabled={isLoading} size="lg">
                 {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                 Complete Setup
               </Button>

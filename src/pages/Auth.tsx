@@ -62,11 +62,14 @@ export default function Auth() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold">LinkPeek</CardTitle>
-          <CardDescription>Create your account or sign in to continue</CardDescription>
+    <div className="flex min-h-screen items-center justify-center bg-gradient-subtle p-4">
+      <Card className="w-full max-w-md shadow-elegant border-2">
+        <CardHeader className="space-y-2 text-center">
+          <div className="flex justify-center mb-4">
+            <div className="w-12 h-12 gradient-primary rounded-xl"></div>
+          </div>
+          <CardTitle className="text-3xl font-bold">Welcome to LinkPeek</CardTitle>
+          <CardDescription className="text-base">Create your account or sign in to continue</CardDescription>
         </CardHeader>
         <CardContent>
           <Tabs defaultValue="signup" className="w-full">
@@ -119,7 +122,7 @@ export default function Auth() {
                     required
                   />
                 </div>
-                <Button type="submit" className="w-full" disabled={isLoading}>
+                <Button type="submit" className="w-full gradient-primary" disabled={isLoading} size="lg">
                   {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                   Create Account
                 </Button>
@@ -149,7 +152,7 @@ export default function Auth() {
                     required
                   />
                 </div>
-                <Button type="submit" className="w-full" disabled={isLoading}>
+                <Button type="submit" className="w-full" disabled={isLoading} size="lg">
                   {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                   Sign In
                 </Button>
