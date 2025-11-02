@@ -33,15 +33,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const [subscriptionStatus, setSubscriptionStatus] = useState<SubscriptionStatus | null>(null);
+  const [lastCheckTime, setLastCheckTime] = useState<number>(0);
   const navigate = useNavigate();
 
-  const checkSubscription = async (currentSession: Session | null) => {
+  const checkSubscription = async (currentSession: Session | null, force: boolean = false) => {
     if (!currentSession) {
       setSubscriptionStatus(null);
       return;
     }
 
+    // Rate limiting: Don't check more than once every 30 seconds unless forced
+    const now = Date.now();
+    if (!force && now - lastCheckTime < 30000) {
+      return;
+    }
+
     try {
+      setLastCheckTime(now);
       const { data, error } = await supabase.functions.invoke('check-subscription', {
         headers: {
           Authorization: `Bearer ${currentSession.access_token}`,
@@ -52,12 +60,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setSubscriptionStatus(data);
     } catch (error) {
       console.error('Error checking subscription:', error);
-      setSubscriptionStatus({ subscribed: false, product_id: null, subscription_end: null });
+      // Only set default status on first check, not on rate limit errors
+      if (!subscriptionStatus) {
+        setSubscriptionStatus({ subscribed: false, product_id: null, subscription_end: null });
+      }
     }
   };
 
   const refreshSubscription = async () => {
-    await checkSubscription(session);
+    await checkSubscription(session, true);
   };
 
   useEffect(() => {
@@ -86,17 +97,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     });
 
+    // Check subscription every 5 minutes
     const subscriptionInterval = setInterval(() => {
-      if (session) {
-        checkSubscription(session);
-      }
-    }, 60000);
+      supabase.auth.getSession().then(({ data: { session: currentSession } }) => {
+        if (currentSession) {
+          checkSubscription(currentSession);
+        }
+      });
+    }, 300000); // 5 minutes
 
     return () => {
       subscription.unsubscribe();
       clearInterval(subscriptionInterval);
     };
-  }, [session]);
+  }, []);
 
   const signUp = async (email: string, password: string, handle: string, name: string) => {
     const redirectUrl = `${window.location.origin}/`;
