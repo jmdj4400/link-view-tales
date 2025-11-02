@@ -4,14 +4,22 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabase-client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { LogOut, Settings, Link as LinkIcon, CreditCard, Eye, MousePointerClick, TrendingUp } from "lucide-react";
 import { toast } from "sonner";
+import { AnalyticsChart } from "@/components/analytics/AnalyticsChart";
+import { TopLinksTable } from "@/components/analytics/TopLinksTable";
+import { TrafficSources } from "@/components/analytics/TrafficSources";
 
 export default function Dashboard() {
   const { user, signOut, loading, subscriptionStatus, refreshSubscription } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const [timeRange, setTimeRange] = useState<'7d' | '30d'>('7d');
   const [metrics, setMetrics] = useState({ views: 0, clicks: 0, ctr: 0 });
+  const [chartData, setChartData] = useState<Array<{ date: string; clicks: number; views: number }>>([]);
+  const [topLinks, setTopLinks] = useState<Array<any>>([]);
+  const [trafficSources, setTrafficSources] = useState<Array<any>>([]);
   const [links, setLinks] = useState([]);
 
   useEffect(() => {
@@ -29,25 +37,124 @@ export default function Dashboard() {
 
   useEffect(() => {
     if (user) {
-      fetchMetrics();
+      fetchAnalytics();
       fetchLinks();
     }
-  }, [user]);
+  }, [user, timeRange]);
 
-  const fetchMetrics = async () => {
-    const { data, error } = await supabase
-      .from('metrics_daily')
+  const fetchAnalytics = async () => {
+    const days = timeRange === '7d' ? 7 : 30;
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - days);
+
+    // Fetch events (excluding bots)
+    const { data: events, error: eventsError } = await supabase
+      .from('events')
       .select('*')
       .eq('user_id', user?.id)
-      .order('date', { ascending: false })
-      .limit(7);
+      .eq('is_bot', false)
+      .gte('created_at', startDate.toISOString());
 
-    if (!error && data) {
-      const totalViews = data.reduce((sum, m) => sum + (m.page_views || 0), 0);
-      const totalClicks = data.reduce((sum, m) => sum + (m.clicks || 0), 0);
-      const ctr = totalViews > 0 ? (totalClicks / totalViews) * 100 : 0;
-      setMetrics({ views: totalViews, clicks: totalClicks, ctr: Math.round(ctr * 10) / 10 });
+    if (eventsError) {
+      console.error('Error fetching events:', eventsError);
+      return;
     }
+
+    // Calculate metrics
+    const viewEvents = events?.filter(e => e.event_type === 'view') || [];
+    const clickEvents = events?.filter(e => e.event_type === 'click') || [];
+    const totalViews = viewEvents.length;
+    const totalClicks = clickEvents.length;
+    const ctr = totalViews > 0 ? (totalClicks / totalViews) * 100 : 0;
+    
+    setMetrics({ 
+      views: totalViews, 
+      clicks: totalClicks, 
+      ctr: Math.round(ctr * 10) / 10 
+    });
+
+    // Prepare chart data (group by date)
+    const dateMap = new Map<string, { clicks: number; views: number }>();
+    for (let i = 0; i < days; i++) {
+      const date = new Date();
+      date.setDate(date.getDate() - (days - 1 - i));
+      const dateStr = date.toISOString().split('T')[0];
+      dateMap.set(dateStr, { clicks: 0, views: 0 });
+    }
+
+    viewEvents.forEach(event => {
+      const dateStr = new Date(event.created_at).toISOString().split('T')[0];
+      if (dateMap.has(dateStr)) {
+        dateMap.get(dateStr)!.views++;
+      }
+    });
+
+    clickEvents.forEach(event => {
+      const dateStr = new Date(event.created_at).toISOString().split('T')[0];
+      if (dateMap.has(dateStr)) {
+        dateMap.get(dateStr)!.clicks++;
+      }
+    });
+
+    const chartDataArray = Array.from(dateMap.entries()).map(([date, data]) => ({
+      date: new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+      ...data
+    }));
+    setChartData(chartDataArray);
+
+    // Calculate top links
+    const linkClickMap = new Map<string, number>();
+    clickEvents.forEach(event => {
+      if (event.link_id) {
+        linkClickMap.set(event.link_id, (linkClickMap.get(event.link_id) || 0) + 1);
+      }
+    });
+
+    const { data: linksData } = await supabase
+      .from('links')
+      .select('*')
+      .eq('user_id', user?.id);
+
+    const linksWithStats = (linksData || []).map(link => {
+      const linkClicks = linkClickMap.get(link.id) || 0;
+      const linkCtr = totalViews > 0 ? (linkClicks / totalViews) * 100 : 0;
+      return {
+        ...link,
+        clicks: linkClicks,
+        views: totalViews,
+        ctr: linkCtr
+      };
+    }).sort((a, b) => b.clicks - a.clicks).slice(0, 5);
+
+    setTopLinks(linksWithStats);
+
+    // Calculate traffic sources
+    const sourceMap = new Map<string, number>();
+    clickEvents.forEach(event => {
+      let source = 'Direct';
+      if (event.referrer) {
+        try {
+          const url = new URL(event.referrer);
+          source = url.hostname.replace('www.', '');
+        } catch {
+          source = 'Direct';
+        }
+      } else if (event.utm_source) {
+        source = event.utm_source;
+      }
+      sourceMap.set(source, (sourceMap.get(source) || 0) + 1);
+    });
+
+    const sourcesArray = Array.from(sourceMap.entries())
+      .map(([source, clicks]) => ({
+        source,
+        clicks,
+        percentage: totalClicks > 0 ? (clicks / totalClicks) * 100 : 0
+      }))
+      .sort((a, b) => b.clicks - a.clicks)
+      .slice(0, 5);
+
+    setTrafficSources(sourcesArray);
   };
 
   const fetchLinks = async () => {
@@ -99,13 +206,21 @@ export default function Dashboard() {
           <p className="text-muted-foreground">Here's your LinkPeek overview</p>
         </div>
 
+        {/* Time Range Toggle */}
+        <Tabs value={timeRange} onValueChange={(v) => setTimeRange(v as '7d' | '30d')} className="mb-6">
+          <TabsList>
+            <TabsTrigger value="7d">Last 7 Days</TabsTrigger>
+            <TabsTrigger value="30d">Last 30 Days</TabsTrigger>
+          </TabsList>
+        </Tabs>
+
         {/* Metrics Cards */}
         <div className="grid md:grid-cols-3 gap-6 mb-8">
           <Card>
             <CardHeader className="pb-2">
               <CardDescription className="flex items-center gap-2">
                 <Eye className="h-4 w-4" />
-                Page Views (7d)
+                Page Views
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -116,7 +231,7 @@ export default function Dashboard() {
             <CardHeader className="pb-2">
               <CardDescription className="flex items-center gap-2">
                 <MousePointerClick className="h-4 w-4" />
-                Link Clicks (7d)
+                Link Clicks
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -127,13 +242,24 @@ export default function Dashboard() {
             <CardHeader className="pb-2">
               <CardDescription className="flex items-center gap-2">
                 <TrendingUp className="h-4 w-4" />
-                CTR (7d)
+                Click-Through Rate
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="text-3xl font-bold">{metrics.ctr}%</div>
             </CardContent>
           </Card>
+        </div>
+
+        {/* Analytics Chart */}
+        <div className="mb-8">
+          <AnalyticsChart data={chartData} timeRange={timeRange} />
+        </div>
+
+        {/* Top Links & Traffic Sources */}
+        <div className="grid lg:grid-cols-2 gap-6 mb-8">
+          <TopLinksTable links={topLinks} timeRange={timeRange} />
+          <TrafficSources sources={trafficSources} timeRange={timeRange} />
         </div>
 
         {/* Quick Actions */}
