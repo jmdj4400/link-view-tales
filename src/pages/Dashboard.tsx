@@ -191,6 +191,15 @@ export default function Dashboard() {
             <h1 className="text-2xl font-bold">LinkPeek</h1>
           </div>
           <div className="flex items-center gap-2">
+            {subscriptionStatus?.subscribed && (
+              <div className="hidden sm:flex items-center px-3 py-1.5 bg-primary/10 border border-primary/20 rounded-full text-xs font-medium text-primary">
+                ✨ Pro
+              </div>
+            )}
+            <Button variant="ghost" size="sm" onClick={() => navigate('/billing')}>
+              <CreditCard className="h-4 w-4 mr-2" />
+              Billing
+            </Button>
             <ThemeToggle />
             <Button variant="ghost" size="sm" onClick={() => navigate('/settings/profile')}>
               <Settings className="h-4 w-4 mr-2" />
@@ -319,6 +328,27 @@ export default function Dashboard() {
             </CardContent>
           </Card>
         </div>
+
+        {/* Upgrade CTA for Free Users */}
+        {!subscriptionStatus?.subscribed && (
+          <Card className="mt-10 border-2 border-primary shadow-elegant animate-fade-in">
+            <CardHeader className="text-center pb-4">
+              <CardTitle className="text-2xl">Unlock Pro Features</CardTitle>
+              <CardDescription className="text-base">
+                Get unlimited links, advanced analytics, and remove branding
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="text-center">
+              <Button
+                className="gradient-primary"
+                size="lg"
+                onClick={() => navigate('/billing')}
+              >
+                View Plans & Pricing
+              </Button>
+            </CardContent>
+          </Card>
+        )}
       </div>
     </div>
   );
