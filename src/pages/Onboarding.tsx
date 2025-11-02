@@ -8,9 +8,10 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { Loader2 } from "lucide-react";
+import { Loader2, Sparkles, ArrowRight } from "lucide-react";
 import { CountdownTimer } from "@/components/onboarding/CountdownTimer";
 import { CelebrationModal } from "@/components/onboarding/CelebrationModal";
+import { motion } from "framer-motion";
 
 export default function Onboarding() {
   const { user, loading } = useAuth();
@@ -104,7 +105,14 @@ export default function Onboarding() {
   };
 
   if (loading) {
-    return <div className="flex min-h-screen items-center justify-center">Loading...</div>;
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-gradient-subtle">
+        <div className="text-center space-y-4">
+          <div className="w-12 h-12 gradient-primary rounded-2xl mx-auto animate-pulse"></div>
+          <p className="text-muted-foreground">Setting up your profile...</p>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -116,62 +124,104 @@ export default function Onboarding() {
         onContinue={handleCelebrationContinue}
       />
       <div className="flex min-h-screen items-center justify-center bg-gradient-subtle p-4">
-        <Card className="w-full max-w-md shadow-elegant border-2 animate-fade-in">
-        <CardHeader>
-          <CardTitle className="text-2xl font-bold">Quick Setup - Step {step} of 2</CardTitle>
-          <CardDescription className="text-base">
-            {step === 1 ? 'Tell us about yourself' : 'Add your first link'}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {step === 1 ? (
-            <form onSubmit={handleProfileSubmit} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="bio">Bio (optional)</Label>
-                <Textarea
-                  id="bio"
-                  placeholder="Tell your visitors about yourself..."
-                  value={profile.bio}
-                  onChange={(e) => setProfile({ ...profile, bio: e.target.value })}
-                  rows={3}
-                />
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="w-full max-w-md"
+        >
+          <Card className="shadow-elegant-xl border-2">
+            <CardHeader className="text-center">
+              <div className="flex justify-center mb-3">
+                <div className="w-12 h-12 gradient-primary rounded-2xl shadow-md"></div>
               </div>
-              <Button type="submit" className="w-full" disabled={isLoading} size="lg">
-                {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-                Next
-              </Button>
-            </form>
-          ) : (
-            <form onSubmit={handleLinkSubmit} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="title">Link Title</Label>
-                <Input
-                  id="title"
-                  placeholder="My Website"
-                  value={link.title}
-                  onChange={(e) => setLink({ ...link, title: e.target.value })}
-                  required
-                />
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 border border-primary/20 rounded-full text-sm font-medium text-primary mx-auto mb-4">
+                <Sparkles className="h-4 w-4" />
+                Step {step} of 2
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="url">Destination URL</Label>
-                <Input
-                  id="url"
-                  type="url"
-                  placeholder="https://example.com"
-                  value={link.dest_url}
-                  onChange={(e) => setLink({ ...link, dest_url: e.target.value })}
-                  required
-                />
-              </div>
-              <Button type="submit" className="w-full gradient-primary" disabled={isLoading} size="lg">
-                {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-                Complete Setup
-              </Button>
-            </form>
-          )}
-        </CardContent>
-        </Card>
+              <CardTitle className="text-3xl font-heading font-bold">
+                {step === 1 ? 'Tell us about yourself' : 'Add your first link'}
+              </CardTitle>
+              <CardDescription className="text-base pt-2">
+                {step === 1 
+                  ? 'Share a bit about yourself (optional)' 
+                  : 'Almost there! Add a link to get started'}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {step === 1 ? (
+                <form onSubmit={handleProfileSubmit} className="space-y-5">
+                  <div className="space-y-2">
+                    <Label htmlFor="bio" className="text-sm font-medium">Bio (optional)</Label>
+                    <Textarea
+                      id="bio"
+                      placeholder="Tell your visitors about yourself..."
+                      value={profile.bio}
+                      onChange={(e) => setProfile({ ...profile, bio: e.target.value })}
+                      rows={4}
+                      className="resize-none"
+                    />
+                  </div>
+                  <Button 
+                    type="submit" 
+                    className="w-full group" 
+                    disabled={isLoading} 
+                    size="lg"
+                  >
+                    {isLoading ? (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    ) : null}
+                    Next
+                    <ArrowRight className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                  </Button>
+                </form>
+              ) : (
+                <form onSubmit={handleLinkSubmit} className="space-y-5">
+                  <div className="space-y-2">
+                    <Label htmlFor="title" className="text-sm font-medium">Link Title</Label>
+                    <Input
+                      id="title"
+                      placeholder="My Website"
+                      value={link.title}
+                      onChange={(e) => setLink({ ...link, title: e.target.value })}
+                      required
+                      className="h-11"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="url" className="text-sm font-medium">Destination URL</Label>
+                    <Input
+                      id="url"
+                      type="url"
+                      placeholder="https://example.com"
+                      value={link.dest_url}
+                      onChange={(e) => setLink({ ...link, dest_url: e.target.value })}
+                      required
+                      className="h-11"
+                    />
+                  </div>
+                  <Button 
+                    type="submit" 
+                    className="w-full gradient-primary shadow-md group" 
+                    disabled={isLoading} 
+                    size="lg"
+                  >
+                    {isLoading ? (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    ) : (
+                      <Sparkles className="mr-2 h-4 w-4" />
+                    )}
+                    Complete Setup
+                    <ArrowRight className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                  </Button>
+                  <p className="text-xs text-center text-muted-foreground pt-1">
+                    Complete in under 60s to get 1 month Pro free
+                  </p>
+                </form>
+              )}
+            </CardContent>
+          </Card>
+        </motion.div>
       </div>
     </>
   );
