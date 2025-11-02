@@ -34,11 +34,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [subscriptionStatus, setSubscriptionStatus] = useState<SubscriptionStatus | null>(null);
   const [lastCheckTime, setLastCheckTime] = useState<number>(0);
+  const [isChecking, setIsChecking] = useState(false);
   const navigate = useNavigate();
 
   const checkSubscription = async (currentSession: Session | null, force: boolean = false) => {
     if (!currentSession) {
       setSubscriptionStatus(null);
+      return;
+    }
+
+    // Prevent concurrent calls
+    if (isChecking) {
       return;
     }
 
@@ -49,6 +55,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     try {
+      setIsChecking(true);
       setLastCheckTime(now);
       const { data, error } = await supabase.functions.invoke('check-subscription', {
         headers: {
@@ -64,6 +71,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (!subscriptionStatus) {
         setSubscriptionStatus({ subscribed: false, product_id: null, subscription_end: null });
       }
+    } finally {
+      setIsChecking(false);
     }
   };
 
@@ -72,28 +81,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   useEffect(() => {
+    let mounted = true;
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, currentSession) => {
+      if (!mounted) return;
+      
       setSession(currentSession);
       setUser(currentSession?.user ?? null);
       
       if (currentSession) {
-        setTimeout(() => {
-          checkSubscription(currentSession);
-        }, 0);
+        checkSubscription(currentSession);
       } else {
         setSubscriptionStatus(null);
       }
     });
 
     supabase.auth.getSession().then(({ data: { session: currentSession } }) => {
+      if (!mounted) return;
+      
       setSession(currentSession);
       setUser(currentSession?.user ?? null);
       setLoading(false);
       
       if (currentSession) {
-        setTimeout(() => {
-          checkSubscription(currentSession);
-        }, 0);
+        checkSubscription(currentSession);
       }
     });
 
@@ -107,6 +118,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }, 300000); // 5 minutes
 
     return () => {
+      mounted = false;
       subscription.unsubscribe();
       clearInterval(subscriptionInterval);
     };
