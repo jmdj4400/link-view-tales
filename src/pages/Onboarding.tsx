@@ -9,15 +9,27 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
+import { CountdownTimer } from "@/components/onboarding/CountdownTimer";
+import { CelebrationModal } from "@/components/onboarding/CelebrationModal";
 
 export default function Onboarding() {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
-  const [startTime] = useState(Date.now());
+  const [startTime] = useState(() => {
+    const stored = localStorage.getItem('challenge_start_time');
+    if (stored) {
+      return parseInt(stored, 10);
+    }
+    const now = Date.now();
+    localStorage.setItem('challenge_start_time', now.toString());
+    return now;
+  });
   const [step, setStep] = useState(1);
   const [profile, setProfile] = useState({ bio: "" });
   const [link, setLink] = useState({ title: "", dest_url: "" });
+  const [showCelebration, setShowCelebration] = useState(false);
+  const [completionTime, setCompletionTime] = useState(0);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -57,28 +69,38 @@ export default function Onboarding() {
 
     if (error) {
       toast.error('Failed to add link');
-    } else {
-      const elapsed = Date.now() - startTime;
-      const seconds = Math.round(elapsed / 1000);
-      
-      if (seconds < 60) {
-        toast.success(`🎉 Challenge complete in ${seconds}s! Pro plan unlocked for 1 month!`);
-        // Grant trial
-        const { error: trialError } = await supabase
-          .from('subscriptions')
-          .update({
-            trial_granted: true,
-            trial_end_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-          })
-          .eq('user_id', user?.id);
+      setIsLoading(false);
+      return;
+    }
 
-        if (trialError) console.error('Failed to grant trial:', trialError);
+    const elapsed = Date.now() - startTime;
+    const seconds = Math.round(elapsed / 1000);
+    setCompletionTime(seconds);
+    
+    if (seconds < 60) {
+      // Grant trial using database function
+      const { error: trialError } = await supabase.rpc('grant_trial', {
+        p_user_id: user?.id
+      });
+
+      if (trialError) {
+        console.error('Failed to grant trial:', trialError);
+        toast.error('Setup complete, but trial grant failed');
       } else {
-        toast.success('Setup complete! Welcome to LinkPeek');
+        setShowCelebration(true);
       }
+    } else {
+      toast.success('Setup complete! Welcome to LinkPeek');
       navigate('/dashboard');
     }
+    
+    localStorage.removeItem('challenge_start_time');
     setIsLoading(false);
+  };
+
+  const handleCelebrationContinue = () => {
+    setShowCelebration(false);
+    navigate('/dashboard');
   };
 
   if (loading) {
@@ -86,8 +108,15 @@ export default function Onboarding() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background p-4">
-      <Card className="w-full max-w-md">
+    <>
+      <CountdownTimer startTime={startTime} />
+      <CelebrationModal 
+        open={showCelebration}
+        seconds={completionTime}
+        onContinue={handleCelebrationContinue}
+      />
+      <div className="flex min-h-screen items-center justify-center bg-background p-4">
+        <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle>Quick Setup - Step {step} of 2</CardTitle>
           <CardDescription>
@@ -142,7 +171,8 @@ export default function Onboarding() {
             </form>
           )}
         </CardContent>
-      </Card>
-    </div>
+        </Card>
+      </div>
+    </>
   );
 }

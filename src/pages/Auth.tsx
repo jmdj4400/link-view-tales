@@ -26,6 +26,9 @@ export default function Auth() {
     e.preventDefault();
     setIsLoading(true);
 
+    // Start the challenge timer
+    localStorage.setItem('challenge_start_time', Date.now().toString());
+
     const { error } = await signUp(
       signUpData.email,
       signUpData.password,
@@ -35,8 +38,9 @@ export default function Auth() {
 
     if (error) {
       toast.error(error.message);
+      localStorage.removeItem('challenge_start_time');
     } else {
-      toast.success("Account created! Welcome to LinkPeek");
+      toast.success("Account created! Let's set up your profile");
       navigate('/onboarding');
     }
     setIsLoading(false);
