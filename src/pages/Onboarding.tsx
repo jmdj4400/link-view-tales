@@ -11,7 +11,8 @@ import { toast } from "sonner";
 import { Loader2, Sparkles, ArrowRight } from "lucide-react";
 import { CountdownTimer } from "@/components/onboarding/CountdownTimer";
 import { CelebrationModal } from "@/components/onboarding/CelebrationModal";
-import { motion } from "framer-motion";
+import { SEOHead } from "@/components/SEOHead";
+import { PageLoader } from "@/components/ui/loading-spinner";
 
 export default function Onboarding() {
   const { user, loading } = useAuth();
@@ -105,18 +106,16 @@ export default function Onboarding() {
   };
 
   if (loading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-gradient-subtle">
-        <div className="text-center space-y-4">
-          <div className="w-12 h-12 gradient-primary rounded-2xl mx-auto animate-pulse"></div>
-          <p className="text-muted-foreground">Setting up your profile...</p>
-        </div>
-      </div>
-    );
+    return <PageLoader />;
   }
 
   return (
     <>
+      <SEOHead
+        title="Setup Your Profile - LinkPeek"
+        description="Complete your LinkPeek profile setup in under 60 seconds."
+        noindex={true}
+      />
       <CountdownTimer startTime={startTime} />
       <CelebrationModal 
         open={showCelebration}
@@ -124,12 +123,7 @@ export default function Onboarding() {
         onContinue={handleCelebrationContinue}
       />
       <div className="flex min-h-screen items-center justify-center bg-gradient-subtle p-4">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="w-full max-w-md"
-        >
+        <div className="w-full max-w-md">
           <Card className="shadow-elegant-xl border-2">
             <CardHeader className="text-center">
               <div className="flex justify-center mb-3">
@@ -221,7 +215,7 @@ export default function Onboarding() {
               )}
             </CardContent>
           </Card>
-        </motion.div>
+        </div>
       </div>
     </>
   );

@@ -5,15 +5,18 @@ import { supabase } from "@/lib/supabase-client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
-import { ArrowLeft, Loader2 } from "lucide-react";
+import { ArrowLeft, Loader2, Eye } from "lucide-react";
 import { toast } from "sonner";
+import { SEOHead } from "@/components/SEOHead";
+import { PageLoader } from "@/components/ui/loading-spinner";
 
 export default function ProfileSettings() {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
+  const [isFetchingProfile, setIsFetchingProfile] = useState(true);
   const [profile, setProfile] = useState({ name: "", handle: "", bio: "", avatar_url: "" });
 
   useEffect(() => {
@@ -29,6 +32,7 @@ export default function ProfileSettings() {
   }, [user]);
 
   const fetchProfile = async () => {
+    setIsFetchingProfile(true);
     const { data, error } = await supabase
       .from('profiles')
       .select('*')
@@ -43,6 +47,7 @@ export default function ProfileSettings() {
         avatar_url: data.avatar_url || "",
       });
     }
+    setIsFetchingProfile(false);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -66,20 +71,34 @@ export default function ProfileSettings() {
     setIsLoading(false);
   };
 
-  if (loading) {
-    return <div className="flex min-h-screen items-center justify-center bg-background"><p className="text-muted-foreground">Loading...</p></div>;
+  if (loading || isFetchingProfile) {
+    return <PageLoader />;
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <nav className="border-b">
-        <div className="container mx-auto px-6 py-4">
-          <Button variant="ghost" onClick={() => navigate('/dashboard')}>
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back
-          </Button>
-        </div>
-      </nav>
+    <>
+      <SEOHead
+        title="Profile Settings - LinkPeek"
+        description="Update your LinkPeek profile settings."
+        noindex={true}
+      />
+      <div className="min-h-screen bg-background">
+        <nav className="border-b">
+          <div className="container mx-auto px-6 py-4 flex items-center justify-between">
+            <Button variant="ghost" onClick={() => navigate('/dashboard')}>
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back
+            </Button>
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => window.open(`/${profile.handle}`, '_blank')}
+            >
+              <Eye className="h-4 w-4 mr-2" />
+              View Profile
+            </Button>
+          </div>
+        </nav>
 
       <div className="container mx-auto px-6 py-10 max-w-2xl">
         <div className="mb-6">
@@ -134,12 +153,38 @@ export default function ProfileSettings() {
 
               <Button type="submit" disabled={isLoading} className="w-full sm:w-auto">
                 {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Save Changes
+                {isLoading ? "Saving..." : "Save Changes"}
               </Button>
             </form>
           </CardContent>
         </Card>
+        
+        <Card className="mt-6 border-muted">
+          <CardContent className="pt-6">
+            <div className="space-y-3">
+              <h3 className="text-sm font-semibold">Your Profile URL</h3>
+              <div className="flex items-center gap-2">
+                <Input
+                  value={`${window.location.origin}/${profile.handle}`}
+                  readOnly
+                  className="font-mono text-sm"
+                />
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    navigator.clipboard.writeText(`${window.location.origin}/${profile.handle}`);
+                    toast.success('Link copied to clipboard');
+                  }}
+                >
+                  Copy
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
+    </>
   );
 }

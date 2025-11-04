@@ -7,10 +7,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ArrowLeft, Plus, Trash2, GripVertical, Link as LinkIcon } from "lucide-react";
+import { ArrowLeft, Plus, Trash2, GripVertical, Link as LinkIcon, Eye } from "lucide-react";
 import { toast } from "sonner";
 import { PageLoader } from "@/components/ui/loading-spinner";
 import { EmptyState } from "@/components/ui/empty-state";
+import { SEOHead } from "@/components/SEOHead";
 
 interface Link {
   id: string;
@@ -27,6 +28,7 @@ export default function LinksSettings() {
   const [newLink, setNewLink] = useState({ title: "", dest_url: "" });
   const [isLoadingLinks, setIsLoadingLinks] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [userHandle, setUserHandle] = useState("");
 
   useEffect(() => {
     if (!loading && !user) {
@@ -37,8 +39,21 @@ export default function LinksSettings() {
   useEffect(() => {
     if (user) {
       fetchLinks();
+      fetchUserHandle();
     }
   }, [user]);
+
+  const fetchUserHandle = async () => {
+    const { data } = await supabase
+      .from('profiles')
+      .select('handle')
+      .eq('id', user?.id)
+      .single();
+    
+    if (data) {
+      setUserHandle(data.handle);
+    }
+  };
 
   const fetchLinks = async () => {
     setIsLoadingLinks(true);
@@ -109,15 +124,31 @@ export default function LinksSettings() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <nav className="border-b">
-        <div className="container mx-auto px-6 py-4">
-          <Button variant="ghost" onClick={() => navigate('/dashboard')}>
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back
-          </Button>
-        </div>
-      </nav>
+    <>
+      <SEOHead
+        title="Manage Links - LinkPeek"
+        description="Add and organize your profile links."
+        noindex={true}
+      />
+      <div className="min-h-screen bg-background">
+        <nav className="border-b">
+          <div className="container mx-auto px-6 py-4 flex items-center justify-between">
+            <Button variant="ghost" onClick={() => navigate('/dashboard')}>
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back
+            </Button>
+            {userHandle && (
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => window.open(`/${userHandle}`, '_blank')}
+              >
+                <Eye className="h-4 w-4 mr-2" />
+                View Profile
+              </Button>
+            )}
+          </div>
+        </nav>
 
       <div className="container mx-auto px-6 py-10 max-w-2xl">
         <div className="mb-6">
@@ -217,5 +248,6 @@ export default function LinksSettings() {
         </Card>
       </div>
     </div>
+    </>
   );
 }
