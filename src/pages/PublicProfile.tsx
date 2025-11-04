@@ -48,13 +48,13 @@ export default function PublicProfile() {
 
     const { data: linksData, error: linksError } = await supabase
       .from('links')
-      .select('id, title, dest_url, position, active_from, active_until')
+      .select('id, title, dest_url, position, active_from, active_until, max_clicks, current_clicks')
       .eq('user_id', profileData.id)
       .eq('is_active', true)
       .order('position', { ascending: true });
 
     if (!linksError && linksData) {
-      // Filter links based on schedule
+      // Filter links based on schedule and click limits
       const now = new Date();
       const activeLinks = linksData.filter(link => {
         const from = link.active_from ? new Date(link.active_from) : null;
@@ -62,6 +62,7 @@ export default function PublicProfile() {
         
         if (from && now < from) return false;
         if (until && now > until) return false;
+        if (link.max_clicks && link.current_clicks >= link.max_clicks) return false;
         return true;
       });
       setLinks(activeLinks);

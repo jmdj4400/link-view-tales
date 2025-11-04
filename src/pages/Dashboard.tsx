@@ -13,6 +13,7 @@ import { TopLinksTable } from "@/components/analytics/TopLinksTable";
 import { TrafficSources } from "@/components/analytics/TrafficSources";
 import { DeviceBrowserStats } from "@/components/analytics/DeviceBrowserStats";
 import { CountryStats } from "@/components/analytics/CountryStats";
+import { DateRangePicker } from "@/components/analytics/DateRangePicker";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { PageLoader } from "@/components/ui/loading-spinner";
 import { SEOHead } from "@/components/SEOHead";
@@ -22,7 +23,10 @@ export default function Dashboard() {
   const { user, signOut, loading, subscriptionStatus, refreshSubscription } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const [timeRange, setTimeRange] = useState<'7d' | '30d'>('7d');
+  const [dateRange, setDateRange] = useState({ 
+    from: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), 
+    to: new Date() 
+  });
   const [metrics, setMetrics] = useState({ views: 0, clicks: 0, ctr: 0 });
   const [chartData, setChartData] = useState<Array<{ date: string; clicks: number; views: number }>>([]);
   const [topLinks, setTopLinks] = useState<Array<any>>([]);
@@ -51,13 +55,10 @@ export default function Dashboard() {
       fetchAnalytics();
       fetchLinks();
     }
-  }, [user, timeRange]);
+  }, [user, dateRange]);
 
   const fetchAnalytics = async () => {
     setIsLoadingAnalytics(true);
-    const days = timeRange === '7d' ? 7 : 30;
-    const startDate = new Date();
-    startDate.setDate(startDate.getDate() - days);
 
     // Fetch events (excluding bots)
     const { data: events, error: eventsError } = await supabase
@@ -65,7 +66,8 @@ export default function Dashboard() {
       .select('*')
       .eq('user_id', user?.id)
       .eq('is_bot', false)
-      .gte('created_at', startDate.toISOString());
+      .gte('created_at', dateRange.from.toISOString())
+      .lte('created_at', dateRange.to.toISOString());
 
     if (eventsError) {
       console.error('Error fetching events:', eventsError);
@@ -87,9 +89,10 @@ export default function Dashboard() {
 
     // Prepare chart data (group by date)
     const dateMap = new Map<string, { clicks: number; views: number }>();
-    for (let i = 0; i < days; i++) {
-      const date = new Date();
-      date.setDate(date.getDate() - (days - 1 - i));
+    const days = Math.ceil((dateRange.to.getTime() - dateRange.from.getTime()) / (1000 * 60 * 60 * 24));
+    for (let i = 0; i <= days; i++) {
+      const date = new Date(dateRange.from);
+      date.setDate(date.getDate() + i);
       const dateStr = date.toISOString().split('T')[0];
       dateMap.set(dateStr, { clicks: 0, views: 0 });
     }
@@ -250,7 +253,8 @@ export default function Dashboard() {
       
       // Export overview data
       const overviewCSV = convertToCSV(formattedData.overview, ['Date', 'Page Views', 'Link Clicks']);
-      downloadCSV(`linkpeek-analytics-overview-${timeRange}.csv`, overviewCSV);
+      const dateStr = `${dateRange.from.toISOString().split('T')[0]}_${dateRange.to.toISOString().split('T')[0]}`;
+      downloadCSV(`linkpeek-analytics-${dateStr}.csv`, overviewCSV);
       
       toast.success('Analytics exported successfully');
     } catch (error) {
@@ -322,13 +326,10 @@ export default function Dashboard() {
           </Button>
         </div>
 
-        {/* Time Range Toggle */}
-        <Tabs value={timeRange} onValueChange={(v) => setTimeRange(v as '7d' | '30d')} className="mb-8">
-          <TabsList>
-            <TabsTrigger value="7d">Last 7 Days</TabsTrigger>
-            <TabsTrigger value="30d">Last 30 Days</TabsTrigger>
-          </TabsList>
-        </Tabs>
+        {/* Date Range Picker */}
+        <div className="mb-8">
+          <DateRangePicker dateRange={dateRange} onDateRangeChange={setDateRange} />
+        </div>
 
         {/* Metrics Cards */}
         <div className="grid md:grid-cols-3 gap-6 mb-8">
@@ -387,13 +388,13 @@ export default function Dashboard() {
 
         {/* Analytics Chart */}
         <div className="mb-8">
-          <AnalyticsChart data={chartData} timeRange={timeRange} />
+          <AnalyticsChart data={chartData} />
         </div>
 
         {/* Top Links & Traffic Sources */}
         <div className="grid lg:grid-cols-2 gap-6 mb-8">
-          <TopLinksTable links={topLinks} timeRange={timeRange} />
-          <TrafficSources sources={trafficSources} timeRange={timeRange} />
+          <TopLinksTable links={topLinks} />
+          <TrafficSources sources={trafficSources} />
         </div>
 
         {/* Device, Browser & Country Stats */}

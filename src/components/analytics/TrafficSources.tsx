@@ -10,7 +10,7 @@ interface TrafficSource {
 
 interface TrafficSourcesProps {
   sources: TrafficSource[];
-  timeRange: '7d' | '30d';
+  timeRange?: '7d' | '30d';
 }
 
 const getSourceIcon = (source: string) => {
@@ -28,7 +28,7 @@ export function TrafficSources({ sources, timeRange }: TrafficSourcesProps) {
       <CardHeader>
         <CardTitle className="text-xl">Traffic Sources</CardTitle>
         <CardDescription className="text-base">
-          Where your clicks are coming from ({timeRange === '7d' ? 'last 7 days' : 'last 30 days'})
+          Where your clicks are coming from
         </CardDescription>
       </CardHeader>
       <CardContent>

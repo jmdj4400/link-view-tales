@@ -111,37 +111,52 @@ export type Database = {
           active_from: string | null
           active_until: string | null
           created_at: string | null
+          current_clicks: number | null
           dest_url: string
           id: string
           is_active: boolean | null
+          max_clicks: number | null
           position: number
           title: string
           updated_at: string | null
           user_id: string
+          utm_campaign: string | null
+          utm_medium: string | null
+          utm_source: string | null
         }
         Insert: {
           active_from?: string | null
           active_until?: string | null
           created_at?: string | null
+          current_clicks?: number | null
           dest_url: string
           id?: string
           is_active?: boolean | null
+          max_clicks?: number | null
           position?: number
           title: string
           updated_at?: string | null
           user_id: string
+          utm_campaign?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
         }
         Update: {
           active_from?: string | null
           active_until?: string | null
           created_at?: string | null
+          current_clicks?: number | null
           dest_url?: string
           id?: string
           is_active?: boolean | null
+          max_clicks?: number | null
           position?: number
           title?: string
           updated_at?: string | null
           user_id?: string
+          utm_campaign?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
         }
         Relationships: [
           {

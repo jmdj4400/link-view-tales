@@ -13,7 +13,7 @@ interface TopLink {
 
 interface TopLinksTableProps {
   links: TopLink[];
-  timeRange: '7d' | '30d';
+  timeRange?: '7d' | '30d';
 }
 
 export function TopLinksTable({ links, timeRange }: TopLinksTableProps) {
@@ -22,7 +22,7 @@ export function TopLinksTable({ links, timeRange }: TopLinksTableProps) {
       <CardHeader>
         <CardTitle className="text-xl">Top Performing Links</CardTitle>
         <CardDescription className="text-base">
-          Your most clicked links in the last {timeRange === '7d' ? '7 days' : '30 days'}
+          Your most clicked links
         </CardDescription>
       </CardHeader>
       <CardContent>

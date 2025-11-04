@@ -7,7 +7,7 @@ interface AnalyticsChartProps {
     clicks: number;
     views: number;
   }>;
-  timeRange: '7d' | '30d';
+  timeRange?: '7d' | '30d';
 }
 
 export function AnalyticsChart({ data, timeRange }: AnalyticsChartProps) {
@@ -16,7 +16,7 @@ export function AnalyticsChart({ data, timeRange }: AnalyticsChartProps) {
       <CardHeader>
         <CardTitle className="text-2xl">Performance Overview</CardTitle>
         <CardDescription className="text-base">
-          Clicks and views over the last {timeRange === '7d' ? '7 days' : '30 days'}
+          Clicks and views over time
         </CardDescription>
       </CardHeader>
       <CardContent>

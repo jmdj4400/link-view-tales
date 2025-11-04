@@ -7,10 +7,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ArrowLeft, Plus, Trash2, GripVertical, Link as LinkIcon, Eye, QrCode, CalendarClock } from "lucide-react";
+import { ArrowLeft, Plus, Trash2, GripVertical, Link as LinkIcon, Eye, QrCode, CalendarClock, Gauge, Link2 } from "lucide-react";
 import { toast } from "sonner";
 import { QRCodeDialog } from "@/components/links/QRCodeDialog";
 import { LinkScheduleDialog } from "@/components/links/LinkScheduleDialog";
+import { ClickLimitDialog } from "@/components/links/ClickLimitDialog";
+import { UTMBuilderDialog } from "@/components/links/UTMBuilderDialog";
 import { PageLoader } from "@/components/ui/loading-spinner";
 import { EmptyState } from "@/components/ui/empty-state";
 import { SEOHead } from "@/components/SEOHead";
@@ -23,6 +25,11 @@ interface Link {
   is_active: boolean;
   active_from: string | null;
   active_until: string | null;
+  max_clicks: number | null;
+  current_clicks: number;
+  utm_source: string | null;
+  utm_medium: string | null;
+  utm_campaign: string | null;
 }
 
 export default function LinksSettings() {
@@ -35,6 +42,8 @@ export default function LinksSettings() {
   const [userHandle, setUserHandle] = useState("");
   const [qrCodeDialog, setQrCodeDialog] = useState<{ open: boolean; link: Link | null }>({ open: false, link: null });
   const [scheduleDialog, setScheduleDialog] = useState<{ open: boolean; link: Link | null }>({ open: false, link: null });
+  const [clickLimitDialog, setClickLimitDialog] = useState<{ open: boolean; link: Link | null }>({ open: false, link: null });
+  const [utmDialog, setUtmDialog] = useState<{ open: boolean; link: Link | null }>({ open: false, link: null });
 
   useEffect(() => {
     if (!loading && !user) {
@@ -139,6 +148,38 @@ export default function LinksSettings() {
     }
   };
 
+  const handleSaveClickLimit = async (linkId: string, maxClicks: number | null) => {
+    const { error } = await supabase
+      .from('links')
+      .update({ max_clicks: maxClicks })
+      .eq('id', linkId);
+
+    if (error) {
+      toast.error('Failed to update click limit');
+    } else {
+      toast.success('Click limit updated');
+      fetchLinks();
+    }
+  };
+
+  const handleSaveUTM = async (linkId: string, utmSource: string | null, utmMedium: string | null, utmCampaign: string | null) => {
+    const { error } = await supabase
+      .from('links')
+      .update({ 
+        utm_source: utmSource, 
+        utm_medium: utmMedium, 
+        utm_campaign: utmCampaign 
+      })
+      .eq('id', linkId);
+
+    if (error) {
+      toast.error('Failed to update UTM parameters');
+    } else {
+      toast.success('UTM parameters updated');
+      fetchLinks();
+    }
+  };
+
   const getScheduleStatus = (link: Link) => {
     const now = new Date();
     const from = link.active_from ? new Date(link.active_from) : null;
@@ -148,6 +189,14 @@ export default function LinksSettings() {
     if (until && now > until) return { status: 'expired', text: 'Expired' };
     if (from || until) return { status: 'active', text: 'Scheduled' };
     return null;
+  };
+
+  const getClickStatus = (link: Link) => {
+    if (!link.max_clicks) return null;
+    const remaining = link.max_clicks - link.current_clicks;
+    if (remaining <= 0) return { status: 'limit-reached', text: 'Limit reached' };
+    if (remaining <= link.max_clicks * 0.2) return { status: 'low', text: `${remaining} left` };
+    return { status: 'active', text: `${link.current_clicks}/${link.max_clicks}` };
   };
 
   if (loading) {
@@ -257,16 +306,40 @@ export default function LinksSettings() {
                   <div className="flex-1 min-w-0">
                     <div className="font-medium truncate">{link.title}</div>
                     <div className="text-sm text-muted-foreground truncate">{link.dest_url}</div>
-                    {getScheduleStatus(link) && (
-                      <div className="text-xs text-muted-foreground mt-1">
-                        {getScheduleStatus(link)?.text}
-                      </div>
-                    )}
+                    <div className="flex gap-2 mt-1">
+                      {getScheduleStatus(link) && (
+                        <span className="text-xs text-muted-foreground">
+                          {getScheduleStatus(link)?.text}
+                        </span>
+                      )}
+                      {getClickStatus(link) && (
+                        <span className={`text-xs ${getClickStatus(link)?.status === 'limit-reached' ? 'text-destructive' : 'text-muted-foreground'}`}>
+                          {getClickStatus(link)?.text}
+                        </span>
+                      )}
+                    </div>
                   </div>
                   <Button
                     variant="ghost"
                     size="sm"
+                    onClick={() => setClickLimitDialog({ open: true, link })}
+                    title="Click Limit"
+                  >
+                    <Gauge className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setUtmDialog({ open: true, link })}
+                    title="UTM Parameters"
+                  >
+                    <Link2 className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
                     onClick={() => setScheduleDialog({ open: true, link })}
+                    title="Schedule"
                   >
                     <CalendarClock className="h-4 w-4" />
                   </Button>
@@ -274,6 +347,7 @@ export default function LinksSettings() {
                     variant="ghost"
                     size="sm"
                     onClick={() => setQrCodeDialog({ open: true, link })}
+                    title="QR Code"
                   >
                     <QrCode className="h-4 w-4" />
                   </Button>
@@ -313,6 +387,24 @@ export default function LinksSettings() {
           onOpenChange={(open) => setScheduleDialog({ open, link: null })}
           link={scheduleDialog.link}
           onSave={handleSaveSchedule}
+        />
+      )}
+
+      {clickLimitDialog.link && (
+        <ClickLimitDialog
+          open={clickLimitDialog.open}
+          onOpenChange={(open) => setClickLimitDialog({ open, link: null })}
+          link={clickLimitDialog.link}
+          onSave={handleSaveClickLimit}
+        />
+      )}
+
+      {utmDialog.link && (
+        <UTMBuilderDialog
+          open={utmDialog.open}
+          onOpenChange={(open) => setUtmDialog({ open, link: null })}
+          link={utmDialog.link}
+          onSave={handleSaveUTM}
         />
       )}
     </div>
