@@ -14,40 +14,43 @@ export default function Landing() {
     {
       name: "Free",
       price: "0",
-      description: "For getting started",
+      description: "Perfect for getting started",
       features: [
-        "Up to 3 active links",
-        "7 days analytics",
-        "Basic tracking",
+        "5 active links",
+        "Basic click analytics",
+        "LinkPeek subdomain",
+        "Standard themes",
       ],
       cta: user ? "Current Plan" : "Start Free",
       featured: false,
     },
     {
       name: "Pro",
-      price: "39",
-      description: "For serious creators",
+      price: "9",
+      description: "For creators and professionals",
       features: [
         "Unlimited links",
-        "90 days history",
-        "Advanced analytics",
-        "No branding",
-        "Priority support",
+        "Advanced analytics & insights",
+        "Custom domain connection",
+        "Remove LinkPeek branding",
+        "Priority email support",
+        "Custom themes & colors",
       ],
-      cta: "Get Pro",
+      cta: "Start Pro Trial",
       featured: true,
     },
     {
       name: "Business",
-      price: "99",
-      description: "For teams",
+      price: "29",
+      description: "For growing teams",
       features: [
         "Everything in Pro",
-        "Team access",
-        "Custom domain",
+        "Team collaboration (5 seats)",
         "API access",
+        "Advanced integrations",
+        "Dedicated account manager",
       ],
-      cta: "Contact Us",
+      cta: "Contact Sales",
       featured: false,
     },
   ];
@@ -83,10 +86,10 @@ export default function Landing() {
       <section className="container mx-auto px-6 pt-24 pb-20 max-w-7xl">
         <div className="max-w-3xl">
           <h2 className="text-5xl md:text-6xl lg:text-7xl font-heading font-semibold leading-[1.1] tracking-tight mb-6">
-            Link analytics that actually help
+            Your Digital Hub for Every Platform
           </h2>
           <p className="text-xl text-muted-foreground mb-10 leading-relaxed max-w-2xl">
-            Track where your audience comes from. See what works. Make better decisions.
+            Share all your important links from one professional page. Track engagement, understand your audience, and grow your reach with real-time analytics.
           </p>
           <div className="flex flex-wrap gap-4">
             <Button 
@@ -94,12 +97,15 @@ export default function Landing() {
               onClick={() => navigate('/auth')} 
               className="text-base"
             >
-              Start tracking free
+              Start Free Trial
             </Button>
             <Button size="lg" variant="outline" onClick={() => navigate('/auth')} className="text-base">
-              View demo
+              See How It Works
             </Button>
           </div>
+          <p className="text-sm text-muted-foreground mt-6">
+            No credit card required • 14-day Pro trial included
+          </p>
         </div>
       </section>
 
@@ -125,29 +131,38 @@ export default function Landing() {
 
       {/* Features */}
       <section className="container mx-auto px-6 py-24 max-w-7xl border-t">
+        <div className="max-w-2xl mb-16">
+          <h2 className="text-4xl md:text-5xl font-heading font-semibold mb-4 leading-tight">
+            Built for Professionals
+          </h2>
+          <p className="text-lg text-muted-foreground">
+            Everything you need to manage and grow your online presence
+          </p>
+        </div>
+        
         <div className="grid md:grid-cols-2 gap-16 items-start">
           <div>
             <div className="inline-flex items-center gap-2 px-3 py-1 bg-muted rounded-full text-sm mb-4">
               <BarChart3 className="h-4 w-4" />
-              Analytics
+              Real-Time Analytics
             </div>
             <h3 className="text-3xl md:text-4xl font-heading font-semibold mb-4 leading-tight">
-              See where your traffic comes from
+              See exactly how your audience engages
             </h3>
             <p className="text-lg text-muted-foreground leading-relaxed">
-              Know which platforms drive clicks. Track referrers, devices, and locations. Export data when you need it.
+              Track clicks, referral sources, and geographic data. Understand which platforms drive the most engagement and make data-driven decisions to optimize your content strategy.
             </p>
           </div>
           <div>
             <div className="inline-flex items-center gap-2 px-3 py-1 bg-muted rounded-full text-sm mb-4">
               <LinkIcon className="h-4 w-4" />
-              Simple
+              Unlimited Links
             </div>
             <h3 className="text-3xl md:text-4xl font-heading font-semibold mb-4 leading-tight">
-              Set up in under a minute
+              Add as many links as you need
             </h3>
             <p className="text-lg text-muted-foreground leading-relaxed">
-              Add your links. Share your page. Start tracking. No complex setup or configuration needed.
+              Organize your links with intuitive drag-and-drop ordering. Easily update, pause, or remove links anytime. No limits on Pro plan.
             </p>
           </div>
         </div>
@@ -157,25 +172,25 @@ export default function Landing() {
             <div>
               <div className="inline-flex items-center gap-2 px-3 py-1 bg-muted rounded-full text-sm mb-4">
                 <Zap className="h-4 w-4" />
-                Privacy
+                Custom Branding
               </div>
               <h3 className="text-3xl md:text-4xl font-heading font-semibold mb-4 leading-tight">
-                GDPR compliant by default
+                Match your brand perfectly
               </h3>
               <p className="text-lg text-muted-foreground leading-relaxed">
-                No cookies. No third-party trackers. Just clean, privacy-focused analytics you can trust.
+                Customize themes, colors, and fonts. Connect your own domain for a professional presence. Remove all LinkPeek branding on Pro plans.
               </p>
             </div>
             <div>
               <div className="inline-flex items-center gap-2 px-3 py-1 bg-muted rounded-full text-sm mb-4">
                 <Check className="h-4 w-4" />
-                Reliable
+                Privacy-First
               </div>
               <h3 className="text-3xl md:text-4xl font-heading font-semibold mb-4 leading-tight">
-                Fast and always available
+                GDPR compliant by default
               </h3>
               <p className="text-lg text-muted-foreground leading-relaxed">
-                Your page loads instantly. Analytics update in real-time. Built on infrastructure that scales.
+                No cookies. No third-party trackers. Your data stays private. Built with privacy regulations in mind from day one.
               </p>
             </div>
           </div>
@@ -186,10 +201,10 @@ export default function Landing() {
       <section className="container mx-auto px-6 py-24 max-w-7xl border-t">
         <div className="max-w-2xl mb-16">
           <h2 className="text-4xl md:text-5xl font-heading font-semibold mb-4 leading-tight">
-            Pricing
+            Pricing That Scales With You
           </h2>
           <p className="text-lg text-muted-foreground">
-            Start free. Upgrade when you need more.
+            Start free, upgrade when you're ready. All plans include 14-day Pro trial.
           </p>
         </div>
 
@@ -205,8 +220,8 @@ export default function Landing() {
                 <h3 className="text-lg font-heading font-semibold mb-1">{plan.name}</h3>
                 <p className="text-sm text-muted-foreground mb-4">{plan.description}</p>
                 <div className="flex items-baseline gap-1">
-                  <span className="text-4xl font-heading font-semibold">{plan.price}</span>
-                  <span className="text-muted-foreground">DKK/month</span>
+                  <span className="text-4xl font-heading font-semibold">${plan.price}</span>
+                  <span className="text-muted-foreground">/month</span>
                 </div>
               </div>
               
@@ -232,15 +247,50 @@ export default function Landing() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t mt-24">
-        <div className="container mx-auto px-6 py-12 max-w-7xl">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <div className="flex items-center gap-2">
-              <div className="w-6 h-6 bg-primary rounded"></div>
-              <span className="font-heading font-semibold">LinkPeek</span>
+      <footer className="border-t mt-24 bg-muted/30">
+        <div className="container mx-auto px-6 py-16 max-w-7xl">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+            <div className="space-y-4">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 bg-primary rounded-lg"></div>
+                <h3 className="font-heading font-semibold text-lg">LinkPeek</h3>
+              </div>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                Professional link management and analytics for creators, entrepreneurs, and brands
+              </p>
             </div>
+            
+            <div className="space-y-4">
+              <h4 className="font-heading font-semibold">Product</h4>
+              <ul className="space-y-3 text-sm text-muted-foreground">
+                <li><button onClick={() => navigate('/')} className="hover:text-foreground transition-colors">Features</button></li>
+                <li><button onClick={() => navigate('/')} className="hover:text-foreground transition-colors">Pricing</button></li>
+                <li><button onClick={() => navigate('/auth')} className="hover:text-foreground transition-colors">Sign Up</button></li>
+              </ul>
+            </div>
+            
+            <div className="space-y-4">
+              <h4 className="font-heading font-semibold">Resources</h4>
+              <ul className="space-y-3 text-sm text-muted-foreground">
+                <li><button onClick={() => navigate('/')} className="hover:text-foreground transition-colors">Help Center</button></li>
+                <li><button onClick={() => navigate('/')} className="hover:text-foreground transition-colors">Contact Support</button></li>
+                <li><button onClick={() => navigate('/')} className="hover:text-foreground transition-colors">API Documentation</button></li>
+              </ul>
+            </div>
+            
+            <div className="space-y-4">
+              <h4 className="font-heading font-semibold">Legal</h4>
+              <ul className="space-y-3 text-sm text-muted-foreground">
+                <li><button onClick={() => navigate('/')} className="hover:text-foreground transition-colors">Privacy Policy</button></li>
+                <li><button onClick={() => navigate('/')} className="hover:text-foreground transition-colors">Terms of Service</button></li>
+                <li><button onClick={() => navigate('/')} className="hover:text-foreground transition-colors">Cookie Policy</button></li>
+              </ul>
+            </div>
+          </div>
+          
+          <div className="pt-8 border-t text-center">
             <p className="text-sm text-muted-foreground">
-              © 2025 LinkPeek
+              © {new Date().getFullYear()} LinkPeek. All rights reserved.
             </p>
           </div>
         </div>
