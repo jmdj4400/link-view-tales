@@ -18,6 +18,18 @@ serve(async (req) => {
   }
 
   try {
+    // Validate CRON_SECRET for security
+    const authHeader = req.headers.get('authorization');
+    const cronSecret = Deno.env.get('CRON_SECRET');
+    
+    if (!authHeader || authHeader !== `Bearer ${cronSecret}`) {
+      logStep("Unauthorized access attempt");
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 401,
+      });
+    }
+
     logStep("Function started");
 
     const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
