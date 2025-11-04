@@ -6,6 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ExternalLink } from "lucide-react";
 import { SEOHead } from "@/components/SEOHead";
 import { PageLoader } from "@/components/ui/loading-spinner";
+import { hashUserAgent } from "@/lib/security-utils";
 
 interface Profile {
   name: string;
@@ -79,11 +80,12 @@ export default function PublicProfile() {
       .single();
 
     if (profileData) {
+      const userAgentHash = await hashUserAgent(navigator.userAgent);
       await supabase.from('events').insert({
         user_id: profileData.id,
         event_type: 'page_view',
         referrer: document.referrer,
-        user_agent_hash: btoa(navigator.userAgent).substring(0, 32),
+        user_agent_hash: userAgentHash,
       });
     }
   };
@@ -96,12 +98,13 @@ export default function PublicProfile() {
       .single();
 
     if (profileData) {
+      const userAgentHash = await hashUserAgent(navigator.userAgent);
       await supabase.from('events').insert({
         user_id: profileData.id,
         link_id: linkId,
         event_type: 'click',
         referrer: document.referrer,
-        user_agent_hash: btoa(navigator.userAgent).substring(0, 32),
+        user_agent_hash: userAgentHash,
       });
     }
 

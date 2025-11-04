@@ -303,6 +303,33 @@ export type Database = {
         }
         Relationships: []
       }
+      rate_limits: {
+        Row: {
+          action: string
+          count: number | null
+          created_at: string | null
+          id: string
+          identifier: string
+          window_start: string | null
+        }
+        Insert: {
+          action: string
+          count?: number | null
+          created_at?: string | null
+          id?: string
+          identifier: string
+          window_start?: string | null
+        }
+        Update: {
+          action?: string
+          count?: number | null
+          created_at?: string | null
+          id?: string
+          identifier?: string
+          window_start?: string | null
+        }
+        Relationships: []
+      }
       subscriptions: {
         Row: {
           created_at: string | null
@@ -367,9 +394,7 @@ export type Database = {
           handle: string | null
           id: string | null
           name: string | null
-          plan: Database["public"]["Enums"]["subscription_plan"] | null
           theme: string | null
-          updated_at: string | null
         }
         Insert: {
           avatar_url?: string | null
@@ -378,9 +403,7 @@ export type Database = {
           handle?: string | null
           id?: string | null
           name?: string | null
-          plan?: Database["public"]["Enums"]["subscription_plan"] | null
           theme?: string | null
-          updated_at?: string | null
         }
         Update: {
           avatar_url?: string | null
@@ -389,14 +412,21 @@ export type Database = {
           handle?: string | null
           id?: string | null
           name?: string | null
-          plan?: Database["public"]["Enums"]["subscription_plan"] | null
           theme?: string | null
-          updated_at?: string | null
         }
         Relationships: []
       }
     }
     Functions: {
+      check_rate_limit: {
+        Args: {
+          p_action: string
+          p_identifier: string
+          p_max_requests: number
+          p_window_minutes: number
+        }
+        Returns: boolean
+      }
       grant_trial: { Args: { p_user_id: string }; Returns: undefined }
       is_email_whitelisted: { Args: { check_email: string }; Returns: boolean }
     }

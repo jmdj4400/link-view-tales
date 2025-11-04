@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Link2 } from "lucide-react";
 import { toast } from "sonner";
+import { linkValidation } from "@/lib/security-utils";
 
 interface UTMBuilderDialogProps {
   open: boolean;
@@ -35,6 +36,16 @@ export function UTMBuilderDialog({ open, onOpenChange, link, onSave }: UTMBuilde
   };
 
   const handleSave = async () => {
+    // Validate UTM parameters
+    const sourceError = linkValidation.utmParam.validate(utmSource);
+    const mediumError = linkValidation.utmParam.validate(utmMedium);
+    const campaignError = linkValidation.utmParam.validate(utmCampaign);
+
+    if (sourceError || mediumError || campaignError) {
+      toast.error(sourceError || mediumError || campaignError || 'Validation error');
+      return;
+    }
+
     setIsSaving(true);
     await onSave(
       link.id,
@@ -71,6 +82,7 @@ export function UTMBuilderDialog({ open, onOpenChange, link, onSave }: UTMBuilde
               value={utmSource}
               onChange={(e) => setUtmSource(e.target.value)}
               placeholder="facebook"
+              maxLength={linkValidation.utmParam.maxLength}
             />
           </div>
 
@@ -83,6 +95,7 @@ export function UTMBuilderDialog({ open, onOpenChange, link, onSave }: UTMBuilde
               value={utmMedium}
               onChange={(e) => setUtmMedium(e.target.value)}
               placeholder="social"
+              maxLength={linkValidation.utmParam.maxLength}
             />
           </div>
 
@@ -95,6 +108,7 @@ export function UTMBuilderDialog({ open, onOpenChange, link, onSave }: UTMBuilde
               value={utmCampaign}
               onChange={(e) => setUtmCampaign(e.target.value)}
               placeholder="spring-sale"
+              maxLength={linkValidation.utmParam.maxLength}
             />
           </div>
 

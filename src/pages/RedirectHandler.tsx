@@ -1,9 +1,11 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { supabase } from "@/lib/supabase-client";
+import { hashUserAgent } from "@/lib/security-utils";
 
 export default function RedirectHandler() {
   const { linkId } = useParams();
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     handleRedirect();
@@ -12,17 +14,32 @@ export default function RedirectHandler() {
   const handleRedirect = async () => {
     if (!linkId) return;
 
-    const { data: linkData, error } = await supabase
-      .from('links')
-      .select('dest_url, user_id, active_from, active_until, max_clicks, current_clicks, utm_source, utm_medium, utm_campaign')
-      .eq('id', linkId)
-      .eq('is_active', true)
-      .single();
+    try {
+      // Check rate limit first (60 requests per 5 minutes per IP)
+      const identifier = await hashUserAgent(navigator.userAgent);
+      const { data: rateLimitOk } = await supabase.rpc('check_rate_limit', {
+        p_identifier: identifier,
+        p_action: 'redirect',
+        p_max_requests: 60,
+        p_window_minutes: 5
+      });
 
-    if (error || !linkData) {
-      window.location.href = '/';
-      return;
-    }
+      if (!rateLimitOk) {
+        setError('Too many requests. Please try again later.');
+        return;
+      }
+
+      const { data: linkData, error } = await supabase
+        .from('links')
+        .select('dest_url, user_id, active_from, active_until, max_clicks, current_clicks, utm_source, utm_medium, utm_campaign')
+        .eq('id', linkId)
+        .eq('is_active', true)
+        .single();
+
+      if (error || !linkData) {
+        window.location.href = '/';
+        return;
+      }
 
     // Check if link is within scheduled time
     const now = new Date();
@@ -45,14 +62,15 @@ export default function RedirectHandler() {
       return;
     }
 
-    // Track the click
-    await supabase.from('events').insert({
-      user_id: linkData.user_id,
-      link_id: linkId,
-      event_type: 'click',
-      referrer: document.referrer,
-      user_agent_hash: btoa(navigator.userAgent).substring(0, 32),
-    });
+      // Track the click with proper hashing
+      const userAgentHash = await hashUserAgent(navigator.userAgent);
+      await supabase.from('events').insert({
+        user_id: linkData.user_id,
+        link_id: linkId,
+        event_type: 'click',
+        referrer: document.referrer,
+        user_agent_hash: userAgentHash,
+      });
 
     // Build destination URL with UTM parameters
     let destUrl = linkData.dest_url;
@@ -64,14 +82,23 @@ export default function RedirectHandler() {
       destUrl = url.toString();
     }
 
-    // Redirect
-    window.location.href = destUrl;
+      // Redirect
+      window.location.href = destUrl;
+    } catch (err) {
+      console.error('Redirect error:', err);
+      setError('An error occurred. Redirecting to home...');
+      setTimeout(() => window.location.href = '/', 2000);
+    }
   };
 
   return (
     <div className="flex min-h-screen items-center justify-center">
       <div className="text-center">
-        <div className="animate-pulse">Redirecting...</div>
+        {error ? (
+          <div className="text-destructive">{error}</div>
+        ) : (
+          <div className="animate-pulse">Redirecting...</div>
+        )}
       </div>
     </div>
   );

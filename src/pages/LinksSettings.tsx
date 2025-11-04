@@ -16,6 +16,7 @@ import { UTMBuilderDialog } from "@/components/links/UTMBuilderDialog";
 import { PageLoader } from "@/components/ui/loading-spinner";
 import { EmptyState } from "@/components/ui/empty-state";
 import { SEOHead } from "@/components/SEOHead";
+import { linkValidation } from "@/lib/security-utils";
 
 interface Link {
   id: string;
@@ -88,6 +89,16 @@ export default function LinksSettings() {
     e.preventDefault();
     setIsSubmitting(true);
     
+    // Validate inputs
+    const titleError = linkValidation.title.validate(newLink.title);
+    const urlError = linkValidation.destUrl.validate(newLink.dest_url);
+
+    if (titleError || urlError) {
+      toast.error(titleError || urlError || 'Validation error');
+      setIsSubmitting(false);
+      return;
+    }
+
     const { error } = await supabase
       .from('links')
       .insert({
@@ -248,6 +259,7 @@ export default function LinksSettings() {
                   placeholder="My Website"
                   value={newLink.title}
                   onChange={(e) => setNewLink({ ...newLink, title: e.target.value })}
+                  maxLength={linkValidation.title.maxLength}
                   required
                 />
               </div>
@@ -259,6 +271,7 @@ export default function LinksSettings() {
                   placeholder="https://example.com"
                   value={newLink.dest_url}
                   onChange={(e) => setNewLink({ ...newLink, dest_url: e.target.value })}
+                  maxLength={linkValidation.destUrl.maxLength}
                   required
                 />
               </div>

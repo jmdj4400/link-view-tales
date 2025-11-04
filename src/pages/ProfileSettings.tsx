@@ -11,6 +11,7 @@ import { ArrowLeft, Loader2, Eye } from "lucide-react";
 import { toast } from "sonner";
 import { SEOHead } from "@/components/SEOHead";
 import { PageLoader } from "@/components/ui/loading-spinner";
+import { profileValidation } from "@/lib/security-utils";
 
 export default function ProfileSettings() {
   const { user, loading } = useAuth();
@@ -53,6 +54,17 @@ export default function ProfileSettings() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+
+    // Validate inputs
+    const nameError = profileValidation.name.validate(profile.name);
+    const bioError = profileValidation.bio.validate(profile.bio);
+    const avatarError = profileValidation.avatarUrl.validate(profile.avatar_url);
+
+    if (nameError || bioError || avatarError) {
+      toast.error(nameError || bioError || avatarError || 'Validation error');
+      setIsLoading(false);
+      return;
+    }
 
     const { error } = await supabase
       .from('profiles')
@@ -114,8 +126,12 @@ export default function ProfileSettings() {
                   id="name"
                   value={profile.name}
                   onChange={(e) => setProfile({ ...profile, name: e.target.value })}
+                  maxLength={profileValidation.name.maxLength}
                   required
                 />
+                <p className="text-xs text-muted-foreground">
+                  {profile.name.length}/{profileValidation.name.maxLength} characters
+                </p>
               </div>
               
               <div className="space-y-2">
@@ -147,8 +163,12 @@ export default function ProfileSettings() {
                   placeholder="Tell your visitors about yourself..."
                   value={profile.bio}
                   onChange={(e) => setProfile({ ...profile, bio: e.target.value })}
+                  maxLength={profileValidation.bio.maxLength}
                   rows={4}
                 />
+                <p className="text-xs text-muted-foreground">
+                  {profile.bio.length}/{profileValidation.bio.maxLength} characters
+                </p>
               </div>
 
               <Button type="submit" disabled={isLoading} className="w-full sm:w-auto">
