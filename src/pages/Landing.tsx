@@ -432,8 +432,8 @@ export default function Landing() {
             <div className="space-y-4">
               <h4 className="font-heading font-semibold">Resources</h4>
               <ul className="space-y-3 text-sm text-muted-foreground">
-                <li><button onClick={() => navigate('/')} className="hover:text-foreground transition-colors">Help Center</button></li>
-                <li><button onClick={() => navigate('/')} className="hover:text-foreground transition-colors">Contact Support</button></li>
+                <li><button onClick={() => navigate('/help')} className="hover:text-foreground transition-colors">Help Center</button></li>
+                <li><button onClick={() => navigate('/contact')} className="hover:text-foreground transition-colors">Contact Support</button></li>
                 <li><button onClick={() => navigate('/')} className="hover:text-foreground transition-colors">API Documentation</button></li>
               </ul>
             </div>

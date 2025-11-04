@@ -18,6 +18,8 @@ import NotFound from "./pages/NotFound";
 import TermsOfService from "./pages/TermsOfService";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import CookiePolicy from "./pages/CookiePolicy";
+import HelpCenter from "./pages/HelpCenter";
+import ContactSupport from "./pages/ContactSupport";
 
 const queryClient = new QueryClient();
 
@@ -40,6 +42,8 @@ const App = () => (
             <Route path="/terms" element={<TermsOfService />} />
             <Route path="/privacy" element={<PrivacyPolicy />} />
             <Route path="/cookies" element={<CookiePolicy />} />
+            <Route path="/help" element={<HelpCenter />} />
+            <Route path="/contact" element={<ContactSupport />} />
             <Route path="/r/:linkId" element={<RedirectHandler />} />
             <Route path="/:handle" element={<PublicProfile />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
