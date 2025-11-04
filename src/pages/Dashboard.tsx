@@ -6,14 +6,17 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
-import { LogOut, Settings, Link as LinkIcon, CreditCard, Eye, MousePointerClick, TrendingUp, ArrowRight } from "lucide-react";
+import { LogOut, Settings, Link as LinkIcon, CreditCard, Eye, MousePointerClick, TrendingUp, ArrowRight, Download } from "lucide-react";
 import { toast } from "sonner";
 import { AnalyticsChart } from "@/components/analytics/AnalyticsChart";
 import { TopLinksTable } from "@/components/analytics/TopLinksTable";
 import { TrafficSources } from "@/components/analytics/TrafficSources";
+import { DeviceBrowserStats } from "@/components/analytics/DeviceBrowserStats";
+import { CountryStats } from "@/components/analytics/CountryStats";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { PageLoader } from "@/components/ui/loading-spinner";
 import { SEOHead } from "@/components/SEOHead";
+import { getDeviceType, getBrowserName, convertToCSV, downloadCSV, formatAnalyticsForCSV } from "@/lib/analytics-utils";
 
 export default function Dashboard() {
   const { user, signOut, loading, subscriptionStatus, refreshSubscription } = useAuth();
@@ -26,6 +29,9 @@ export default function Dashboard() {
   const [trafficSources, setTrafficSources] = useState<Array<any>>([]);
   const [links, setLinks] = useState([]);
   const [isLoadingAnalytics, setIsLoadingAnalytics] = useState(true);
+  const [deviceStats, setDeviceStats] = useState<Array<{ type: string; count: number; percentage: number }>>([]);
+  const [browserStats, setBrowserStats] = useState<Array<{ name: string; count: number; percentage: number }>>([]);
+  const [countryStats, setCountryStats] = useState<Array<{ country: string; count: number; percentage: number }>>([]);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -161,6 +167,61 @@ export default function Dashboard() {
       .slice(0, 5);
 
     setTrafficSources(sourcesArray);
+    
+    // Calculate device statistics
+    const deviceMap = new Map<string, number>();
+    clickEvents.forEach(event => {
+      const userAgent = event.user_agent_hash ? atob(event.user_agent_hash) : '';
+      const deviceType = getDeviceType(userAgent);
+      deviceMap.set(deviceType, (deviceMap.get(deviceType) || 0) + 1);
+    });
+
+    const deviceArray = Array.from(deviceMap.entries())
+      .map(([type, count]) => ({
+        type,
+        count,
+        percentage: totalClicks > 0 ? (count / totalClicks) * 100 : 0
+      }))
+      .sort((a, b) => b.count - a.count);
+    
+    setDeviceStats(deviceArray);
+
+    // Calculate browser statistics
+    const browserMap = new Map<string, number>();
+    clickEvents.forEach(event => {
+      const userAgent = event.user_agent_hash ? atob(event.user_agent_hash) : '';
+      const browser = getBrowserName(userAgent);
+      browserMap.set(browser, (browserMap.get(browser) || 0) + 1);
+    });
+
+    const browserArray = Array.from(browserMap.entries())
+      .map(([name, count]) => ({
+        name,
+        count,
+        percentage: totalClicks > 0 ? (count / totalClicks) * 100 : 0
+      }))
+      .sort((a, b) => b.count - a.count);
+    
+    setBrowserStats(browserArray);
+
+    // Calculate country statistics
+    const countryMap = new Map<string, number>();
+    clickEvents.forEach(event => {
+      const country = event.country || 'Unknown';
+      countryMap.set(country, (countryMap.get(country) || 0) + 1);
+    });
+
+    const countryArray = Array.from(countryMap.entries())
+      .map(([country, count]) => ({
+        country,
+        count,
+        percentage: totalClicks > 0 ? (count / totalClicks) * 100 : 0
+      }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 10); // Top 10 countries
+    
+    setCountryStats(countryArray);
+    
     setIsLoadingAnalytics(false);
   };
 
@@ -181,6 +242,21 @@ export default function Dashboard() {
     if (subscriptionStatus.product_id === 'prod_TLc8xSNHXDJoLm') return 'Pro';
     if (subscriptionStatus.product_id === 'prod_TLc9WRMahXD66M') return 'Business';
     return 'Free';
+  };
+
+  const handleExportCSV = () => {
+    try {
+      const formattedData = formatAnalyticsForCSV(chartData, topLinks, trafficSources);
+      
+      // Export overview data
+      const overviewCSV = convertToCSV(formattedData.overview, ['Date', 'Page Views', 'Link Clicks']);
+      downloadCSV(`linkpeek-analytics-overview-${timeRange}.csv`, overviewCSV);
+      
+      toast.success('Analytics exported successfully');
+    } catch (error) {
+      toast.error('Failed to export analytics');
+      console.error('Export error:', error);
+    }
   };
 
   if (loading) {
@@ -226,13 +302,24 @@ export default function Dashboard() {
 
       <div className="container mx-auto px-6 py-10 max-w-7xl">
         {/* Header */}
-        <div className="mb-8">
-          <h2 className="text-3xl font-heading font-semibold mb-2">
-            Dashboard
-          </h2>
-          <p className="text-muted-foreground">
-            Your analytics overview
-          </p>
+        <div className="mb-8 flex items-center justify-between">
+          <div>
+            <h2 className="text-3xl font-heading font-semibold mb-2">
+              Dashboard
+            </h2>
+            <p className="text-muted-foreground">
+              Your analytics overview
+            </p>
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleExportCSV}
+            disabled={isLoadingAnalytics || chartData.length === 0}
+          >
+            <Download className="h-4 w-4 mr-2" />
+            Export CSV
+          </Button>
         </div>
 
         {/* Time Range Toggle */}
@@ -307,6 +394,15 @@ export default function Dashboard() {
         <div className="grid lg:grid-cols-2 gap-6 mb-8">
           <TopLinksTable links={topLinks} timeRange={timeRange} />
           <TrafficSources sources={trafficSources} timeRange={timeRange} />
+        </div>
+
+        {/* Device, Browser & Country Stats */}
+        <div className="mb-8">
+          <DeviceBrowserStats deviceStats={deviceStats} browserStats={browserStats} />
+        </div>
+
+        <div className="mb-8">
+          <CountryStats countryStats={countryStats} />
         </div>
 
         {/* Quick Actions */}
