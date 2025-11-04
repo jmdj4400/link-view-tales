@@ -258,10 +258,20 @@ export default function Dashboard() {
   };
 
   const getPlanName = () => {
+    // Check profile plan first (for manually set plans or trials)
+    if (profile?.plan === 'pro') return 'Pro';
+    if (profile?.plan === 'business') return 'Business';
+    
+    // Then check Stripe subscription
     if (!subscriptionStatus?.subscribed) return 'Free';
     if (subscriptionStatus.product_id === 'prod_TLc8xSNHXDJoLm') return 'Pro';
     if (subscriptionStatus.product_id === 'prod_TLc9WRMahXD66M') return 'Business';
     return 'Free';
+  };
+
+  const isPaidUser = () => {
+    // User is paid if they have a non-free plan in profile OR active Stripe subscription
+    return (profile?.plan && profile.plan !== 'free') || subscriptionStatus?.subscribed;
   };
 
   const handleExportCSV = () => {
@@ -515,7 +525,7 @@ export default function Dashboard() {
         </div>
 
         {/* Upgrade CTA for Free Users */}
-        {!subscriptionStatus?.subscribed && (
+        {!isPaidUser() && (
           <Card className="mt-8 border-2 border-primary/50 gradient-subtle">
             <CardHeader className="text-center">
               <CardTitle className="text-3xl font-heading font-bold mb-2">
