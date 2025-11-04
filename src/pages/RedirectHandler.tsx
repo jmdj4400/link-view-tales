@@ -14,12 +14,27 @@ export default function RedirectHandler() {
 
     const { data: linkData, error } = await supabase
       .from('links')
-      .select('dest_url, user_id')
+      .select('dest_url, user_id, active_from, active_until')
       .eq('id', linkId)
       .eq('is_active', true)
       .single();
 
     if (error || !linkData) {
+      window.location.href = '/';
+      return;
+    }
+
+    // Check if link is within scheduled time
+    const now = new Date();
+    const from = linkData.active_from ? new Date(linkData.active_from) : null;
+    const until = linkData.active_until ? new Date(linkData.active_until) : null;
+
+    if (from && now < from) {
+      window.location.href = '/';
+      return;
+    }
+
+    if (until && now > until) {
       window.location.href = '/';
       return;
     }

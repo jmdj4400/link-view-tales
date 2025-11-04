@@ -108,6 +108,8 @@ export type Database = {
       }
       links: {
         Row: {
+          active_from: string | null
+          active_until: string | null
           created_at: string | null
           dest_url: string
           id: string
@@ -118,6 +120,8 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          active_from?: string | null
+          active_until?: string | null
           created_at?: string | null
           dest_url: string
           id?: string
@@ -128,6 +132,8 @@ export type Database = {
           user_id: string
         }
         Update: {
+          active_from?: string | null
+          active_until?: string | null
           created_at?: string | null
           dest_url?: string
           id?: string

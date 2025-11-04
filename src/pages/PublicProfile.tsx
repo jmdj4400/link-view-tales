@@ -48,13 +48,23 @@ export default function PublicProfile() {
 
     const { data: linksData, error: linksError } = await supabase
       .from('links')
-      .select('id, title, dest_url, position')
+      .select('id, title, dest_url, position, active_from, active_until')
       .eq('user_id', profileData.id)
       .eq('is_active', true)
       .order('position', { ascending: true });
 
     if (!linksError && linksData) {
-      setLinks(linksData);
+      // Filter links based on schedule
+      const now = new Date();
+      const activeLinks = linksData.filter(link => {
+        const from = link.active_from ? new Date(link.active_from) : null;
+        const until = link.active_until ? new Date(link.active_until) : null;
+        
+        if (from && now < from) return false;
+        if (until && now > until) return false;
+        return true;
+      });
+      setLinks(activeLinks);
     }
 
     setLoading(false);

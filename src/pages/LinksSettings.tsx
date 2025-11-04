@@ -7,9 +7,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ArrowLeft, Plus, Trash2, GripVertical, Link as LinkIcon, Eye, QrCode } from "lucide-react";
+import { ArrowLeft, Plus, Trash2, GripVertical, Link as LinkIcon, Eye, QrCode, CalendarClock } from "lucide-react";
 import { toast } from "sonner";
 import { QRCodeDialog } from "@/components/links/QRCodeDialog";
+import { LinkScheduleDialog } from "@/components/links/LinkScheduleDialog";
 import { PageLoader } from "@/components/ui/loading-spinner";
 import { EmptyState } from "@/components/ui/empty-state";
 import { SEOHead } from "@/components/SEOHead";
@@ -20,6 +21,8 @@ interface Link {
   dest_url: string;
   position: number;
   is_active: boolean;
+  active_from: string | null;
+  active_until: string | null;
 }
 
 export default function LinksSettings() {
@@ -31,6 +34,7 @@ export default function LinksSettings() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [userHandle, setUserHandle] = useState("");
   const [qrCodeDialog, setQrCodeDialog] = useState<{ open: boolean; link: Link | null }>({ open: false, link: null });
+  const [scheduleDialog, setScheduleDialog] = useState<{ open: boolean; link: Link | null }>({ open: false, link: null });
 
   useEffect(() => {
     if (!loading && !user) {
@@ -119,6 +123,31 @@ export default function LinksSettings() {
     } else {
       fetchLinks();
     }
+  };
+
+  const handleSaveSchedule = async (linkId: string, activeFrom: string | null, activeUntil: string | null) => {
+    const { error } = await supabase
+      .from('links')
+      .update({ active_from: activeFrom, active_until: activeUntil })
+      .eq('id', linkId);
+
+    if (error) {
+      toast.error('Failed to update schedule');
+    } else {
+      toast.success('Schedule updated');
+      fetchLinks();
+    }
+  };
+
+  const getScheduleStatus = (link: Link) => {
+    const now = new Date();
+    const from = link.active_from ? new Date(link.active_from) : null;
+    const until = link.active_until ? new Date(link.active_until) : null;
+
+    if (from && now < from) return { status: 'scheduled', text: 'Starts later' };
+    if (until && now > until) return { status: 'expired', text: 'Expired' };
+    if (from || until) return { status: 'active', text: 'Scheduled' };
+    return null;
   };
 
   if (loading) {
@@ -228,7 +257,19 @@ export default function LinksSettings() {
                   <div className="flex-1 min-w-0">
                     <div className="font-medium truncate">{link.title}</div>
                     <div className="text-sm text-muted-foreground truncate">{link.dest_url}</div>
+                    {getScheduleStatus(link) && (
+                      <div className="text-xs text-muted-foreground mt-1">
+                        {getScheduleStatus(link)?.text}
+                      </div>
+                    )}
                   </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setScheduleDialog({ open: true, link })}
+                  >
+                    <CalendarClock className="h-4 w-4" />
+                  </Button>
                   <Button
                     variant="ghost"
                     size="sm"
@@ -263,6 +304,15 @@ export default function LinksSettings() {
           onOpenChange={(open) => setQrCodeDialog({ open, link: null })}
           title={qrCodeDialog.link.title}
           url={`${window.location.origin}/r/${qrCodeDialog.link.id}`}
+        />
+      )}
+
+      {scheduleDialog.link && (
+        <LinkScheduleDialog
+          open={scheduleDialog.open}
+          onOpenChange={(open) => setScheduleDialog({ open, link: null })}
+          link={scheduleDialog.link}
+          onSave={handleSaveSchedule}
         />
       )}
     </div>
