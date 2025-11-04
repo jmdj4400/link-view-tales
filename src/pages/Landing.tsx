@@ -13,74 +13,65 @@ export default function Landing() {
   const plans = [
     {
       name: "Free",
-      price: "0 DKK",
-      description: "Perfect to start tracking",
+      price: "0",
+      description: "For getting started",
       features: [
         "Up to 3 active links",
-        "7 days analytics history",
-        "Basic click tracking",
-        "LinkPeek branding",
+        "7 days analytics",
+        "Basic tracking",
       ],
       cta: user ? "Current Plan" : "Start Free",
       featured: false,
     },
     {
       name: "Pro",
-      price: "39 DKK",
-      period: "/month",
-      description: "For creators who care about data",
+      price: "39",
+      description: "For serious creators",
       features: [
         "Unlimited links",
-        "90 days analytics history",
-        "Advanced analytics & CSV export",
-        "Remove branding",
+        "90 days history",
+        "Advanced analytics",
+        "No branding",
         "Priority support",
       ],
-      cta: "Upgrade to Pro",
+      cta: "Get Pro",
       featured: true,
     },
     {
       name: "Business",
-      price: "99 DKK",
-      period: "/month",
-      description: "Built for teams",
+      price: "99",
+      description: "For teams",
       features: [
         "Everything in Pro",
-        "Team collaboration",
-        "Custom domain support",
-        "Real-time alerts",
-        "Full API access",
+        "Team access",
+        "Custom domain",
+        "API access",
       ],
-      cta: "Go Business",
+      cta: "Contact Us",
       featured: false,
     },
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-subtle">
+    <div className="min-h-screen bg-background">
       {/* Navigation */}
-      <nav className="border-b backdrop-blur-sm bg-card/80 sticky top-0 z-50 shadow-sm">
-        <div className="container mx-auto px-6 py-4 flex justify-between items-center">
-          <motion.div 
-            className="flex items-center gap-3"
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5 }}
-          >
-            <div className="w-9 h-9 gradient-primary rounded-xl shadow-md"></div>
-            <h1 className="text-2xl font-heading font-bold">LinkPeek</h1>
-          </motion.div>
-          <div className="flex items-center gap-3">
+      <nav className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
+        <div className="container mx-auto px-6 py-4 flex justify-between items-center max-w-7xl">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 bg-primary rounded-lg"></div>
+            <h1 className="text-xl font-heading font-semibold">LinkPeek</h1>
+          </div>
+          <div className="flex items-center gap-4">
             <ThemeToggle />
             {user ? (
-              <Button onClick={() => navigate('/dashboard')} size="lg" className="gradient-primary shadow-md">
+              <Button onClick={() => navigate('/dashboard')} variant="default">
                 Dashboard
               </Button>
             ) : (
               <>
-                <Button variant="ghost" onClick={() => navigate('/auth')}>Sign In</Button>
-                <Button onClick={() => navigate('/auth')} size="lg" className="gradient-primary shadow-md">
-                  Get Started
+                <Button variant="ghost" onClick={() => navigate('/auth')}>Sign in</Button>
+                <Button onClick={() => navigate('/auth')} variant="default">
+                  Get started
                 </Button>
               </>
             )}
@@ -88,223 +79,168 @@ export default function Landing() {
         </div>
       </nav>
 
-      {/* Hero Section - Asymmetric Layout */}
-      <section className="container mx-auto px-6 pt-20 pb-16 lg:pt-32 lg:pb-24">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
-          {/* Left: Content */}
-          <motion.div 
-            className="space-y-8"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-          >
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 border border-primary/20 rounded-full text-sm font-medium text-primary mb-2">
-              <Sparkles className="h-4 w-4" />
-              Complete setup in under 60 seconds
-            </div>
-            <h2 className="text-5xl lg:text-6xl font-heading font-bold leading-[1.1]">
-              Your bio deserves<br />
-              <span className="gradient-primary bg-clip-text text-transparent">better data</span>
-            </h2>
-            <p className="text-xl text-muted-foreground max-w-xl leading-relaxed">
-              See where your clicks come from — not just how many. Fast, focused, and built for creators who care about analytics.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 pt-4">
-              <Button 
-                size="lg" 
-                onClick={() => navigate('/auth')} 
-                className="gradient-primary shadow-elegant hover:shadow-elegant-xl group"
-              >
-                <Zap className="h-5 w-5 mr-2 group-hover:rotate-12 transition-transform" />
-                Try 60-Second Setup
-                <ArrowRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
-              </Button>
-              <Button size="lg" variant="outline" onClick={() => navigate('/auth')}>
-                Start Free
-              </Button>
-            </div>
-            <p className="text-sm text-muted-foreground flex items-center gap-2">
-              <Check className="h-4 w-4 text-primary" />
-              Complete setup in under 60 seconds → Get 1 month Pro free
-            </p>
-          </motion.div>
-
-          {/* Right: Visual Element */}
-          <motion.div
-            className="relative"
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-          >
-            <div className="relative rounded-2xl overflow-hidden shadow-elegant-xl border-2 border-border">
-              <div className="bg-gradient-primary p-8 lg:p-12">
-                <div className="space-y-4">
-                  <div className="bg-background/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
-                    <div className="flex items-center gap-3 mb-3">
-                      <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center">
-                        <BarChart3 className="h-6 w-6 text-white" />
-                      </div>
-                      <div>
-                        <p className="text-white/60 text-sm">Total Clicks</p>
-                        <p className="text-white text-2xl font-bold">2,847</p>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="bg-background/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
-                    <p className="text-white/80 text-sm mb-2">Top performing link</p>
-                    <p className="text-white font-semibold">Instagram Profile</p>
-                    <p className="text-white/60 text-sm mt-1">847 clicks • 29% CTR</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </motion.div>
+      {/* Hero Section */}
+      <section className="container mx-auto px-6 pt-24 pb-20 max-w-7xl">
+        <div className="max-w-3xl">
+          <h2 className="text-5xl md:text-6xl lg:text-7xl font-heading font-semibold leading-[1.1] tracking-tight mb-6">
+            Link analytics that actually help
+          </h2>
+          <p className="text-xl text-muted-foreground mb-10 leading-relaxed max-w-2xl">
+            Track where your audience comes from. See what works. Make better decisions.
+          </p>
+          <div className="flex flex-wrap gap-4">
+            <Button 
+              size="lg" 
+              onClick={() => navigate('/auth')} 
+              className="text-base"
+            >
+              Start tracking free
+            </Button>
+            <Button size="lg" variant="outline" onClick={() => navigate('/auth')} className="text-base">
+              View demo
+            </Button>
+          </div>
         </div>
       </section>
 
-      {/* Features - Asymmetric Grid */}
-      <section className="container mx-auto px-6 py-16 lg:py-20">
-        <motion.div 
-          className="text-center mb-12 max-w-2xl mx-auto"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-        >
-          <h2 className="text-4xl lg:text-5xl font-heading font-bold mb-4">
-            Built different by design
-          </h2>
-          <p className="text-lg text-muted-foreground">
-            No bloat. No unnecessary features. Just what you need to understand your audience.
-          </p>
-        </motion.div>
+      {/* Stats Preview */}
+      <section className="container mx-auto px-6 pb-24 max-w-7xl">
+        <div className="bg-card border rounded-lg p-8 md:p-12">
+          <div className="grid md:grid-cols-3 gap-8">
+            <div>
+              <div className="text-4xl font-heading font-semibold mb-2">2,847</div>
+              <div className="text-sm text-muted-foreground">Total clicks this month</div>
+            </div>
+            <div>
+              <div className="text-4xl font-heading font-semibold mb-2">64%</div>
+              <div className="text-sm text-muted-foreground">From mobile devices</div>
+            </div>
+            <div>
+              <div className="text-4xl font-heading font-semibold mb-2">12</div>
+              <div className="text-sm text-muted-foreground">Active links</div>
+            </div>
+          </div>
+        </div>
+      </section>
 
-        <div className="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto">
-          {[
-            {
-              icon: LinkIcon,
-              title: "Setup in seconds",
-              description: "Add your links, share your page. Zero complexity, maximum speed.",
-              delay: 0,
-            },
-            {
-              icon: BarChart3,
-              title: "Analytics that matter",
-              description: "Track clicks, sources, and CTR. Real insights, not vanity metrics.",
-              delay: 0.1,
-            },
-            {
-              icon: Zap,
-              title: "Privacy first",
-              description: "GDPR compliant from day one. No cookies, no tracking scripts.",
-              delay: 0.2,
-            },
-          ].map((feature, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: feature.delay }}
-            >
-              <Card className="border-2 hover:border-primary/50 transition-all hover:shadow-elegant hover-scale h-full">
-                <CardHeader>
-                  <div className="w-12 h-12 gradient-primary rounded-xl flex items-center justify-center mb-4 shadow-md">
-                    <feature.icon className="h-6 w-6 text-white" />
-                  </div>
-                  <CardTitle className="text-xl font-heading">{feature.title}</CardTitle>
-                  <CardDescription className="text-base leading-relaxed">
-                    {feature.description}
-                  </CardDescription>
-                </CardHeader>
-              </Card>
-            </motion.div>
-          ))}
+      {/* Features */}
+      <section className="container mx-auto px-6 py-24 max-w-7xl border-t">
+        <div className="grid md:grid-cols-2 gap-16 items-start">
+          <div>
+            <div className="inline-flex items-center gap-2 px-3 py-1 bg-muted rounded-full text-sm mb-4">
+              <BarChart3 className="h-4 w-4" />
+              Analytics
+            </div>
+            <h3 className="text-3xl md:text-4xl font-heading font-semibold mb-4 leading-tight">
+              See where your traffic comes from
+            </h3>
+            <p className="text-lg text-muted-foreground leading-relaxed">
+              Know which platforms drive clicks. Track referrers, devices, and locations. Export data when you need it.
+            </p>
+          </div>
+          <div>
+            <div className="inline-flex items-center gap-2 px-3 py-1 bg-muted rounded-full text-sm mb-4">
+              <LinkIcon className="h-4 w-4" />
+              Simple
+            </div>
+            <h3 className="text-3xl md:text-4xl font-heading font-semibold mb-4 leading-tight">
+              Set up in under a minute
+            </h3>
+            <p className="text-lg text-muted-foreground leading-relaxed">
+              Add your links. Share your page. Start tracking. No complex setup or configuration needed.
+            </p>
+          </div>
+        </div>
+
+        <div className="mt-16 pt-16 border-t">
+          <div className="grid md:grid-cols-2 gap-16 items-start">
+            <div>
+              <div className="inline-flex items-center gap-2 px-3 py-1 bg-muted rounded-full text-sm mb-4">
+                <Zap className="h-4 w-4" />
+                Privacy
+              </div>
+              <h3 className="text-3xl md:text-4xl font-heading font-semibold mb-4 leading-tight">
+                GDPR compliant by default
+              </h3>
+              <p className="text-lg text-muted-foreground leading-relaxed">
+                No cookies. No third-party trackers. Just clean, privacy-focused analytics you can trust.
+              </p>
+            </div>
+            <div>
+              <div className="inline-flex items-center gap-2 px-3 py-1 bg-muted rounded-full text-sm mb-4">
+                <Check className="h-4 w-4" />
+                Reliable
+              </div>
+              <h3 className="text-3xl md:text-4xl font-heading font-semibold mb-4 leading-tight">
+                Fast and always available
+              </h3>
+              <p className="text-lg text-muted-foreground leading-relaxed">
+                Your page loads instantly. Analytics update in real-time. Built on infrastructure that scales.
+              </p>
+            </div>
+          </div>
         </div>
       </section>
 
       {/* Pricing */}
-      <section className="container mx-auto px-6 py-16 lg:py-20">
-        <motion.div 
-          className="text-center mb-16 space-y-4"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-        >
-          <h2 className="text-4xl lg:text-5xl font-heading font-bold">
-            Simple pricing, no surprises
+      <section className="container mx-auto px-6 py-24 max-w-7xl border-t">
+        <div className="max-w-2xl mb-16">
+          <h2 className="text-4xl md:text-5xl font-heading font-semibold mb-4 leading-tight">
+            Pricing
           </h2>
-          <p className="text-xl text-muted-foreground">
-            Start free. Upgrade when your audience grows.
+          <p className="text-lg text-muted-foreground">
+            Start free. Upgrade when you need more.
           </p>
-        </motion.div>
+        </div>
 
-        <div className="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto">
-          {plans.map((plan, index) => (
-            <motion.div
+        <div className="grid md:grid-cols-3 gap-6">
+          {plans.map((plan) => (
+            <div
               key={plan.name}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
+              className={`bg-card border rounded-lg p-8 flex flex-col ${
+                plan.featured ? "border-primary" : ""
+              }`}
             >
-              <Card 
-                className={`relative h-full flex flex-col ${
-                  plan.featured 
-                    ? "border-2 border-primary shadow-elegant-xl scale-[1.02]" 
-                    : "border-2 hover:border-primary/30 transition-all"
-                }`}
+              <div className="mb-8">
+                <h3 className="text-lg font-heading font-semibold mb-1">{plan.name}</h3>
+                <p className="text-sm text-muted-foreground mb-4">{plan.description}</p>
+                <div className="flex items-baseline gap-1">
+                  <span className="text-4xl font-heading font-semibold">{plan.price}</span>
+                  <span className="text-muted-foreground">DKK/month</span>
+                </div>
+              </div>
+              
+              <ul className="space-y-3 mb-8 flex-1">
+                {plan.features.map((feature) => (
+                  <li key={feature} className="flex items-start gap-3 text-sm">
+                    <Check className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
+                    <span>{feature}</span>
+                  </li>
+                ))}
+              </ul>
+
+              <Button
+                variant={plan.featured ? "default" : "outline"}
+                className="w-full"
+                onClick={() => navigate(user ? '/billing' : '/auth')}
               >
-                {plan.featured && (
-                  <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                    <div className="gradient-primary text-white px-5 py-1.5 rounded-full text-sm font-semibold shadow-lg">
-                      Most Popular
-                    </div>
-                  </div>
-                )}
-                <CardHeader className="pb-8 pt-8">
-                  <CardTitle className="text-2xl font-heading">{plan.name}</CardTitle>
-                  <CardDescription className="text-base">{plan.description}</CardDescription>
-                  <div className="pt-6">
-                    <span className="text-5xl font-heading font-bold">{plan.price}</span>
-                    {plan.period && <span className="text-muted-foreground text-lg">{plan.period}</span>}
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-6 flex-1 flex flex-col">
-                  <ul className="space-y-3 flex-1">
-                    {plan.features.map((feature) => (
-                      <li key={feature} className="flex items-start gap-3">
-                        <Check className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
-                        <span className="text-base">{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
-                  <Button
-                    className={`w-full ${plan.featured ? "gradient-primary shadow-md hover:shadow-lg" : ""}`}
-                    variant={plan.featured ? "default" : "outline"}
-                    size="lg"
-                    onClick={() => navigate(user ? '/billing' : '/auth')}
-                  >
-                    {plan.cta}
-                  </Button>
-                </CardContent>
-              </Card>
-            </motion.div>
+                {plan.cta}
+              </Button>
+            </div>
           ))}
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="border-t mt-20 bg-card">
-        <div className="container mx-auto px-6 py-12">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-6">
-            <div className="flex items-center gap-3">
-              <div className="w-7 h-7 gradient-primary rounded-lg shadow-md"></div>
-              <span className="font-heading font-semibold text-lg">LinkPeek</span>
+      <footer className="border-t mt-24">
+        <div className="container mx-auto px-6 py-12 max-w-7xl">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+            <div className="flex items-center gap-2">
+              <div className="w-6 h-6 bg-primary rounded"></div>
+              <span className="font-heading font-semibold">LinkPeek</span>
             </div>
             <p className="text-sm text-muted-foreground">
-              © 2025 LinkPeek. Built for creators, by creators.
+              © 2025 LinkPeek
             </p>
           </div>
         </div>
