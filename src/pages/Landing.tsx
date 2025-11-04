@@ -295,6 +295,64 @@ export default function Landing() {
                 </Button>
               </CardContent>
             </Card>
+        </div>
+      </section>
+
+        {/* FAQ Section */}
+        <section className="container mx-auto px-6 py-24 max-w-7xl border-t" aria-labelledby="faq-heading">
+          <div className="max-w-2xl mb-16 text-center mx-auto">
+            <h2 id="faq-heading" className="text-4xl md:text-5xl font-heading font-bold mb-4 leading-tight">
+              Frequently Asked Questions
+            </h2>
+            <p className="text-lg text-muted-foreground">
+              Everything you need to know about LinkPeek
+            </p>
+          </div>
+
+          <div className="max-w-3xl mx-auto space-y-6">
+            {[
+              {
+                question: "What is LinkPeek?",
+                answer: "LinkPeek is a professional link management platform that lets you create a beautiful landing page for all your links with powerful real-time analytics. Track clicks, views, traffic sources, and more to understand your audience better."
+              },
+              {
+                question: "How does the 60-second setup challenge work?",
+                answer: "Complete your profile setup in under 60 seconds during onboarding and get a free 1-month Pro trial! This includes adding your name, bio, and first link. The timer starts when you begin the onboarding flow."
+              },
+              {
+                question: "Is LinkPeek free to use?",
+                answer: "Yes! LinkPeek offers a free plan with 5 active links and basic analytics. Upgrade to Pro for unlimited links, advanced analytics, custom domains, and more features. No credit card required to start."
+              },
+              {
+                question: "How accurate is the analytics tracking?",
+                answer: "LinkPeek uses privacy-first analytics that are highly accurate. We filter out bot traffic and provide real-time data on clicks, page views, device types, browsers, geographic locations, and traffic sources."
+              },
+              {
+                question: "Can I use my own domain?",
+                answer: "Yes! Pro and Business plans allow you to connect your custom domain (e.g., links.yourdomain.com) instead of using the LinkPeek subdomain. This provides better branding and professionalism."
+              },
+              {
+                question: "What's included in the Pro plan?",
+                answer: "Pro includes unlimited links, advanced analytics with detailed insights, custom domain connection, QR code generation, UTM tracking, link scheduling, click limits, and removal of LinkPeek branding."
+              },
+              {
+                question: "Is my data secure and private?",
+                answer: "Absolutely. LinkPeek is GDPR compliant and uses no tracking cookies or pixels. We only collect essential analytics data to provide you with insights. Your data is encrypted and never shared with third parties."
+              },
+              {
+                question: "Can I export my analytics data?",
+                answer: "Yes! All plans include CSV export functionality. You can download your analytics data for further analysis in spreadsheet tools or your own analytics platform."
+              }
+            ].map((faq, index) => (
+              <Card key={index} className="border-2 hover:border-primary/50 transition-all">
+                <CardHeader>
+                  <CardTitle className="text-xl font-heading">{faq.question}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground leading-relaxed">{faq.answer}</p>
+                </CardContent>
+              </Card>
+            ))}
           </div>
         </section>
 

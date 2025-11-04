@@ -11,6 +11,8 @@ interface AnalyticsChartProps {
 }
 
 export function AnalyticsChart({ data, timeRange }: AnalyticsChartProps) {
+  const isEmpty = !data || data.length === 0;
+  
   return (
     <Card className="border-2 hover:border-primary/50 transition-all shadow-elegant animate-fade-in">
       <CardHeader>
@@ -20,6 +22,15 @@ export function AnalyticsChart({ data, timeRange }: AnalyticsChartProps) {
         </CardDescription>
       </CardHeader>
       <CardContent>
+        {isEmpty ? (
+          <div className="flex items-center justify-center h-[400px] text-center">
+            <div className="space-y-3">
+              <div className="text-5xl">📈</div>
+              <p className="font-medium text-muted-foreground">No data yet</p>
+              <p className="text-sm text-muted-foreground">Share your profile to start tracking engagement!</p>
+            </div>
+          </div>
+        ) : (
         <ResponsiveContainer width="100%" height={400}>
           <LineChart data={data}>
             <defs>
@@ -99,6 +110,7 @@ export function AnalyticsChart({ data, timeRange }: AnalyticsChartProps) {
             />
           </LineChart>
         </ResponsiveContainer>
+        )}
       </CardContent>
     </Card>
   );

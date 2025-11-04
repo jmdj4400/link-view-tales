@@ -137,6 +137,17 @@ export default function PublicProfile() {
   const pageDescription = profile.bio || `Check out ${profile.name}'s links on LinkPeek`;
   const canonicalUrl = `${window.location.origin}/${profile.handle}`;
 
+  // Structured data for better SEO
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": profile.name,
+    "url": canonicalUrl,
+    "image": profile.avatar_url || undefined,
+    "description": profile.bio || undefined,
+    "sameAs": links.map(link => link.dest_url)
+  };
+
   return (
     <>
       <SEOHead
@@ -145,6 +156,10 @@ export default function PublicProfile() {
         canonicalUrl={canonicalUrl}
         ogImage={profile.avatar_url || undefined}
       />
+      {/* JSON-LD Structured Data */}
+      <script type="application/ld+json">
+        {JSON.stringify(structuredData)}
+      </script>
       <main className="min-h-screen bg-background flex items-center justify-center p-6">
         <article className="w-full max-w-md space-y-8">
           <header className="text-center space-y-4">
