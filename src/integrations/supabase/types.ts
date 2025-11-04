@@ -398,6 +398,7 @@ export type Database = {
     }
     Functions: {
       grant_trial: { Args: { p_user_id: string }; Returns: undefined }
+      is_email_whitelisted: { Args: { check_email: string }; Returns: boolean }
     }
     Enums: {
       subscription_plan: "free" | "pro" | "business"
