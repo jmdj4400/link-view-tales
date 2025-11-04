@@ -1,10 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Check, BarChart3, Link as LinkIcon, Zap, ArrowRight, Sparkles } from "lucide-react";
+import { Check, BarChart3, Link as LinkIcon, Zap, Palette, Share2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { ThemeToggle } from "@/components/ThemeToggle";
-import { motion } from "framer-motion";
+import { SEOHead } from "@/components/SEOHead";
 
 export default function Landing() {
   const navigate = useNavigate();
@@ -56,9 +56,15 @@ export default function Landing() {
   ];
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Navigation */}
-      <nav className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
+    <>
+      <SEOHead
+        title="LinkPeek - Professional Link Management & Analytics Platform"
+        description="Transform your online presence with LinkPeek. Create a beautiful landing page for all your links with powerful real-time analytics and insights. Start free today."
+        canonicalUrl={`${window.location.origin}/`}
+      />
+      <div className="min-h-screen bg-background">
+        {/* Navigation */}
+        <nav className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50" role="navigation" aria-label="Main navigation">
         <div className="container mx-auto px-6 py-4 flex justify-between items-center max-w-7xl">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 bg-primary rounded-lg"></div>
@@ -80,14 +86,14 @@ export default function Landing() {
             )}
           </div>
         </div>
-      </nav>
+        </nav>
 
-      {/* Hero Section */}
-      <section className="container mx-auto px-6 pt-24 pb-20 max-w-7xl">
-        <div className="max-w-3xl">
-          <h2 className="text-5xl md:text-6xl lg:text-7xl font-heading font-semibold leading-[1.1] tracking-tight mb-6">
-            Your Digital Hub for Every Platform
-          </h2>
+        {/* Hero Section */}
+        <section className="container mx-auto px-6 pt-24 pb-20 max-w-7xl" aria-labelledby="hero-heading">
+          <div className="max-w-3xl">
+            <h2 id="hero-heading" className="text-5xl md:text-6xl lg:text-7xl font-heading font-semibold leading-[1.1] tracking-tight mb-6">
+              Your Digital Hub for Every Platform
+            </h2>
           <p className="text-xl text-muted-foreground mb-10 leading-relaxed max-w-2xl">
             Share all your important links from one professional page. Track engagement, understand your audience, and grow your reach with real-time analytics.
           </p>
@@ -107,10 +113,10 @@ export default function Landing() {
             No credit card required • 14-day Pro trial included
           </p>
         </div>
-      </section>
+        </section>
 
-      {/* Stats Preview */}
-      <section className="container mx-auto px-6 pb-24 max-w-7xl">
+        {/* Stats Preview */}
+        <section className="container mx-auto px-6 pb-24 max-w-7xl" aria-label="Platform statistics">
         <div className="bg-card border rounded-lg p-8 md:p-12">
           <div className="grid md:grid-cols-3 gap-8">
             <div>
@@ -127,14 +133,14 @@ export default function Landing() {
             </div>
           </div>
         </div>
-      </section>
+        </section>
 
-      {/* Features */}
-      <section className="container mx-auto px-6 py-24 max-w-7xl border-t">
-        <div className="max-w-2xl mb-16">
-          <h2 className="text-4xl md:text-5xl font-heading font-semibold mb-4 leading-tight">
-            Built for Professionals
-          </h2>
+        {/* Features */}
+        <section className="container mx-auto px-6 py-24 max-w-7xl border-t" aria-labelledby="features-heading">
+          <div className="max-w-2xl mb-16">
+            <h2 id="features-heading" className="text-4xl md:text-5xl font-heading font-semibold mb-4 leading-tight">
+              Built for Professionals
+            </h2>
           <p className="text-lg text-muted-foreground">
             Everything you need to manage and grow your online presence
           </p>
@@ -195,14 +201,14 @@ export default function Landing() {
             </div>
           </div>
         </div>
-      </section>
+        </section>
 
-      {/* Pricing */}
-      <section className="container mx-auto px-6 py-24 max-w-7xl border-t">
-        <div className="max-w-2xl mb-16">
-          <h2 className="text-4xl md:text-5xl font-heading font-semibold mb-4 leading-tight">
-            Pricing That Scales With You
-          </h2>
+        {/* Pricing */}
+        <section className="container mx-auto px-6 py-24 max-w-7xl border-t" aria-labelledby="pricing-heading">
+          <div className="max-w-2xl mb-16">
+            <h2 id="pricing-heading" className="text-4xl md:text-5xl font-heading font-semibold mb-4 leading-tight">
+              Pricing That Scales With You
+            </h2>
           <p className="text-lg text-muted-foreground">
             Start free, upgrade when you're ready. All plans include 14-day Pro trial.
           </p>
@@ -221,33 +227,34 @@ export default function Landing() {
                 <p className="text-sm text-muted-foreground mb-4">{plan.description}</p>
                 <div className="flex items-baseline gap-1">
                   <span className="text-4xl font-heading font-semibold">${plan.price}</span>
-                  <span className="text-muted-foreground">/month</span>
+                  <span className="text-muted-foreground" aria-label="per month">/month</span>
                 </div>
               </div>
               
               <ul className="space-y-3 mb-8 flex-1">
-                {plan.features.map((feature) => (
-                  <li key={feature} className="flex items-start gap-3 text-sm">
-                    <Check className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
-                    <span>{feature}</span>
-                  </li>
-                ))}
-              </ul>
+                  {plan.features.map((feature) => (
+                    <li key={feature} className="flex items-start gap-3 text-sm">
+                      <Check className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" aria-hidden="true" />
+                      <span>{feature}</span>
+                    </li>
+                  ))}
+                </ul>
 
-              <Button
-                variant={plan.featured ? "default" : "outline"}
-                className="w-full"
-                onClick={() => navigate(user ? '/billing' : '/auth')}
-              >
-                {plan.cta}
-              </Button>
+                <Button
+                  variant={plan.featured ? "default" : "outline"}
+                  className="w-full"
+                  onClick={() => navigate(user ? '/billing' : '/auth')}
+                  aria-label={`Choose ${plan.name} plan`}
+                >
+                  {plan.cta}
+                </Button>
             </div>
           ))}
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="border-t mt-24 bg-muted/30">
+        {/* Footer */}
+        <footer className="border-t mt-24 bg-muted/30" role="contentinfo">
         <div className="container mx-auto px-6 py-16 max-w-7xl">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
             <div className="space-y-4">
@@ -296,5 +303,6 @@ export default function Landing() {
         </div>
       </footer>
     </div>
+    </>
   );
 }

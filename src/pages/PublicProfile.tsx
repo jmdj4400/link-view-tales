@@ -4,6 +4,8 @@ import { supabase } from "@/lib/supabase-client";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ExternalLink } from "lucide-react";
+import { SEOHead } from "@/components/SEOHead";
+import { PageLoader } from "@/components/ui/loading-spinner";
 
 interface Profile {
   name: string;
@@ -96,70 +98,93 @@ export default function PublicProfile() {
   };
 
   if (loading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-background">
-        <p className="text-muted-foreground">Loading...</p>
-      </div>
-    );
+    return <PageLoader />;
   }
 
   if (!profile) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-background">
-        <div className="text-center">
-          <h1 className="text-2xl font-semibold mb-2">Profile not found</h1>
-          <p className="text-muted-foreground">This profile doesn't exist</p>
-        </div>
-      </div>
+      <>
+        <SEOHead
+          title="Profile Not Found - LinkPeek"
+          description="This profile doesn't exist."
+          noindex={true}
+        />
+        <main className="flex min-h-screen items-center justify-center bg-background">
+          <article className="text-center space-y-4">
+            <h1 className="text-2xl font-semibold">Profile not found</h1>
+            <p className="text-muted-foreground">This profile doesn't exist</p>
+            <Button asChild>
+              <a href="/">Go to Home</a>
+            </Button>
+          </article>
+        </main>
+      </>
     );
   }
 
+  const pageTitle = `${profile.name} (@${profile.handle}) - LinkPeek`;
+  const pageDescription = profile.bio || `Check out ${profile.name}'s links on LinkPeek`;
+  const canonicalUrl = `${window.location.origin}/${profile.handle}`;
+
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-6">
-      <div className="w-full max-w-md space-y-8">
-        <div className="text-center space-y-4">
-          <Avatar className="h-24 w-24 mx-auto">
-            <AvatarImage src={profile.avatar_url} alt={profile.name} />
-            <AvatarFallback className="text-xl">
-              {profile.name.substring(0, 2).toUpperCase()}
-            </AvatarFallback>
-          </Avatar>
-          <div>
-            <h1 className="text-2xl font-semibold mb-1">{profile.name}</h1>
-            <p className="text-muted-foreground">@{profile.handle}</p>
-          </div>
-          {profile.bio && (
-            <p className="text-center max-w-sm mx-auto text-muted-foreground">{profile.bio}</p>
-          )}
-        </div>
+    <>
+      <SEOHead
+        title={pageTitle}
+        description={pageDescription}
+        canonicalUrl={canonicalUrl}
+        ogImage={profile.avatar_url || undefined}
+      />
+      <main className="min-h-screen bg-background flex items-center justify-center p-6">
+        <article className="w-full max-w-md space-y-8">
+          <header className="text-center space-y-4">
+            <Avatar className="h-24 w-24 mx-auto">
+              <AvatarImage 
+                src={profile.avatar_url} 
+                alt={`${profile.name}'s profile picture`}
+                loading="lazy"
+              />
+              <AvatarFallback className="text-xl">
+                {profile.name.substring(0, 2).toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
+            <div>
+              <h1 className="text-2xl font-semibold mb-1">{profile.name}</h1>
+              <p className="text-muted-foreground">@{profile.handle}</p>
+            </div>
+            {profile.bio && (
+              <p className="text-center max-w-sm mx-auto text-muted-foreground">{profile.bio}</p>
+            )}
+          </header>
 
-        <div className="space-y-3">
-          {links.length === 0 ? (
-            <p className="text-center text-muted-foreground py-8">No links yet</p>
-          ) : (
-            links.map((link) => (
-              <Button
-                key={link.id}
-                variant="outline"
-                className="w-full h-auto py-4 justify-between"
-                onClick={() => handleLinkClick(link.id, link.dest_url)}
-              >
-                <span className="font-medium">{link.title}</span>
-                <ExternalLink className="h-4 w-4 ml-2" />
-              </Button>
-            ))
-          )}
-        </div>
+          <nav className="space-y-3" aria-label="Social links">
+            {links.length === 0 ? (
+              <p className="text-center text-muted-foreground py-8">No links yet</p>
+            ) : (
+              links.map((link) => (
+                <Button
+                  key={link.id}
+                  variant="outline"
+                  className="w-full h-auto py-4 justify-between transition-all hover:shadow-md"
+                  onClick={() => handleLinkClick(link.id, link.dest_url)}
+                  aria-label={`Visit ${link.title}`}
+                >
+                  <span className="font-medium">{link.title}</span>
+                  <ExternalLink className="h-4 w-4 ml-2" aria-hidden="true" />
+                </Button>
+              ))
+            )}
+          </nav>
 
-        <div className="text-center pt-6">
-          <a 
-            href="/" 
-            className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-          >
-            Create your own with LinkPeek
-          </a>
-        </div>
-      </div>
-    </div>
+          <footer className="text-center pt-6">
+            <a 
+              href="/" 
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Create your own with LinkPeek
+            </a>
+          </footer>
+        </article>
+      </main>
+    </>
   );
 }

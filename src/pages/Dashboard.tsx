@@ -13,6 +13,7 @@ import { TopLinksTable } from "@/components/analytics/TopLinksTable";
 import { TrafficSources } from "@/components/analytics/TrafficSources";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { PageLoader } from "@/components/ui/loading-spinner";
+import { SEOHead } from "@/components/SEOHead";
 
 export default function Dashboard() {
   const { user, signOut, loading, subscriptionStatus, refreshSubscription } = useAuth();
@@ -187,9 +188,15 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Navigation */}
-      <nav className="border-b bg-background sticky top-0 z-50">
+    <>
+      <SEOHead
+        title="Dashboard - LinkPeek"
+        description="View your link analytics and manage your profile."
+        noindex={true}
+      />
+      <div className="min-h-screen bg-background">
+        {/* Navigation */}
+        <nav className="border-b bg-background sticky top-0 z-50" role="navigation" aria-label="Dashboard navigation">
         <div className="container mx-auto px-6 py-4 flex justify-between items-center">
           <div className="flex items-center gap-3">
             <h1 className="text-xl font-heading font-semibold">LinkPeek</h1>
@@ -372,5 +379,6 @@ export default function Dashboard() {
         )}
       </div>
     </div>
+    </>
   );
 }

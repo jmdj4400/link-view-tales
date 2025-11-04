@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { Loader2, Sparkles } from "lucide-react";
-import { motion } from "framer-motion";
+import { SEOHead } from "@/components/SEOHead";
 
 export default function Auth() {
   const [isLoading, setIsLoading] = useState(false);
@@ -63,23 +63,23 @@ export default function Auth() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-subtle p-4">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="w-full max-w-md"
-      >
-        <Card className="shadow-elegant-xl border-2">
-          <CardHeader className="space-y-3 text-center pb-6">
-            <div className="flex justify-center mb-2">
-              <div className="w-14 h-14 gradient-primary rounded-2xl shadow-lg"></div>
-            </div>
-            <CardTitle className="text-3xl font-heading font-bold">Welcome to LinkPeek</CardTitle>
-            <CardDescription className="text-base">
-              Create your account in seconds
-            </CardDescription>
-          </CardHeader>
+    <>
+      <SEOHead
+        title="Sign Up or Sign In - LinkPeek"
+        description="Create your LinkPeek account in seconds. Get started with professional link management and analytics today."
+      />
+      <div className="flex min-h-screen items-center justify-center bg-gradient-subtle p-4">
+        <div className="w-full max-w-md">
+          <Card className="shadow-elegant-xl border-2">
+            <CardHeader className="space-y-3 text-center pb-6">
+              <div className="flex justify-center mb-2">
+                <div className="w-14 h-14 gradient-primary rounded-2xl shadow-lg"></div>
+              </div>
+              <CardTitle className="text-3xl font-heading font-bold">Welcome to LinkPeek</CardTitle>
+              <CardDescription className="text-base">
+                Create your account in seconds
+              </CardDescription>
+            </CardHeader>
           <CardContent>
             <Tabs defaultValue="signup" className="w-full">
               <TabsList className="grid w-full grid-cols-2 mb-6">
@@ -201,7 +201,8 @@ export default function Auth() {
         <p className="text-center text-sm text-muted-foreground mt-6">
           By continuing, you agree to our Terms of Service
         </p>
-      </motion.div>
+      </div>
     </div>
+    </>
   );
 }
