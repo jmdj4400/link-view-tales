@@ -34,8 +34,8 @@ export default function PublicProfile() {
 
   const fetchProfileData = async () => {
     const { data: profileData, error: profileError } = await supabase
-      .from('profiles')
-      .select('name, handle, bio, avatar_url, id')
+      .from('public_profiles')
+      .select('id, name, handle, bio, avatar_url')
       .eq('handle', handle)
       .single();
 
@@ -73,7 +73,7 @@ export default function PublicProfile() {
 
   const trackPageView = async () => {
     const { data: profileData } = await supabase
-      .from('profiles')
+      .from('public_profiles')
       .select('id')
       .eq('handle', handle)
       .single();
@@ -90,7 +90,7 @@ export default function PublicProfile() {
 
   const handleLinkClick = async (linkId: string, destUrl: string) => {
     const { data: profileData } = await supabase
-      .from('profiles')
+      .from('public_profiles')
       .select('id')
       .eq('handle', handle)
       .single();
