@@ -15,6 +15,8 @@ import Billing from "./pages/Billing";
 import PublicProfile from "./pages/PublicProfile";
 import RedirectHandler from "./pages/RedirectHandler";
 import NotFound from "./pages/NotFound";
+import TermsOfService from "./pages/TermsOfService";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
 
 const queryClient = new QueryClient();
 
@@ -34,6 +36,8 @@ const App = () => (
             <Route path="/settings/profile" element={<ProfileSettings />} />
             <Route path="/settings/links" element={<LinksSettings />} />
             <Route path="/billing" element={<Billing />} />
+            <Route path="/terms" element={<TermsOfService />} />
+            <Route path="/privacy" element={<PrivacyPolicy />} />
             <Route path="/r/:linkId" element={<RedirectHandler />} />
             <Route path="/:handle" element={<PublicProfile />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
