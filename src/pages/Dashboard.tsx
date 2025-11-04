@@ -19,6 +19,7 @@ import { PageLoader } from "@/components/ui/loading-spinner";
 import { SEOHead } from "@/components/SEOHead";
 import { EmptyState } from "@/components/ui/empty-state";
 import { InfoTooltip } from "@/components/ui/info-tooltip";
+import { ProfileCompleteness } from "@/components/profile/ProfileCompleteness";
 import { getDeviceType, getBrowserName, convertToCSV, downloadCSV, formatAnalyticsForCSV } from "@/lib/analytics-utils";
 
 export default function Dashboard() {
@@ -38,6 +39,7 @@ export default function Dashboard() {
   const [deviceStats, setDeviceStats] = useState<Array<{ type: string; count: number; percentage: number }>>([]);
   const [browserStats, setBrowserStats] = useState<Array<{ name: string; count: number; percentage: number }>>([]);
   const [countryStats, setCountryStats] = useState<Array<{ country: string; count: number; percentage: number }>>([]);
+  const [profile, setProfile] = useState<any>(null);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -56,8 +58,21 @@ export default function Dashboard() {
     if (user) {
       fetchAnalytics();
       fetchLinks();
+      fetchProfile();
     }
   }, [user, dateRange]);
+
+  const fetchProfile = async () => {
+    const { data } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', user?.id)
+      .single();
+    
+    if (data) {
+      setProfile(data);
+    }
+  };
 
   const fetchAnalytics = async () => {
     setIsLoadingAnalytics(true);
@@ -433,8 +448,13 @@ export default function Dashboard() {
           </>
         )}
 
-        {/* Quick Actions */}
-        <div className="grid md:grid-cols-2 gap-6">
+        {/* Profile Completeness & Quick Actions */}
+        <div className="grid lg:grid-cols-3 gap-6 mb-8">
+          {profile && (
+            <ProfileCompleteness profile={profile} linksCount={links.length} />
+          )}
+
+          <div className={profile ? "lg:col-span-2 grid md:grid-cols-2 gap-6" : "grid md:grid-cols-2 gap-6"}>
           <Card className="border-2">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -491,6 +511,7 @@ export default function Dashboard() {
               </Button>
             </CardContent>
           </Card>
+          </div>
         </div>
 
         {/* Upgrade CTA for Free Users */}
