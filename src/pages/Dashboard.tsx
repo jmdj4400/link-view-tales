@@ -5,12 +5,14 @@ import { supabase } from "@/lib/supabase-client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Skeleton } from "@/components/ui/skeleton";
 import { LogOut, Settings, Link as LinkIcon, CreditCard, Eye, MousePointerClick, TrendingUp, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
 import { AnalyticsChart } from "@/components/analytics/AnalyticsChart";
 import { TopLinksTable } from "@/components/analytics/TopLinksTable";
 import { TrafficSources } from "@/components/analytics/TrafficSources";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { PageLoader } from "@/components/ui/loading-spinner";
 
 export default function Dashboard() {
   const { user, signOut, loading, subscriptionStatus, refreshSubscription } = useAuth();
@@ -22,6 +24,7 @@ export default function Dashboard() {
   const [topLinks, setTopLinks] = useState<Array<any>>([]);
   const [trafficSources, setTrafficSources] = useState<Array<any>>([]);
   const [links, setLinks] = useState([]);
+  const [isLoadingAnalytics, setIsLoadingAnalytics] = useState(true);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -44,6 +47,7 @@ export default function Dashboard() {
   }, [user, timeRange]);
 
   const fetchAnalytics = async () => {
+    setIsLoadingAnalytics(true);
     const days = timeRange === '7d' ? 7 : 30;
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - days);
@@ -156,6 +160,7 @@ export default function Dashboard() {
       .slice(0, 5);
 
     setTrafficSources(sourcesArray);
+    setIsLoadingAnalytics(false);
   };
 
   const fetchLinks = async () => {
@@ -178,13 +183,7 @@ export default function Dashboard() {
   };
 
   if (loading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-background">
-        <div className="text-center">
-          <p className="text-muted-foreground">Loading...</p>
-        </div>
-      </div>
-    );
+    return <PageLoader />;
   }
 
   return (
@@ -239,41 +238,57 @@ export default function Dashboard() {
 
         {/* Metrics Cards */}
         <div className="grid md:grid-cols-3 gap-6 mb-8">
-          {[
-            {
-              icon: Eye,
-              label: "Page Views",
-              value: metrics.views,
-              subtitle: "Total profile visits",
-            },
-            {
-              icon: MousePointerClick,
-              label: "Link Clicks",
-              value: metrics.clicks,
-              subtitle: "Total link interactions",
-            },
-            {
-              icon: TrendingUp,
-              label: "Click-Through Rate",
-              value: `${metrics.ctr}%`,
-              subtitle: "Engagement ratio",
-            },
-          ].map((metric, index) => (
-            <Card key={index}>
-              <CardHeader className="pb-3">
-                <CardDescription className="flex items-center gap-2 text-sm">
-                  <metric.icon className="h-4 w-4" />
-                  {metric.label}
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="text-3xl font-semibold">
-                  {typeof metric.value === 'number' ? metric.value.toLocaleString() : metric.value}
-                </div>
-                <p className="text-sm text-muted-foreground mt-1">{metric.subtitle}</p>
-              </CardContent>
-            </Card>
-          ))}
+          {isLoadingAnalytics ? (
+            <>
+              {[1, 2, 3].map((i) => (
+                <Card key={i}>
+                  <CardHeader className="pb-3">
+                    <Skeleton className="h-4 w-32" />
+                  </CardHeader>
+                  <CardContent>
+                    <Skeleton className="h-10 w-24 mb-2" />
+                    <Skeleton className="h-4 w-40" />
+                  </CardContent>
+                </Card>
+              ))}
+            </>
+          ) : (
+            [
+              {
+                icon: Eye,
+                label: "Page Views",
+                value: metrics.views,
+                subtitle: "Total profile visits",
+              },
+              {
+                icon: MousePointerClick,
+                label: "Link Clicks",
+                value: metrics.clicks,
+                subtitle: "Total link interactions",
+              },
+              {
+                icon: TrendingUp,
+                label: "Click-Through Rate",
+                value: `${metrics.ctr}%`,
+                subtitle: "Engagement ratio",
+              },
+            ].map((metric, index) => (
+              <Card key={index} className="transition-all hover:shadow-md">
+                <CardHeader className="pb-3">
+                  <CardDescription className="flex items-center gap-2 text-sm">
+                    <metric.icon className="h-4 w-4" />
+                    {metric.label}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-semibold">
+                    {typeof metric.value === 'number' ? metric.value.toLocaleString() : metric.value}
+                  </div>
+                  <p className="text-sm text-muted-foreground mt-1">{metric.subtitle}</p>
+                </CardContent>
+              </Card>
+            ))
+          )}
         </div>
 
         {/* Analytics Chart */}

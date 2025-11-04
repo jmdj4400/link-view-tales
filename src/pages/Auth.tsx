@@ -178,7 +178,7 @@ export default function Auth() {
                       type="password"
                       placeholder="••••••••"
                       value={signInData.password}
-                      onChange={(e) => setSignInData({ ...signInData, email: e.target.value })}
+                      onChange={(e) => setSignInData({ ...signInData, password: e.target.value })}
                       required
                       className="h-11"
                     />

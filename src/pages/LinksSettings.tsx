@@ -6,8 +6,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Plus, Trash2, GripVertical } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
+import { ArrowLeft, Plus, Trash2, GripVertical, Link as LinkIcon } from "lucide-react";
 import { toast } from "sonner";
+import { PageLoader } from "@/components/ui/loading-spinner";
+import { EmptyState } from "@/components/ui/empty-state";
 
 interface Link {
   id: string;
@@ -22,6 +25,8 @@ export default function LinksSettings() {
   const navigate = useNavigate();
   const [links, setLinks] = useState<Link[]>([]);
   const [newLink, setNewLink] = useState({ title: "", dest_url: "" });
+  const [isLoadingLinks, setIsLoadingLinks] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -36,6 +41,7 @@ export default function LinksSettings() {
   }, [user]);
 
   const fetchLinks = async () => {
+    setIsLoadingLinks(true);
     const { data, error } = await supabase
       .from('links')
       .select('*')
@@ -45,10 +51,12 @@ export default function LinksSettings() {
     if (!error && data) {
       setLinks(data);
     }
+    setIsLoadingLinks(false);
   };
 
   const handleAddLink = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSubmitting(true);
     
     const { error } = await supabase
       .from('links')
@@ -66,6 +74,7 @@ export default function LinksSettings() {
       setNewLink({ title: "", dest_url: "" });
       fetchLinks();
     }
+    setIsSubmitting(false);
   };
 
   const handleDeleteLink = async (id: string) => {
@@ -96,7 +105,7 @@ export default function LinksSettings() {
   };
 
   if (loading) {
-    return <div className="flex min-h-screen items-center justify-center bg-background"><p className="text-muted-foreground">Loading...</p></div>;
+    return <PageLoader />;
   }
 
   return (
@@ -142,9 +151,9 @@ export default function LinksSettings() {
                   required
                 />
               </div>
-              <Button type="submit">
+              <Button type="submit" disabled={isSubmitting}>
                 <Plus className="h-4 w-4 mr-2" />
-                Add Link
+                {isSubmitting ? "Adding..." : "Add Link"}
               </Button>
             </form>
           </CardContent>
@@ -156,15 +165,33 @@ export default function LinksSettings() {
             <CardDescription>{links.length} {links.length === 1 ? 'link' : 'links'}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
-            {links.length === 0 ? (
-              <p className="text-muted-foreground text-center py-8">No links yet. Add your first link above!</p>
+            {isLoadingLinks ? (
+              <div className="space-y-3">
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="flex items-center gap-3 p-3 border rounded-lg">
+                    <Skeleton className="h-5 w-5" />
+                    <div className="flex-1 space-y-2">
+                      <Skeleton className="h-4 w-32" />
+                      <Skeleton className="h-3 w-48" />
+                    </div>
+                    <Skeleton className="h-9 w-20" />
+                    <Skeleton className="h-9 w-9" />
+                  </div>
+                ))}
+              </div>
+            ) : links.length === 0 ? (
+              <EmptyState
+                icon={LinkIcon}
+                title="No links yet"
+                description="Add your first link above to get started with your profile"
+              />
             ) : (
               links.map((link) => (
                 <div
                   key={link.id}
-                  className="flex items-center gap-3 p-3 border rounded-lg"
+                  className="flex items-center gap-3 p-3 border rounded-lg transition-all hover:shadow-md"
                 >
-                  <GripVertical className="h-5 w-5 text-muted-foreground" />
+                  <GripVertical className="h-5 w-5 text-muted-foreground cursor-grab active:cursor-grabbing" />
                   <div className="flex-1 min-w-0">
                     <div className="font-medium truncate">{link.title}</div>
                     <div className="text-sm text-muted-foreground truncate">{link.dest_url}</div>
