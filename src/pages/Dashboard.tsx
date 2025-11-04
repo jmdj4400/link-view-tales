@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
-import { LogOut, Settings, Link as LinkIcon, CreditCard, Eye, MousePointerClick, TrendingUp, ArrowRight, Download } from "lucide-react";
+import { LogOut, Settings, Link as LinkIcon, CreditCard, Eye, MousePointerClick, TrendingUp, ArrowRight, Download, Plus, BarChart3 } from "lucide-react";
 import { toast } from "sonner";
 import { AnalyticsChart } from "@/components/analytics/AnalyticsChart";
 import { TopLinksTable } from "@/components/analytics/TopLinksTable";
@@ -17,6 +17,8 @@ import { DateRangePicker } from "@/components/analytics/DateRangePicker";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { PageLoader } from "@/components/ui/loading-spinner";
 import { SEOHead } from "@/components/SEOHead";
+import { EmptyState } from "@/components/ui/empty-state";
+import { InfoTooltip } from "@/components/ui/info-tooltip";
 import { getDeviceType, getBrowserName, convertToCSV, downloadCSV, formatAnalyticsForCSV } from "@/lib/analytics-utils";
 
 export default function Dashboard() {
@@ -354,89 +356,128 @@ export default function Dashboard() {
                 label: "Page Views",
                 value: metrics.views,
                 subtitle: "Total profile visits",
+                tooltip: "Number of times your profile page was viewed"
               },
               {
                 icon: MousePointerClick,
                 label: "Link Clicks",
                 value: metrics.clicks,
                 subtitle: "Total link interactions",
+                tooltip: "Number of times your links were clicked"
               },
               {
                 icon: TrendingUp,
                 label: "Click-Through Rate",
                 value: `${metrics.ctr}%`,
                 subtitle: "Engagement ratio",
+                tooltip: "Percentage of visitors who clicked at least one link (Clicks ÷ Views × 100)"
               },
             ].map((metric, index) => (
-              <Card key={index} className="transition-all hover:shadow-md">
+              <Card key={index} className="transition-all hover:shadow-elegant hover-scale border-2">
                 <CardHeader className="pb-3">
-                  <CardDescription className="flex items-center gap-2 text-sm">
+                  <CardDescription className="flex items-center gap-2 text-sm font-medium">
                     <metric.icon className="h-4 w-4" />
                     {metric.label}
+                    <InfoTooltip content={metric.tooltip} />
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-semibold">
+                  <div className="text-4xl font-heading font-bold bg-gradient-to-br from-foreground to-foreground/60 bg-clip-text text-transparent">
                     {typeof metric.value === 'number' ? metric.value.toLocaleString() : metric.value}
                   </div>
-                  <p className="text-sm text-muted-foreground mt-1">{metric.subtitle}</p>
+                  <p className="text-sm text-muted-foreground mt-2">{metric.subtitle}</p>
                 </CardContent>
               </Card>
             ))
           )}
         </div>
 
-        {/* Analytics Chart */}
-        <div className="mb-8">
-          <AnalyticsChart data={chartData} />
-        </div>
+        {/* Analytics Chart or Empty State */}
+        {metrics.views === 0 && metrics.clicks === 0 ? (
+          <Card className="mb-8 border-2">
+            <EmptyState
+              icon={BarChart3}
+              title="No data yet"
+              description="Share your bio link and come back to see your analytics. Your first insights will appear here once people start visiting."
+              action={{
+                label: "View Your Profile",
+                onClick: () => {
+                  if (user?.id) {
+                    const username = user.email?.split('@')[0] || user.id;
+                    window.open(`/${username}`, '_blank');
+                  }
+                }
+              }}
+            />
+          </Card>
+        ) : (
+          <>
+            <div className="mb-8">
+              <AnalyticsChart data={chartData} />
+            </div>
 
-        {/* Top Links & Traffic Sources */}
-        <div className="grid lg:grid-cols-2 gap-6 mb-8">
-          <TopLinksTable links={topLinks} />
-          <TrafficSources sources={trafficSources} />
-        </div>
+            {/* Top Links & Traffic Sources */}
+            <div className="grid lg:grid-cols-2 gap-6 mb-8">
+              <TopLinksTable links={topLinks} />
+              <TrafficSources sources={trafficSources} />
+            </div>
 
-        {/* Device, Browser & Country Stats */}
-        <div className="mb-8">
-          <DeviceBrowserStats deviceStats={deviceStats} browserStats={browserStats} />
-        </div>
+            {/* Device, Browser & Country Stats */}
+            <div className="mb-8">
+              <DeviceBrowserStats deviceStats={deviceStats} browserStats={browserStats} />
+            </div>
 
-        <div className="mb-8">
-          <CountryStats countryStats={countryStats} />
-        </div>
+            <div className="mb-8">
+              <CountryStats countryStats={countryStats} />
+            </div>
+          </>
+        )}
 
         {/* Quick Actions */}
         <div className="grid md:grid-cols-2 gap-6">
-          <Card>
+          <Card className="border-2">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <LinkIcon className="h-5 w-5" />
                 Your Links
               </CardTitle>
               <CardDescription>
-                {links.length} active {links.length === 1 ? 'link' : 'links'}
+                {links.length === 0 ? (
+                  <span className="text-destructive font-medium">No links yet - add your first link!</span>
+                ) : (
+                  <span>{links.length} active {links.length === 1 ? 'link' : 'links'}</span>
+                )}
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Button
-                className="w-full"
-                onClick={() => navigate('/settings/links')}
-              >
-                Manage Links
-                <ArrowRight className="h-4 w-4 ml-2" />
-              </Button>
+              {links.length === 0 ? (
+                <Button
+                  className="w-full gradient-primary shadow-elegant"
+                  onClick={() => navigate('/settings/links')}
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Your First Link
+                </Button>
+              ) : (
+                <Button
+                  className="w-full"
+                  onClick={() => navigate('/settings/links')}
+                >
+                  Manage Links
+                  <ArrowRight className="h-4 w-4 ml-2" />
+                </Button>
+              )}
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="border-2">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <CreditCard className="h-5 w-5" />
                 Subscription
               </CardTitle>
               <CardDescription>
-                Current plan: {getPlanName()}
+                <span className="font-medium">Current plan: {getPlanName()}</span>
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -454,23 +495,27 @@ export default function Dashboard() {
 
         {/* Upgrade CTA for Free Users */}
         {!subscriptionStatus?.subscribed && (
-          <Card className="mt-8 border-2">
+          <Card className="mt-8 border-2 border-primary/50 gradient-subtle">
             <CardHeader className="text-center">
-              <CardTitle className="text-2xl font-semibold">
-                Upgrade to Pro
+              <CardTitle className="text-3xl font-heading font-bold mb-2">
+                Unlock the full potential
               </CardTitle>
-              <CardDescription>
-                Get unlimited links, extended analytics, and remove branding
+              <CardDescription className="text-base">
+                Get unlimited links, 90-day analytics history, and remove branding
               </CardDescription>
             </CardHeader>
             <CardContent className="text-center">
               <Button
                 size="lg"
                 onClick={() => navigate('/billing')}
+                className="gradient-primary shadow-elegant text-base px-8"
               >
-                View Plans
-                <ArrowRight className="h-4 w-4 ml-2" />
+                Upgrade to Pro
+                <ArrowRight className="h-5 w-5 ml-2" />
               </Button>
+              <p className="text-sm text-muted-foreground mt-4">
+                From $9/month • No long-term commitment
+              </p>
             </CardContent>
           </Card>
         )}

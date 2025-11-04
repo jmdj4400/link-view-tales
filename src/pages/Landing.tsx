@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Check, BarChart3, Link as LinkIcon, Zap, Palette, Share2 } from "lucide-react";
+import { Check, BarChart3, Link as LinkIcon, Zap, Palette, Share2, Sparkles, TrendingUp, ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -89,130 +89,225 @@ export default function Landing() {
         </nav>
 
         {/* Hero Section */}
-        <section className="container mx-auto px-6 pt-24 pb-20 max-w-7xl" aria-labelledby="hero-heading">
-          <div className="max-w-3xl">
-            <h2 id="hero-heading" className="text-5xl md:text-6xl lg:text-7xl font-heading font-semibold leading-[1.1] tracking-tight mb-6">
-              Your Digital Hub for Every Platform
-            </h2>
-          <p className="text-xl text-muted-foreground mb-10 leading-relaxed max-w-2xl">
-            Share all your important links from one professional page. Track engagement, understand your audience, and grow your reach with real-time analytics.
-          </p>
-          <div className="flex flex-wrap gap-4">
-            <Button 
-              size="lg" 
-              onClick={() => navigate('/auth')} 
-              className="text-base"
-            >
-              Start Free Trial
-            </Button>
-            <Button size="lg" variant="outline" onClick={() => navigate('/auth')} className="text-base">
-              See How It Works
-            </Button>
+        <section className="container mx-auto px-6 pt-20 pb-16 max-w-7xl" aria-labelledby="hero-heading">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div className="max-w-2xl">
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 border border-primary/20 rounded-full text-sm font-medium text-primary mb-6 animate-fade-in">
+                <Zap className="h-4 w-4" />
+                Complete setup in 60s • Get Pro free
+              </div>
+              <h2 id="hero-heading" className="text-5xl md:text-6xl lg:text-7xl font-heading font-bold leading-[1.05] tracking-tight mb-6 animate-fade-in">
+                Your bio deserves better data
+              </h2>
+              <p className="text-xl text-muted-foreground mb-8 leading-relaxed animate-fade-in">
+                Track clicks, not guesses. Fast, focused, and built for creators who care about analytics.
+              </p>
+              <div className="flex flex-wrap gap-4 animate-fade-in">
+                <Button 
+                  size="lg" 
+                  onClick={() => navigate('/auth')} 
+                  className="text-base shadow-elegant hover:shadow-elegant-xl transition-all"
+                >
+                  Start Free Trial
+                </Button>
+                <Button size="lg" variant="outline" onClick={() => window.scrollTo({ top: document.getElementById('how-it-works')?.offsetTop || 0, behavior: 'smooth' })} className="text-base">
+                  See How It Works
+                </Button>
+              </div>
+              <p className="text-sm text-muted-foreground mt-6 animate-fade-in">
+                No credit card required • Setup in 60 seconds • 1 month Pro trial
+              </p>
+            </div>
+            <div className="hidden lg:block">
+              <div className="relative">
+                <div className="absolute inset-0 gradient-primary opacity-20 blur-3xl rounded-full"></div>
+                <Card className="relative shadow-elegant-xl border-2 hover-scale">
+                  <CardHeader>
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center gap-2">
+                        <div className="w-10 h-10 gradient-primary rounded-xl"></div>
+                        <div>
+                          <div className="font-semibold">@creator</div>
+                          <div className="text-sm text-muted-foreground">Creator & Designer</div>
+                        </div>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    {['Portfolio', 'YouTube Channel', 'Newsletter'].map((item, i) => (
+                      <div key={i} className="p-4 border rounded-lg hover:border-primary transition-colors cursor-pointer">
+                        <div className="font-medium">{item}</div>
+                        <div className="text-sm text-muted-foreground mt-1">View {item.toLowerCase()}</div>
+                      </div>
+                    ))}
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
           </div>
-          <p className="text-sm text-muted-foreground mt-6">
-            No credit card required • 14-day Pro trial included
-          </p>
-        </div>
         </section>
 
-        {/* Stats Preview */}
-        <section className="container mx-auto px-6 pb-24 max-w-7xl" aria-label="Platform statistics">
-        <div className="bg-card border rounded-lg p-8 md:p-12">
-          <div className="grid md:grid-cols-3 gap-8">
-            <div>
-              <div className="text-4xl font-heading font-semibold mb-2">2,847</div>
-              <div className="text-sm text-muted-foreground">Total clicks this month</div>
-            </div>
-            <div>
-              <div className="text-4xl font-heading font-semibold mb-2">64%</div>
-              <div className="text-sm text-muted-foreground">From mobile devices</div>
-            </div>
-            <div>
-              <div className="text-4xl font-heading font-semibold mb-2">12</div>
-              <div className="text-sm text-muted-foreground">Active links</div>
-            </div>
+        {/* How It Works */}
+        <section id="how-it-works" className="container mx-auto px-6 py-24 max-w-7xl border-t" aria-labelledby="how-it-works-heading">
+          <div className="max-w-2xl mb-16 text-center mx-auto">
+            <h2 id="how-it-works-heading" className="text-4xl md:text-5xl font-heading font-bold mb-4 leading-tight">
+              Setup in 3 simple steps
+            </h2>
+            <p className="text-lg text-muted-foreground">
+              Get started in less than 60 seconds
+            </p>
           </div>
-        </div>
+          
+          <div className="grid md:grid-cols-3 gap-8">
+            {[
+              {
+                step: '1',
+                title: 'Sign up & share your story',
+                description: 'Create your account and add a short bio to introduce yourself to visitors.',
+                icon: '✍️'
+              },
+              {
+                step: '2',
+                title: 'Add your first link',
+                description: 'Add your most important link. You can add unlimited links later.',
+                icon: '🔗'
+              },
+              {
+                step: '3',
+                title: 'Share & track',
+                description: 'Get your unique LinkPeek URL and watch real-time analytics roll in.',
+                icon: '📊'
+              }
+            ].map((item) => (
+              <Card key={item.step} className="relative overflow-hidden border-2 hover:border-primary transition-all hover-scale">
+                <div className="absolute top-0 right-0 w-32 h-32 gradient-primary opacity-5 rounded-full -mr-16 -mt-16"></div>
+                <CardHeader>
+                  <div className="text-5xl mb-4">{item.icon}</div>
+                  <div className="text-sm font-bold text-primary mb-2">STEP {item.step}</div>
+                  <CardTitle className="text-2xl font-heading">{item.title}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground leading-relaxed">
+                    {item.description}
+                  </p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
         </section>
 
         {/* Features */}
         <section className="container mx-auto px-6 py-24 max-w-7xl border-t" aria-labelledby="features-heading">
-          <div className="max-w-2xl mb-16">
-            <h2 id="features-heading" className="text-4xl md:text-5xl font-heading font-semibold mb-4 leading-tight">
-              Built for Professionals
+          <div className="max-w-2xl mb-16 text-center mx-auto">
+            <h2 id="features-heading" className="text-4xl md:text-5xl font-heading font-bold mb-4 leading-tight">
+              Analytics-first design
             </h2>
-          <p className="text-lg text-muted-foreground">
-            Everything you need to manage and grow your online presence
-          </p>
-        </div>
+            <p className="text-lg text-muted-foreground">
+              Understand your audience with powerful, privacy-first analytics
+            </p>
+          </div>
         
-        <div className="grid md:grid-cols-2 gap-16 items-start">
-          <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 bg-muted rounded-full text-sm mb-4">
-              <BarChart3 className="h-4 w-4" />
-              Real-Time Analytics
-            </div>
-            <h3 className="text-3xl md:text-4xl font-heading font-semibold mb-4 leading-tight">
-              See exactly how your audience engages
-            </h3>
-            <p className="text-lg text-muted-foreground leading-relaxed">
-              Track clicks, referral sources, and geographic data. Understand which platforms drive the most engagement and make data-driven decisions to optimize your content strategy.
-            </p>
-          </div>
-          <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 bg-muted rounded-full text-sm mb-4">
-              <LinkIcon className="h-4 w-4" />
-              Unlimited Links
-            </div>
-            <h3 className="text-3xl md:text-4xl font-heading font-semibold mb-4 leading-tight">
-              Add as many links as you need
-            </h3>
-            <p className="text-lg text-muted-foreground leading-relaxed">
-              Organize your links with intuitive drag-and-drop ordering. Easily update, pause, or remove links anytime. No limits on Pro plan.
-            </p>
-          </div>
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {[
+            {
+              icon: BarChart3,
+              title: 'Real-time analytics',
+              description: 'Track every click, view, and interaction as it happens.'
+            },
+            {
+              icon: Share2,
+              title: 'UTM tracking',
+              description: 'Add campaign parameters and track traffic sources.'
+            },
+            {
+              icon: Palette,
+              title: 'Custom branding',
+              description: 'Match your brand with custom themes and domains.'
+            },
+            {
+              icon: Check,
+              title: 'Privacy-first',
+              description: 'GDPR compliant. No cookies. No tracking pixels.'
+            },
+            {
+              icon: Zap,
+              title: 'Click limits',
+              description: 'Set maximum clicks for time-sensitive campaigns.'
+            },
+            {
+              icon: LinkIcon,
+              title: 'QR codes',
+              description: 'Generate QR codes for offline-to-online tracking.'
+            },
+            {
+              icon: BarChart3,
+              title: 'Device insights',
+              description: 'See which devices your audience uses most.'
+            },
+            {
+              icon: TrendingUp,
+              title: 'Export data',
+              description: 'Download your analytics as CSV for deeper analysis.'
+            }
+          ].map((feature, index) => (
+            <Card key={index} className="border-2 hover:border-primary transition-all hover-scale">
+              <CardHeader>
+                <div className="w-12 h-12 gradient-primary rounded-xl flex items-center justify-center mb-3">
+                  <feature.icon className="h-6 w-6 text-white" />
+                </div>
+                <CardTitle className="text-xl font-heading">{feature.title}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground text-sm leading-relaxed">
+                  {feature.description}
+                </p>
+              </CardContent>
+            </Card>
+          ))}
         </div>
+        </section>
 
-        <div className="mt-16 pt-16 border-t">
-          <div className="grid md:grid-cols-2 gap-16 items-start">
-            <div>
-              <div className="inline-flex items-center gap-2 px-3 py-1 bg-muted rounded-full text-sm mb-4">
-                <Zap className="h-4 w-4" />
-                Custom Branding
-              </div>
-              <h3 className="text-3xl md:text-4xl font-heading font-semibold mb-4 leading-tight">
-                Match your brand perfectly
-              </h3>
-              <p className="text-lg text-muted-foreground leading-relaxed">
-                Customize themes, colors, and fonts. Connect your own domain for a professional presence. Remove all LinkPeek branding on Pro plans.
-              </p>
-            </div>
-            <div>
-              <div className="inline-flex items-center gap-2 px-3 py-1 bg-muted rounded-full text-sm mb-4">
-                <Check className="h-4 w-4" />
-                Privacy-First
-              </div>
-              <h3 className="text-3xl md:text-4xl font-heading font-semibold mb-4 leading-tight">
-                GDPR compliant by default
-              </h3>
-              <p className="text-lg text-muted-foreground leading-relaxed">
-                No cookies. No third-party trackers. Your data stays private. Built with privacy regulations in mind from day one.
-              </p>
-            </div>
+        {/* Beta Signup CTA */}
+        <section className="container mx-auto px-6 py-24 max-w-7xl border-t" aria-labelledby="beta-heading">
+          <div className="relative overflow-hidden">
+            <div className="absolute inset-0 gradient-primary opacity-5"></div>
+            <Card className="relative border-2 border-primary/50 shadow-elegant-xl">
+              <CardHeader className="text-center pb-4">
+                <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 border border-primary/20 rounded-full text-sm font-medium text-primary mx-auto mb-4">
+                  <Sparkles className="h-4 w-4" />
+                  Limited Beta Access
+                </div>
+                <CardTitle className="text-3xl md:text-4xl font-heading font-bold mb-4">
+                  Join the beta
+                </CardTitle>
+                <CardDescription className="text-lg max-w-2xl mx-auto">
+                  Be among the first to experience LinkPeek. Complete setup in under 60 seconds and get 1 month Pro free.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="flex justify-center pb-8">
+                <Button 
+                  size="lg" 
+                  onClick={() => navigate('/auth')} 
+                  className="text-lg px-8 gradient-primary shadow-elegant"
+                >
+                  Get Early Access
+                  <ArrowRight className="h-5 w-5 ml-2" />
+                </Button>
+              </CardContent>
+            </Card>
           </div>
-        </div>
         </section>
 
         {/* Pricing */}
         <section className="container mx-auto px-6 py-24 max-w-7xl border-t" aria-labelledby="pricing-heading">
-          <div className="max-w-2xl mb-16">
-            <h2 id="pricing-heading" className="text-4xl md:text-5xl font-heading font-semibold mb-4 leading-tight">
-              Pricing That Scales With You
+          <div className="max-w-2xl mb-16 text-center mx-auto">
+            <h2 id="pricing-heading" className="text-4xl md:text-5xl font-heading font-bold mb-4 leading-tight">
+              Simple, transparent pricing
             </h2>
-          <p className="text-lg text-muted-foreground">
-            Start free, upgrade when you're ready. All plans include 14-day Pro trial.
-          </p>
-        </div>
+            <p className="text-lg text-muted-foreground">
+              Start free, upgrade when you're ready
+            </p>
+          </div>
 
         <div className="grid md:grid-cols-3 gap-6">
           {plans.map((plan) => (
