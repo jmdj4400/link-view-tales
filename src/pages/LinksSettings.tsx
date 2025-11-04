@@ -7,8 +7,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ArrowLeft, Plus, Trash2, GripVertical, Link as LinkIcon, Eye } from "lucide-react";
+import { ArrowLeft, Plus, Trash2, GripVertical, Link as LinkIcon, Eye, QrCode } from "lucide-react";
 import { toast } from "sonner";
+import { QRCodeDialog } from "@/components/links/QRCodeDialog";
 import { PageLoader } from "@/components/ui/loading-spinner";
 import { EmptyState } from "@/components/ui/empty-state";
 import { SEOHead } from "@/components/SEOHead";
@@ -29,6 +30,7 @@ export default function LinksSettings() {
   const [isLoadingLinks, setIsLoadingLinks] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [userHandle, setUserHandle] = useState("");
+  const [qrCodeDialog, setQrCodeDialog] = useState<{ open: boolean; link: Link | null }>({ open: false, link: null });
 
   useEffect(() => {
     if (!loading && !user) {
@@ -228,6 +230,13 @@ export default function LinksSettings() {
                     <div className="text-sm text-muted-foreground truncate">{link.dest_url}</div>
                   </div>
                   <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setQrCodeDialog({ open: true, link })}
+                  >
+                    <QrCode className="h-4 w-4" />
+                  </Button>
+                  <Button
                     variant={link.is_active ? "outline" : "secondary"}
                     size="sm"
                     onClick={() => handleToggleActive(link.id, link.is_active)}
@@ -247,6 +256,15 @@ export default function LinksSettings() {
           </CardContent>
         </Card>
       </div>
+      
+      {qrCodeDialog.link && (
+        <QRCodeDialog
+          open={qrCodeDialog.open}
+          onOpenChange={(open) => setQrCodeDialog({ open, link: null })}
+          title={qrCodeDialog.link.title}
+          url={`${window.location.origin}/r/${qrCodeDialog.link.id}`}
+        />
+      )}
     </div>
     </>
   );
