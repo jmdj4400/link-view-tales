@@ -46,6 +46,33 @@ export type Database = {
           },
         ]
       }
+      beta_whitelist: {
+        Row: {
+          created_at: string | null
+          email: string
+          id: string
+          invited_at: string | null
+          invited_by: string | null
+          status: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          email: string
+          id?: string
+          invited_at?: string | null
+          invited_by?: string | null
+          status?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          email?: string
+          id?: string
+          invited_at?: string | null
+          invited_by?: string | null
+          status?: string | null
+        }
+        Relationships: []
+      }
       events: {
         Row: {
           country: string | null
