@@ -443,7 +443,7 @@ export default function Landing() {
               <ul className="space-y-3 text-sm text-muted-foreground">
                 <li><button onClick={() => navigate('/privacy')} className="hover:text-foreground transition-colors">Privacy Policy</button></li>
                 <li><button onClick={() => navigate('/terms')} className="hover:text-foreground transition-colors">Terms of Service</button></li>
-                <li><button onClick={() => navigate('/')} className="hover:text-foreground transition-colors">Cookie Policy</button></li>
+                <li><button onClick={() => navigate('/cookies')} className="hover:text-foreground transition-colors">Cookie Policy</button></li>
               </ul>
             </div>
           </div>
