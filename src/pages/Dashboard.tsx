@@ -5,13 +5,12 @@ import { supabase } from "@/lib/supabase-client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { LogOut, Settings, Link as LinkIcon, CreditCard, Eye, MousePointerClick, TrendingUp, Sparkles, ArrowRight } from "lucide-react";
+import { LogOut, Settings, Link as LinkIcon, CreditCard, Eye, MousePointerClick, TrendingUp, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
 import { AnalyticsChart } from "@/components/analytics/AnalyticsChart";
 import { TopLinksTable } from "@/components/analytics/TopLinksTable";
 import { TrafficSources } from "@/components/analytics/TrafficSources";
 import { ThemeToggle } from "@/components/ThemeToggle";
-import { motion } from "framer-motion";
 
 export default function Dashboard() {
   const { user, signOut, loading, subscriptionStatus, refreshSubscription } = useAuth();
@@ -180,48 +179,40 @@ export default function Dashboard() {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gradient-subtle">
-        <div className="text-center space-y-4">
-          <div className="w-12 h-12 gradient-primary rounded-2xl mx-auto animate-pulse"></div>
-          <p className="text-muted-foreground">Loading your dashboard...</p>
+      <div className="flex min-h-screen items-center justify-center bg-background">
+        <div className="text-center">
+          <p className="text-muted-foreground">Loading...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-subtle">
+    <div className="min-h-screen bg-background">
       {/* Navigation */}
-      <nav className="border-b backdrop-blur-sm bg-card/80 sticky top-0 z-50 shadow-sm">
+      <nav className="border-b bg-background sticky top-0 z-50">
         <div className="container mx-auto px-6 py-4 flex justify-between items-center">
-          <motion.div 
-            className="flex items-center gap-3"
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5 }}
-          >
-            <div className="w-9 h-9 gradient-primary rounded-xl shadow-md"></div>
-            <h1 className="text-2xl font-heading font-bold">LinkPeek</h1>
-          </motion.div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
+            <h1 className="text-xl font-heading font-semibold">LinkPeek</h1>
             {subscriptionStatus?.subscribed && (
-              <div className="hidden sm:flex items-center px-4 py-1.5 bg-primary/10 border border-primary/20 rounded-full text-sm font-medium text-primary">
-                <Sparkles className="h-3.5 w-3.5 mr-1.5" />
+              <span className="hidden sm:inline-block px-2 py-1 bg-muted rounded text-xs font-medium text-muted-foreground">
                 {getPlanName()}
-              </div>
+              </span>
             )}
+          </div>
+          <div className="flex items-center gap-1">
             <Button variant="ghost" size="sm" onClick={() => navigate('/billing')}>
-              <CreditCard className="h-4 w-4 mr-2" />
-              <span className="hidden sm:inline">Billing</span>
+              <CreditCard className="h-4 w-4" />
+              <span className="hidden sm:inline ml-2">Billing</span>
             </Button>
             <ThemeToggle />
             <Button variant="ghost" size="sm" onClick={() => navigate('/settings/profile')}>
-              <Settings className="h-4 w-4 mr-2" />
-              <span className="hidden sm:inline">Settings</span>
+              <Settings className="h-4 w-4" />
+              <span className="hidden sm:inline ml-2">Settings</span>
             </Button>
             <Button variant="ghost" size="sm" onClick={signOut}>
-              <LogOut className="h-4 w-4 sm:mr-2" />
-              <span className="hidden sm:inline">Sign Out</span>
+              <LogOut className="h-4 w-4" />
+              <span className="hidden sm:inline ml-2">Sign Out</span>
             </Button>
           </div>
         </div>
@@ -229,193 +220,140 @@ export default function Dashboard() {
 
       <div className="container mx-auto px-6 py-10 max-w-7xl">
         {/* Header */}
-        <motion.div 
-          className="mb-12"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-        >
-          <h2 className="text-4xl lg:text-5xl font-heading font-bold mb-3">
-            Welcome back 👋
+        <div className="mb-8">
+          <h2 className="text-3xl font-heading font-semibold mb-2">
+            Dashboard
           </h2>
-          <p className="text-lg text-muted-foreground">
-            Here's your LinkPeek analytics overview
+          <p className="text-muted-foreground">
+            Your analytics overview
           </p>
-        </motion.div>
+        </div>
 
         {/* Time Range Toggle */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.1 }}
-        >
-          <Tabs value={timeRange} onValueChange={(v) => setTimeRange(v as '7d' | '30d')} className="mb-10">
-            <TabsList className="bg-card shadow-md border">
-              <TabsTrigger value="7d" className="px-6 font-medium">Last 7 Days</TabsTrigger>
-              <TabsTrigger value="30d" className="px-6 font-medium">Last 30 Days</TabsTrigger>
-            </TabsList>
-          </Tabs>
-        </motion.div>
+        <Tabs value={timeRange} onValueChange={(v) => setTimeRange(v as '7d' | '30d')} className="mb-8">
+          <TabsList>
+            <TabsTrigger value="7d">Last 7 Days</TabsTrigger>
+            <TabsTrigger value="30d">Last 30 Days</TabsTrigger>
+          </TabsList>
+        </Tabs>
 
         {/* Metrics Cards */}
-        <div className="grid md:grid-cols-3 gap-6 mb-12">
+        <div className="grid md:grid-cols-3 gap-6 mb-8">
           {[
             {
               icon: Eye,
               label: "Page Views",
               value: metrics.views,
               subtitle: "Total profile visits",
-              delay: 0.2,
             },
             {
               icon: MousePointerClick,
               label: "Link Clicks",
               value: metrics.clicks,
               subtitle: "Total link interactions",
-              delay: 0.25,
             },
             {
               icon: TrendingUp,
               label: "Click-Through Rate",
               value: `${metrics.ctr}%`,
               subtitle: "Engagement ratio",
-              delay: 0.3,
             },
           ].map((metric, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: metric.delay }}
-            >
-              <Card className="border-2 hover:border-primary/50 transition-all hover:shadow-elegant hover-scale">
-                <CardHeader className="pb-3">
-                  <CardDescription className="flex items-center gap-2 text-sm font-medium">
-                    <div className="p-2 bg-primary/10 rounded-xl">
-                      <metric.icon className="h-4 w-4 text-primary" />
-                    </div>
-                    {metric.label}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-4xl font-heading font-bold">
-                    {typeof metric.value === 'number' ? metric.value.toLocaleString() : metric.value}
-                  </div>
-                  <p className="text-sm text-muted-foreground mt-2">{metric.subtitle}</p>
-                </CardContent>
-              </Card>
-            </motion.div>
+            <Card key={index}>
+              <CardHeader className="pb-3">
+                <CardDescription className="flex items-center gap-2 text-sm">
+                  <metric.icon className="h-4 w-4" />
+                  {metric.label}
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="text-3xl font-semibold">
+                  {typeof metric.value === 'number' ? metric.value.toLocaleString() : metric.value}
+                </div>
+                <p className="text-sm text-muted-foreground mt-1">{metric.subtitle}</p>
+              </CardContent>
+            </Card>
           ))}
         </div>
 
         {/* Analytics Chart */}
-        <motion.div 
-          className="mb-12"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.35 }}
-        >
+        <div className="mb-8">
           <AnalyticsChart data={chartData} timeRange={timeRange} />
-        </motion.div>
+        </div>
 
         {/* Top Links & Traffic Sources */}
-        <motion.div 
-          className="grid lg:grid-cols-2 gap-6 mb-12"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.4 }}
-        >
+        <div className="grid lg:grid-cols-2 gap-6 mb-8">
           <TopLinksTable links={topLinks} timeRange={timeRange} />
           <TrafficSources sources={trafficSources} timeRange={timeRange} />
-        </motion.div>
+        </div>
 
         {/* Quick Actions */}
-        <motion.div 
-          className="grid md:grid-cols-2 gap-6"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.45 }}
-        >
-          <Card className="border-2 hover:border-primary/50 transition-all hover:shadow-elegant">
+        <div className="grid md:grid-cols-2 gap-6">
+          <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 font-heading text-xl">
-                <LinkIcon className="h-5 w-5 text-primary" />
+              <CardTitle className="flex items-center gap-2">
+                <LinkIcon className="h-5 w-5" />
                 Your Links
               </CardTitle>
-              <CardDescription className="text-base">
+              <CardDescription>
                 {links.length} active {links.length === 1 ? 'link' : 'links'}
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-2">
+            <CardContent>
               <Button
-                className="w-full gradient-primary shadow-md group"
-                size="lg"
+                className="w-full"
                 onClick={() => navigate('/settings/links')}
               >
-                <LinkIcon className="h-4 w-4 mr-2" />
                 Manage Links
-                <ArrowRight className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                <ArrowRight className="h-4 w-4 ml-2" />
               </Button>
             </CardContent>
           </Card>
 
-          <Card className="border-2 hover:border-primary/50 transition-all hover:shadow-elegant">
+          <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 font-heading text-xl">
-                <CreditCard className="h-5 w-5 text-primary" />
+              <CardTitle className="flex items-center gap-2">
+                <CreditCard className="h-5 w-5" />
                 Subscription
               </CardTitle>
-              <CardDescription className="text-base">
-                Current plan: <span className="font-semibold text-foreground">{getPlanName()}</span>
+              <CardDescription>
+                Current plan: {getPlanName()}
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-2">
+            <CardContent>
               <Button
-                className="w-full group"
-                size="lg"
+                className="w-full"
                 variant="outline"
                 onClick={() => navigate('/billing')}
               >
-                <CreditCard className="h-4 w-4 mr-2" />
                 Manage Billing
-                <ArrowRight className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                <ArrowRight className="h-4 w-4 ml-2" />
               </Button>
             </CardContent>
           </Card>
-        </motion.div>
+        </div>
 
         {/* Upgrade CTA for Free Users */}
         {!subscriptionStatus?.subscribed && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.5 }}
-          >
-            <Card className="mt-12 border-2 border-primary shadow-elegant-xl gradient-accent">
-              <CardHeader className="text-center pb-4">
-                <div className="inline-flex items-center justify-center gap-2 mx-auto px-4 py-2 bg-primary/10 border border-primary/20 rounded-full text-sm font-medium text-primary mb-4">
-                  <Sparkles className="h-4 w-4" />
-                  Unlock more with Pro
-                </div>
-                <CardTitle className="text-3xl font-heading font-bold">
-                  See where your traffic comes from
-                </CardTitle>
-                <CardDescription className="text-base pt-2">
-                  Get unlimited links, 90 days of analytics, and remove branding
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="text-center">
-                <Button
-                  className="gradient-primary shadow-md group"
-                  size="lg"
-                  onClick={() => navigate('/billing')}
-                >
-                  View Plans & Pricing
-                  <ArrowRight className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform" />
-                </Button>
-              </CardContent>
-            </Card>
-          </motion.div>
+          <Card className="mt-8 border-2">
+            <CardHeader className="text-center">
+              <CardTitle className="text-2xl font-semibold">
+                Upgrade to Pro
+              </CardTitle>
+              <CardDescription>
+                Get unlimited links, extended analytics, and remove branding
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="text-center">
+              <Button
+                size="lg"
+                onClick={() => navigate('/billing')}
+              >
+                View Plans
+                <ArrowRight className="h-4 w-4 ml-2" />
+              </Button>
+            </CardContent>
+          </Card>
         )}
       </div>
     </div>

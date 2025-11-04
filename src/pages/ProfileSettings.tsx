@@ -67,28 +67,28 @@ export default function ProfileSettings() {
   };
 
   if (loading) {
-    return <div className="flex min-h-screen items-center justify-center">Loading...</div>;
+    return <div className="flex min-h-screen items-center justify-center bg-background"><p className="text-muted-foreground">Loading...</p></div>;
   }
 
   return (
     <div className="min-h-screen bg-background">
       <nav className="border-b">
-        <div className="container mx-auto px-4 py-4">
+        <div className="container mx-auto px-6 py-4">
           <Button variant="ghost" onClick={() => navigate('/dashboard')}>
             <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Dashboard
+            Back
           </Button>
         </div>
       </nav>
 
-      <div className="container mx-auto px-4 py-8 max-w-2xl">
+      <div className="container mx-auto px-6 py-10 max-w-2xl">
+        <div className="mb-6">
+          <h1 className="text-2xl font-semibold mb-1">Profile Settings</h1>
+          <p className="text-muted-foreground">Update your public profile information</p>
+        </div>
         <Card>
-          <CardHeader>
-            <CardTitle>Profile Settings</CardTitle>
-            <CardDescription>Update your public profile information</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
+          <CardContent className="pt-6">
+            <form onSubmit={handleSubmit} className="space-y-6">
               <div className="space-y-2">
                 <Label htmlFor="name">Name</Label>
                 <Input
@@ -132,8 +132,8 @@ export default function ProfileSettings() {
                 />
               </div>
 
-              <Button type="submit" disabled={isLoading}>
-                {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+              <Button type="submit" disabled={isLoading} className="w-full sm:w-auto">
+                {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Save Changes
               </Button>
             </form>

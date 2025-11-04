@@ -96,25 +96,28 @@ export default function LinksSettings() {
   };
 
   if (loading) {
-    return <div className="flex min-h-screen items-center justify-center">Loading...</div>;
+    return <div className="flex min-h-screen items-center justify-center bg-background"><p className="text-muted-foreground">Loading...</p></div>;
   }
 
   return (
     <div className="min-h-screen bg-background">
       <nav className="border-b">
-        <div className="container mx-auto px-4 py-4">
+        <div className="container mx-auto px-6 py-4">
           <Button variant="ghost" onClick={() => navigate('/dashboard')}>
             <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Dashboard
+            Back
           </Button>
         </div>
       </nav>
 
-      <div className="container mx-auto px-4 py-8 max-w-2xl">
+      <div className="container mx-auto px-6 py-10 max-w-2xl">
+        <div className="mb-6">
+          <h1 className="text-2xl font-semibold mb-1">Manage Links</h1>
+          <p className="text-muted-foreground">Add and organize your profile links</p>
+        </div>
         <Card className="mb-6">
           <CardHeader>
             <CardTitle>Add New Link</CardTitle>
-            <CardDescription>Create a new link for your profile</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleAddLink} className="space-y-4">
@@ -150,7 +153,7 @@ export default function LinksSettings() {
         <Card>
           <CardHeader>
             <CardTitle>Your Links</CardTitle>
-            <CardDescription>{links.length} total links</CardDescription>
+            <CardDescription>{links.length} {links.length === 1 ? 'link' : 'links'}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
             {links.length === 0 ? (
