@@ -157,6 +157,87 @@ export type Database = {
           },
         ]
       }
+      goal_events: {
+        Row: {
+          conversion_value: number | null
+          event_ref: string | null
+          goal_id: string | null
+          id: string
+          link_id: string | null
+          matched_click_id: string | null
+          referrer: string | null
+          source: string | null
+          ts: string
+        }
+        Insert: {
+          conversion_value?: number | null
+          event_ref?: string | null
+          goal_id?: string | null
+          id?: string
+          link_id?: string | null
+          matched_click_id?: string | null
+          referrer?: string | null
+          source?: string | null
+          ts?: string
+        }
+        Update: {
+          conversion_value?: number | null
+          event_ref?: string | null
+          goal_id?: string | null
+          id?: string
+          link_id?: string | null
+          matched_click_id?: string | null
+          referrer?: string | null
+          source?: string | null
+          ts?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "goal_events_goal_id_fkey"
+            columns: ["goal_id"]
+            isOneToOne: false
+            referencedRelation: "goals"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "goal_events_link_id_fkey"
+            columns: ["link_id"]
+            isOneToOne: false
+            referencedRelation: "links"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      goals: {
+        Row: {
+          active: boolean | null
+          created_at: string | null
+          id: string
+          name: string
+          type: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          active?: boolean | null
+          created_at?: string | null
+          id?: string
+          name: string
+          type: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          active?: boolean | null
+          created_at?: string | null
+          id?: string
+          name?: string
+          type?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       lead_forms: {
         Row: {
           button_text: string | null
@@ -420,6 +501,7 @@ export type Database = {
       metrics_daily: {
         Row: {
           clicks: number | null
+          conversion_count: number | null
           created_at: string | null
           ctr: number | null
           date: string
@@ -430,6 +512,7 @@ export type Database = {
         }
         Insert: {
           clicks?: number | null
+          conversion_count?: number | null
           created_at?: string | null
           ctr?: number | null
           date: string
@@ -440,6 +523,7 @@ export type Database = {
         }
         Update: {
           clicks?: number | null
+          conversion_count?: number | null
           created_at?: string | null
           ctr?: number | null
           date?: string
@@ -577,6 +661,91 @@ export type Database = {
           window_start?: string | null
         }
         Relationships: []
+      }
+      redirects: {
+        Row: {
+          browser: string | null
+          country: string | null
+          device: string | null
+          fallback_used: boolean | null
+          id: string
+          link_id: string | null
+          referrer: string | null
+          success: boolean | null
+          ts: string
+          user_agent: string | null
+        }
+        Insert: {
+          browser?: string | null
+          country?: string | null
+          device?: string | null
+          fallback_used?: boolean | null
+          id?: string
+          link_id?: string | null
+          referrer?: string | null
+          success?: boolean | null
+          ts?: string
+          user_agent?: string | null
+        }
+        Update: {
+          browser?: string | null
+          country?: string | null
+          device?: string | null
+          fallback_used?: boolean | null
+          id?: string
+          link_id?: string | null
+          referrer?: string | null
+          success?: boolean | null
+          ts?: string
+          user_agent?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "redirects_link_id_fkey"
+            columns: ["link_id"]
+            isOneToOne: false
+            referencedRelation: "links"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      rules: {
+        Row: {
+          conditions: Json
+          created_at: string | null
+          dest_url: string
+          id: string
+          is_active: boolean | null
+          link_id: string | null
+          priority: number | null
+        }
+        Insert: {
+          conditions: Json
+          created_at?: string | null
+          dest_url: string
+          id?: string
+          is_active?: boolean | null
+          link_id?: string | null
+          priority?: number | null
+        }
+        Update: {
+          conditions?: Json
+          created_at?: string | null
+          dest_url?: string
+          id?: string
+          is_active?: boolean | null
+          link_id?: string | null
+          priority?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rules_link_id_fkey"
+            columns: ["link_id"]
+            isOneToOne: false
+            referencedRelation: "links"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       subscriptions: {
         Row: {

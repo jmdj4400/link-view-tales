@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { supabase } from "@/lib/supabase-client";
+import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -28,6 +28,8 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { InfoTooltip } from "@/components/ui/info-tooltip";
 import { getDeviceType, getBrowserName, convertToCSV, downloadCSV, formatAnalyticsForCSV } from "@/lib/analytics-utils";
 import { ProfileQRDialog } from "@/components/profile/ProfileQRDialog";
+import { ReliabilityMetrics } from "@/components/analytics/ReliabilityMetrics";
+import { ConversionMetrics } from "@/components/analytics/ConversionMetrics";
 
 export default function ProfileAnalytics() {
   const { user, loading } = useAuth();
@@ -332,6 +334,18 @@ export default function ProfileAnalytics() {
           {/* Date Range Picker */}
           <div className="mb-8">
             <DateRangePicker dateRange={dateRange} onDateRangeChange={setDateRange} />
+          </div>
+
+          {/* Performance & Reliability Section */}
+          <div className="mb-8">
+            <h2 className="text-xl font-semibold mb-4">Performance & Reliability</h2>
+            <ReliabilityMetrics />
+          </div>
+
+          {/* Conversion Metrics Section */}
+          <div className="mb-8">
+            <h2 className="text-xl font-semibold mb-4">Conversion Tracking</h2>
+            <ConversionMetrics />
           </div>
 
           {/* Metrics Cards */}

@@ -97,10 +97,10 @@ export default function Landing() {
                 Complete setup in 60s • Get Pro free
               </div>
               <h2 id="hero-heading" className="text-5xl md:text-6xl lg:text-7xl font-heading font-bold leading-[1.05] tracking-tight mb-6 animate-fade-in">
-                Your bio deserves better data
+                Bio-links that work and convert — even inside Instagram
               </h2>
               <p className="text-xl text-muted-foreground mb-8 leading-relaxed animate-fade-in">
-                Track clicks, not guesses. Fast, focused, and built for creators who care about analytics.
+                LinkPeek ensures your links load correctly across all platforms and tracks what actually matters: conversions.
               </p>
               <div className="flex flex-wrap gap-4 animate-fade-in">
                 <Button 

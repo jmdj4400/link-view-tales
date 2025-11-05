@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { supabase } from "@/lib/supabase-client";
+import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
-import { LogOut, Settings, Link as LinkIcon, CreditCard, Eye, MousePointerClick, TrendingUp, ArrowRight, Download, Plus, BarChart3, Palette, Users } from "lucide-react";
+import { LogOut, Settings, Link as LinkIcon, CreditCard, Eye, MousePointerClick, TrendingUp, ArrowRight, Download, Plus, BarChart3, Palette, Users, Target } from "lucide-react";
 import { toast } from "sonner";
 import { AnalyticsChart } from "@/components/analytics/AnalyticsChart";
 import { TopLinksTable } from "@/components/analytics/TopLinksTable";
@@ -539,6 +539,28 @@ export default function Dashboard() {
                 onClick={() => navigate('/settings/theme')}
               >
                 Customize Theme
+                <ArrowRight className="h-4 w-4 ml-2" />
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card className="border-2">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Target className="h-5 w-5" />
+                Conversions
+              </CardTitle>
+              <CardDescription>
+                Track goals and conversions
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button
+                className="w-full"
+                variant="outline"
+                onClick={() => navigate('/settings/conversions')}
+              >
+                Manage Goals
                 <ArrowRight className="h-4 w-4 ml-2" />
               </Button>
             </CardContent>
