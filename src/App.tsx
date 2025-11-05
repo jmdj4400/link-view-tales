@@ -1,7 +1,6 @@
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
@@ -32,18 +31,15 @@ import VerifyEmail from "./pages/VerifyEmail";
 import EmailConfirmed from "./pages/EmailConfirmed";
 import PublicScorecard from "./pages/PublicScorecard";
 
-const queryClient = new QueryClient();
-
 const App = () => (
   <ErrorBoundary>
-      <QueryClientProvider client={queryClient}>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <InstallPrompt />
-          <BrowserRouter>
-          <AuthProvider>
-            <Routes>
+    <TooltipProvider>
+      <Toaster />
+      <Sonner />
+      <InstallPrompt />
+      <BrowserRouter>
+        <AuthProvider>
+          <Routes>
               <Route path="/beta" element={<Beta />} />
               <Route path="/" element={<Landing />} />
               <Route path="/auth" element={<Auth />} />
@@ -70,11 +66,10 @@ const App = () => (
               <Route path="/:handle" element={<PublicProfile />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
-            </Routes>
-          </AuthProvider>
-        </BrowserRouter>
-      </TooltipProvider>
-    </QueryClientProvider>
+          </Routes>
+        </AuthProvider>
+      </BrowserRouter>
+    </TooltipProvider>
   </ErrorBoundary>
 );
 
