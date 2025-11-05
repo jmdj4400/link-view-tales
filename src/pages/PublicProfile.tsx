@@ -49,7 +49,7 @@ export default function PublicProfile() {
     const { data: profileData, error: profileError } = await supabase
       .from('public_profiles')
       .select('id, name, handle, bio, avatar_url, primary_color, secondary_color, background_color, text_color, accent_color, heading_font, body_font, layout_style, button_style, card_style')
-      .eq('handle', handle)
+      .ilike('handle', handle)
       .single();
 
     if (profileError || !profileData) {
@@ -88,7 +88,7 @@ export default function PublicProfile() {
     const { data: profileData } = await supabase
       .from('public_profiles')
       .select('id')
-      .eq('handle', handle)
+      .ilike('handle', handle)
       .single();
 
     if (profileData) {
@@ -106,7 +106,7 @@ export default function PublicProfile() {
     const { data: profileData } = await supabase
       .from('public_profiles')
       .select('id')
-      .eq('handle', handle)
+      .ilike('handle', handle)
       .single();
 
     if (profileData) {
