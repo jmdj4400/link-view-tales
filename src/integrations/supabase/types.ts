@@ -354,6 +354,48 @@ export type Database = {
         }
         Relationships: []
       }
+      incidents: {
+        Row: {
+          affected_users: number | null
+          country: string | null
+          detected_at: string
+          device: string | null
+          error_rate: number
+          id: string
+          metadata: Json | null
+          platform: string
+          resolved_at: string | null
+          sample_size: number | null
+          severity: string
+        }
+        Insert: {
+          affected_users?: number | null
+          country?: string | null
+          detected_at?: string
+          device?: string | null
+          error_rate: number
+          id?: string
+          metadata?: Json | null
+          platform: string
+          resolved_at?: string | null
+          sample_size?: number | null
+          severity: string
+        }
+        Update: {
+          affected_users?: number | null
+          country?: string | null
+          detected_at?: string
+          device?: string | null
+          error_rate?: number
+          id?: string
+          metadata?: Json | null
+          platform?: string
+          resolved_at?: string | null
+          sample_size?: number | null
+          severity?: string
+        }
+        Relationships: []
+      }
       lead_forms: {
         Row: {
           button_text: string | null
@@ -674,6 +716,7 @@ export type Database = {
           card_style: string | null
           created_at: string | null
           email: string
+          firewall_enabled: boolean | null
           handle: string
           heading_font: string | null
           id: string
@@ -702,6 +745,7 @@ export type Database = {
           card_style?: string | null
           created_at?: string | null
           email: string
+          firewall_enabled?: boolean | null
           handle: string
           heading_font?: string | null
           id: string
@@ -730,6 +774,7 @@ export type Database = {
           card_style?: string | null
           created_at?: string | null
           email?: string
+          firewall_enabled?: boolean | null
           handle?: string
           heading_font?: string | null
           id?: string
@@ -894,37 +939,46 @@ export type Database = {
       }
       redirects: {
         Row: {
+          avoided_failure: boolean | null
           browser: string | null
           country: string | null
           device: string | null
           fallback_used: boolean | null
+          firewall_strategy: string | null
           id: string
           link_id: string | null
           referrer: string | null
+          risk_score: number | null
           success: boolean | null
           ts: string
           user_agent: string | null
         }
         Insert: {
+          avoided_failure?: boolean | null
           browser?: string | null
           country?: string | null
           device?: string | null
           fallback_used?: boolean | null
+          firewall_strategy?: string | null
           id?: string
           link_id?: string | null
           referrer?: string | null
+          risk_score?: number | null
           success?: boolean | null
           ts?: string
           user_agent?: string | null
         }
         Update: {
+          avoided_failure?: boolean | null
           browser?: string | null
           country?: string | null
           device?: string | null
           fallback_used?: boolean | null
+          firewall_strategy?: string | null
           id?: string
           link_id?: string | null
           referrer?: string | null
+          risk_score?: number | null
           success?: boolean | null
           ts?: string
           user_agent?: string | null
@@ -1009,6 +1063,39 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      scorecards: {
+        Row: {
+          created_at: string
+          data: Json
+          id: string
+          period_end: string
+          period_start: string
+          signature: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          data: Json
+          id?: string
+          period_end: string
+          period_start: string
+          signature: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          data?: Json
+          id?: string
+          period_end?: string
+          period_start?: string
+          signature?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       subscriptions: {
         Row: {
@@ -1125,6 +1212,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      calculate_redirect_risk: {
+        Args: { p_country: string; p_platform: string; p_user_agent: string }
+        Returns: number
+      }
       check_rate_limit: {
         Args: {
           p_action: string
@@ -1133,6 +1224,14 @@ export type Database = {
           p_window_minutes: number
         }
         Returns: boolean
+      }
+      get_user_scorecard_data: {
+        Args: {
+          p_period_end: string
+          p_period_start: string
+          p_user_id: string
+        }
+        Returns: Json
       }
       grant_trial: { Args: { p_user_id: string }; Returns: undefined }
       is_email_whitelisted: { Args: { check_email: string }; Returns: boolean }
