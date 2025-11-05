@@ -31,6 +31,8 @@ import { useCommonShortcuts } from "@/hooks/use-keyboard-shortcuts";
 import { KeyboardShortcutsDialog } from "@/components/ui/keyboard-shortcuts-dialog";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { UsageIndicator } from "@/components/ui/usage-indicator";
+import { UpgradePrompt } from "@/components/ui/upgrade-prompt";
 
 export default function Dashboard() {
   useCommonShortcuts();
@@ -483,6 +485,32 @@ export default function Dashboard() {
               profileUrl={`${window.location.origin}/${profileHandle}`}
               onDismiss={() => setShowSetupBanner(false)}
             />
+          </div>
+        )}
+
+        {/* Usage & Upgrade Section for Free Users */}
+        {!isPaidUser() && (
+          <div className="grid md:grid-cols-2 gap-6 mb-8">
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base">Link Usage</CardTitle>
+                <CardDescription>Track your current plan limits</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <UsageIndicator
+                  current={links.length}
+                  limit={5}
+                  label="Active links"
+                />
+              </CardContent>
+            </Card>
+            {links.length >= 4 && (
+              <UpgradePrompt
+                title="Unlock Unlimited Links"
+                description="Upgrade to Pro for unlimited links, advanced analytics, and priority support."
+                feature="Pro"
+              />
+            )}
           </div>
         )}
 

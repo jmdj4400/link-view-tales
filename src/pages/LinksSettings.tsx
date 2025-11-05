@@ -26,6 +26,8 @@ import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import { FormFieldWithValidation } from "@/components/ui/form-field-with-validation";
 import { BreadcrumbNav } from "@/components/navigation/BreadcrumbNav";
 import { useCommonShortcuts } from "@/hooks/use-keyboard-shortcuts";
+import { UpgradePrompt } from "@/components/ui/upgrade-prompt";
+import { UsageIndicator } from "@/components/ui/usage-indicator";
 
 interface Link {
   id: string;
@@ -69,6 +71,11 @@ export default function LinksSettings() {
     linkId: null, 
     linkTitle: '' 
   });
+  const [userPlan, setUserPlan] = useState<string>('free');
+
+  const FREE_TIER_LIMIT = 5;
+  const isPaidUser = userPlan !== 'free';
+  const showUpgradePrompt = !isPaidUser && links.length >= FREE_TIER_LIMIT;
 
   useEffect(() => {
     if (!loading && !user) {
@@ -81,8 +88,21 @@ export default function LinksSettings() {
       fetchLinks();
       fetchUserHandle();
       fetchCategories();
+      fetchUserPlan();
     }
   }, [user]);
+
+  const fetchUserPlan = async () => {
+    const { data } = await supabase
+      .from('profiles')
+      .select('plan')
+      .eq('id', user?.id)
+      .single();
+    
+    if (data) {
+      setUserPlan(data.plan || 'free');
+    }
+  };
 
   const fetchCategories = async () => {
     const { data } = await supabase
@@ -125,6 +145,23 @@ export default function LinksSettings() {
   const handleAddLink = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    
+    // Check free tier limit (5 links max)
+    const { data: profileData } = await supabase
+      .from('profiles')
+      .select('plan')
+      .eq('id', user?.id)
+      .single();
+    
+    const isPaidUser = profileData?.plan && profileData.plan !== 'free';
+    const FREE_TIER_LIMIT = 5;
+    
+    if (!isPaidUser && links.length >= FREE_TIER_LIMIT) {
+      toast.error(`Free plan limited to ${FREE_TIER_LIMIT} links. Upgrade to add more!`);
+      setIsSubmitting(false);
+      navigate('/billing');
+      return;
+    }
     
     // Validate inputs
     const titleError = linkValidation.title.validate(newLink.title);
@@ -302,6 +339,29 @@ export default function LinksSettings() {
           </TabsList>
 
           <TabsContent value="links" className="space-y-6">
+        {/* Usage Indicator for Free Users */}
+        {!isPaidUser && (
+          <Card>
+            <CardContent className="pt-6">
+              <UsageIndicator
+                current={links.length}
+                limit={FREE_TIER_LIMIT}
+                label="Links used"
+              />
+            </CardContent>
+          </Card>
+        )}
+        
+        {/* Upgrade Prompt when limit reached */}
+        {showUpgradePrompt && (
+          <UpgradePrompt
+            variant="banner"
+            title="Link Limit Reached"
+            description={`You've reached the free plan limit of ${FREE_TIER_LIMIT} links. Upgrade to Pro for unlimited links and advanced features.`}
+            feature="Pro"
+          />
+        )}
+        
         <Card className="mb-6">
           <CardHeader>
             <CardTitle>Add New Link</CardTitle>
@@ -318,6 +378,7 @@ export default function LinksSettings() {
                 placeholder="My Website"
                 showCharCount
                 required
+                disabled={showUpgradePrompt}
               />
               
               <FormFieldWithValidation
@@ -330,6 +391,7 @@ export default function LinksSettings() {
                 maxLength={linkValidation.destUrl.maxLength}
                 placeholder="https://example.com"
                 required
+                disabled={showUpgradePrompt}
               />
               
               <div className="space-y-2">
@@ -337,6 +399,7 @@ export default function LinksSettings() {
                 <Select
                   value={newLink.category_id}
                   onValueChange={(value) => setNewLink({ ...newLink, category_id: value })}
+                  disabled={showUpgradePrompt}
                 >
                   <SelectTrigger id="category">
                     <SelectValue placeholder="No category" />
@@ -354,9 +417,9 @@ export default function LinksSettings() {
                   </SelectContent>
                 </Select>
               </div>
-              <Button type="submit" disabled={isSubmitting}>
+              <Button type="submit" disabled={isSubmitting || showUpgradePrompt}>
                 <Plus className="h-4 w-4 mr-2" />
-                {isSubmitting ? "Adding..." : "Add Link"}
+                {showUpgradePrompt ? "Upgrade to Add More" : isSubmitting ? "Adding..." : "Add Link"}
               </Button>
             </form>
           </CardContent>
