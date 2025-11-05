@@ -39,7 +39,7 @@ const handler = async (req: Request): Promise<Response> => {
 
     // Send confirmation email to user
     const confirmationEmail = await resend.emails.send({
-      from: "LinkPeek Support <noreply@yourdomain.com>", // Update with your verified domain
+      from: "LinkPeek Support <noreply@link-peek.org>",
       to: [email],
       subject: "We received your message - LinkPeek Support",
       html: `
@@ -98,8 +98,8 @@ const handler = async (req: Request): Promise<Response> => {
 
     // Send notification email to support team
     const supportEmail = await resend.emails.send({
-      from: "LinkPeek Contact Form <noreply@yourdomain.com>", // Update with your verified domain
-      to: ["youremail@yourdomain.com"], // Replace with your actual support email
+      from: "LinkPeek Contact Form <noreply@link-peek.org>",
+      to: ["suppport@link-peek.org"],
       replyTo: email,
       subject: `[${category.toUpperCase()}] ${subject}`,
       html: `
