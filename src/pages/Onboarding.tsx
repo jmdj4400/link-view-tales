@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import { Loader2, Sparkles, ArrowRight } from "lucide-react";
 import { CountdownTimer } from "@/components/onboarding/CountdownTimer";
 import { CelebrationModal } from "@/components/onboarding/CelebrationModal";
+import { InstagramSetupGuide } from "@/components/onboarding/InstagramSetupGuide";
 import { SEOHead } from "@/components/SEOHead";
 import { PageLoader } from "@/components/ui/loading-spinner";
 
@@ -28,7 +29,7 @@ export default function Onboarding() {
     return now;
   });
   const [step, setStep] = useState(1);
-  const [profile, setProfile] = useState({ bio: "" });
+  const [profile, setProfile] = useState({ bio: "", handle: "" });
   const [link, setLink] = useState({ title: "", dest_url: "" });
   const [showCelebration, setShowCelebration] = useState(false);
   const [completionTime, setCompletionTime] = useState(0);
@@ -38,6 +39,22 @@ export default function Onboarding() {
       navigate('/auth');
     }
   }, [user, loading, navigate]);
+
+  useEffect(() => {
+    // Fetch user's handle for step 3
+    if (user && step === 3) {
+      supabase
+        .from('profiles')
+        .select('handle')
+        .eq('id', user.id)
+        .single()
+        .then(({ data }) => {
+          if (data?.handle) {
+            setProfile(prev => ({ ...prev, handle: data.handle }));
+          }
+        });
+    }
+  }, [user, step]);
 
   const handleProfileSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -87,17 +104,36 @@ export default function Onboarding() {
 
       if (trialError) {
         console.error('Failed to grant trial:', trialError);
-        toast.error('Setup complete, but trial grant failed');
-      } else {
-        setShowCelebration(true);
       }
-    } else {
-      toast.success('Setup complete! Welcome to LinkPeek');
-      navigate('/dashboard');
+      setShowCelebration(true);
     }
     
+    // Move to step 3 (Instagram setup)
+    setStep(3);
     localStorage.removeItem('challenge_start_time');
     setIsLoading(false);
+  };
+
+  const handleInstagramSetupComplete = async () => {
+    await supabase
+      .from('profiles')
+      .update({ 
+        instagram_bio_setup_completed: true,
+        onboarding_completed_at: new Date().toISOString()
+      })
+      .eq('id', user?.id);
+    
+    toast.success('Setup complete! Welcome to LinkPeek');
+    navigate('/dashboard');
+  };
+
+  const handleSkipInstagram = async () => {
+    await supabase
+      .from('profiles')
+      .update({ onboarding_completed_at: new Date().toISOString() })
+      .eq('id', user?.id);
+    
+    navigate('/dashboard');
   };
 
   const handleCelebrationContinue = () => {
@@ -131,15 +167,17 @@ export default function Onboarding() {
               </div>
               <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 border border-primary/20 rounded-full text-sm font-medium text-primary mx-auto mb-4">
                 <Sparkles className="h-4 w-4" />
-                Step {step} of 2
+                Step {step} of 3
               </div>
               <CardTitle className="text-3xl font-heading font-bold">
-                {step === 1 ? 'Tell us about yourself' : 'Add your first link'}
+                {step === 1 ? 'Tell us about yourself' : step === 2 ? 'Add your first link' : 'Share your LinkPeek'}
               </CardTitle>
               <CardDescription className="text-base pt-2">
                 {step === 1 
                   ? 'Share a bit about yourself (optional)' 
-                  : 'Almost there! Add a link to get started'}
+                  : step === 2
+                  ? 'Almost there! Add a link to get started'
+                  : 'Add your profile to Instagram to start tracking'}
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -169,7 +207,7 @@ export default function Onboarding() {
                     <ArrowRight className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform" />
                   </Button>
                 </form>
-              ) : (
+              ) : step === 2 ? (
                 <form onSubmit={handleLinkSubmit} className="space-y-5">
                   <div className="space-y-2">
                     <Label htmlFor="title" className="text-sm font-medium">Link Title</Label>
@@ -205,13 +243,19 @@ export default function Onboarding() {
                     ) : (
                       <Sparkles className="mr-2 h-4 w-4" />
                     )}
-                    Complete Setup
+                    Next
                     <ArrowRight className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform" />
                   </Button>
                   <p className="text-xs text-center text-muted-foreground pt-1">
                     Complete in under 60s to get 1 month Pro free
                   </p>
                 </form>
+              ) : (
+                <InstagramSetupGuide
+                  profileUrl={`${window.location.origin}/${profile.handle}`}
+                  onComplete={handleInstagramSetupComplete}
+                  onSkip={handleSkipInstagram}
+                />
               )}
             </CardContent>
           </Card>

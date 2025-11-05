@@ -216,6 +216,37 @@ export default function Landing() {
           </div>
         </section>
 
+        {/* How It Works Section */}
+        <section className="container mx-auto px-6 py-24 max-w-7xl border-t bg-muted/30" aria-labelledby="how-it-works-heading">
+          <div className="text-center max-w-3xl mx-auto mb-16">
+            <h2 id="how-it-works-heading" className="text-3xl md:text-4xl font-heading font-bold mb-3 leading-tight">How it works</h2>
+            <p className="text-base text-muted-foreground">Get started in three simple steps</p>
+          </div>
+          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            <Card className="text-center p-8 border hover:border-primary/30 transition-colors">
+              <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
+                <span className="text-2xl font-bold text-primary">1</span>
+              </div>
+              <h3 className="text-xl font-heading font-semibold mb-3">Create your profile</h3>
+              <p className="text-muted-foreground leading-relaxed">Sign up and add your links in seconds. Customize your profile to match your brand.</p>
+            </Card>
+            <Card className="text-center p-8 border hover:border-primary/30 transition-colors">
+              <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
+                <span className="text-2xl font-bold text-primary">2</span>
+              </div>
+              <h3 className="text-xl font-heading font-semibold mb-3">Copy your unique URL</h3>
+              <p className="text-muted-foreground leading-relaxed">Get your personalized LinkPeek URL. It's short, clean, and professional.</p>
+            </Card>
+            <Card className="text-center p-8 border hover:border-primary/30 transition-colors">
+              <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
+                <span className="text-2xl font-bold text-primary">3</span>
+              </div>
+              <h3 className="text-xl font-heading font-semibold mb-3">Add to your bio</h3>
+              <p className="text-muted-foreground leading-relaxed">Paste your LinkPeek URL in Instagram, TikTok, or any social platform. Start tracking immediately.</p>
+            </Card>
+          </div>
+        </section>
+
         {/* Features */}
         <section className="container mx-auto px-6 py-24 max-w-7xl border-t" aria-labelledby="features-heading">
           <div className="max-w-2xl mb-12 text-center mx-auto">

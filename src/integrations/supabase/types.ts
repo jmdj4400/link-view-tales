@@ -705,11 +705,14 @@ export type Database = {
           handle: string
           heading_font: string | null
           id: string
+          instagram_bio_setup_completed: boolean | null
           layout_style: string | null
           name: string | null
+          onboarding_completed_at: string | null
           plan: Database["public"]["Enums"]["subscription_plan"] | null
           primary_color: string | null
           secondary_color: string | null
+          setup_guide_dismissed: boolean | null
           text_color: string | null
           theme: string | null
           updated_at: string | null
@@ -730,11 +733,14 @@ export type Database = {
           handle: string
           heading_font?: string | null
           id: string
+          instagram_bio_setup_completed?: boolean | null
           layout_style?: string | null
           name?: string | null
+          onboarding_completed_at?: string | null
           plan?: Database["public"]["Enums"]["subscription_plan"] | null
           primary_color?: string | null
           secondary_color?: string | null
+          setup_guide_dismissed?: boolean | null
           text_color?: string | null
           theme?: string | null
           updated_at?: string | null
@@ -755,11 +761,14 @@ export type Database = {
           handle?: string
           heading_font?: string | null
           id?: string
+          instagram_bio_setup_completed?: boolean | null
           layout_style?: string | null
           name?: string | null
+          onboarding_completed_at?: string | null
           plan?: Database["public"]["Enums"]["subscription_plan"] | null
           primary_color?: string | null
           secondary_color?: string | null
+          setup_guide_dismissed?: boolean | null
           text_color?: string | null
           theme?: string | null
           updated_at?: string | null

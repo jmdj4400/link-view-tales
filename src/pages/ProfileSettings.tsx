@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
-import { ArrowLeft, Loader2, Eye } from "lucide-react";
+import { ArrowLeft, Loader2, Eye, Copy, ExternalLink, Share2 } from "lucide-react";
 import { toast } from "sonner";
 import { SEOHead } from "@/components/SEOHead";
 import { PageLoader } from "@/components/ui/loading-spinner";
@@ -178,25 +178,52 @@ export default function ProfileSettings() {
           </CardContent>
         </Card>
         
-        <Card className="mt-6 border-muted">
+        <Card className="mt-6 border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-transparent">
           <CardContent className="pt-6">
-            <div className="space-y-3">
-              <h3 className="text-sm font-semibold">Your Profile URL</h3>
-              <div className="flex items-center gap-2">
-                <Input
-                  value={`${window.location.origin}/${profile.handle}`}
-                  readOnly
-                  className="font-mono text-sm"
-                />
+            <div className="space-y-4">
+              <div className="flex items-start gap-3">
+                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                  <Share2 className="h-5 w-5 text-primary" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-base font-semibold mb-1">Share your profile</h3>
+                  <p className="text-sm text-muted-foreground">Add this URL to Instagram, TikTok, LinkedIn, or any social platform</p>
+                </div>
+              </div>
+              
+              <div className="space-y-2">
+                <Label className="text-xs text-muted-foreground">Your LinkPeek URL</Label>
+                <div className="flex items-center gap-2">
+                  <Input
+                    value={`${window.location.origin}/${profile.handle}`}
+                    readOnly
+                    className="font-mono text-sm bg-background"
+                  />
+                  <Button
+                    variant="default"
+                    size="sm"
+                    onClick={() => {
+                      navigator.clipboard.writeText(`${window.location.origin}/${profile.handle}`);
+                      toast.success('Link copied to clipboard');
+                    }}
+                  >
+                    <Copy className="h-4 w-4 mr-2" />
+                    Copy
+                  </Button>
+                </div>
+              </div>
+
+              <div className="pt-3 border-t flex items-center justify-between">
+                <p className="text-xs text-muted-foreground">
+                  Paste this link in your social media bio to start tracking clicks
+                </p>
                 <Button
-                  variant="outline"
+                  variant="ghost"
                   size="sm"
-                  onClick={() => {
-                    navigator.clipboard.writeText(`${window.location.origin}/${profile.handle}`);
-                    toast.success('Link copied to clipboard');
-                  }}
+                  onClick={() => window.open(`/${profile.handle}`, '_blank')}
                 >
-                  Copy
+                  <ExternalLink className="h-4 w-4 mr-2" />
+                  Preview
                 </Button>
               </div>
             </div>

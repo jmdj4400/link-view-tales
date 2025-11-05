@@ -20,6 +20,7 @@ import { SEOHead } from "@/components/SEOHead";
 import { EmptyState } from "@/components/ui/empty-state";
 import { InfoTooltip } from "@/components/ui/info-tooltip";
 import { ProfileCompleteness } from "@/components/profile/ProfileCompleteness";
+import { SetupBanner } from "@/components/profile/SetupBanner";
 import { getDeviceType, getBrowserName, convertToCSV, downloadCSV, formatAnalyticsForCSV } from "@/lib/analytics-utils";
 
 export default function Dashboard() {
@@ -40,12 +41,38 @@ export default function Dashboard() {
   const [browserStats, setBrowserStats] = useState<Array<{ name: string; count: number; percentage: number }>>([]);
   const [countryStats, setCountryStats] = useState<Array<{ country: string; count: number; percentage: number }>>([]);
   const [profile, setProfile] = useState<any>(null);
+  const [showSetupBanner, setShowSetupBanner] = useState(false);
+  const [profileHandle, setProfileHandle] = useState("");
 
   useEffect(() => {
     if (!loading && !user) {
       navigate('/auth');
+      return;
+    }
+
+    if (user) {
+      checkSetupStatus();
     }
   }, [user, loading, navigate]);
+
+  const checkSetupStatus = async () => {
+    if (!user) return;
+
+    const { data } = await supabase
+      .from('profiles')
+      .select('instagram_bio_setup_completed, setup_guide_dismissed, handle, onboarding_completed_at')
+      .eq('id', user.id)
+      .single();
+
+    if (data) {
+      setProfileHandle(data.handle || '');
+      // Show banner if onboarding is complete but Instagram setup is not
+      const shouldShow = data.onboarding_completed_at && 
+                        !data.instagram_bio_setup_completed && 
+                        !data.setup_guide_dismissed;
+      setShowSetupBanner(!!shouldShow);
+    }
+  };
 
   useEffect(() => {
     if (searchParams.get('success') === 'true') {
@@ -352,6 +379,17 @@ export default function Dashboard() {
             Export data
           </Button>
         </div>
+
+        {/* Setup Banner */}
+        {showSetupBanner && (
+          <div className="mb-8">
+            <SetupBanner
+              userId={user!.id}
+              profileUrl={`${window.location.origin}/${profileHandle}`}
+              onDismiss={() => setShowSetupBanner(false)}
+            />
+          </div>
+        )}
 
         {/* Date Range Picker */}
         <div className="mb-8">
