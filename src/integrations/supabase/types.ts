@@ -360,42 +360,89 @@ export type Database = {
       }
       profiles: {
         Row: {
+          accent_color: string | null
+          active_theme_id: string | null
           avatar_url: string | null
+          background_color: string | null
+          background_image_url: string | null
+          background_pattern: string | null
           bio: string | null
+          body_font: string | null
+          button_style: string | null
+          card_style: string | null
           created_at: string | null
           email: string
           handle: string
+          heading_font: string | null
           id: string
+          layout_style: string | null
           name: string | null
           plan: Database["public"]["Enums"]["subscription_plan"] | null
+          primary_color: string | null
+          secondary_color: string | null
+          text_color: string | null
           theme: string | null
           updated_at: string | null
         }
         Insert: {
+          accent_color?: string | null
+          active_theme_id?: string | null
           avatar_url?: string | null
+          background_color?: string | null
+          background_image_url?: string | null
+          background_pattern?: string | null
           bio?: string | null
+          body_font?: string | null
+          button_style?: string | null
+          card_style?: string | null
           created_at?: string | null
           email: string
           handle: string
+          heading_font?: string | null
           id: string
+          layout_style?: string | null
           name?: string | null
           plan?: Database["public"]["Enums"]["subscription_plan"] | null
+          primary_color?: string | null
+          secondary_color?: string | null
+          text_color?: string | null
           theme?: string | null
           updated_at?: string | null
         }
         Update: {
+          accent_color?: string | null
+          active_theme_id?: string | null
           avatar_url?: string | null
+          background_color?: string | null
+          background_image_url?: string | null
+          background_pattern?: string | null
           bio?: string | null
+          body_font?: string | null
+          button_style?: string | null
+          card_style?: string | null
           created_at?: string | null
           email?: string
           handle?: string
+          heading_font?: string | null
           id?: string
+          layout_style?: string | null
           name?: string | null
           plan?: Database["public"]["Enums"]["subscription_plan"] | null
+          primary_color?: string | null
+          secondary_color?: string | null
+          text_color?: string | null
           theme?: string | null
           updated_at?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "profiles_active_theme_id_fkey"
+            columns: ["active_theme_id"]
+            isOneToOne: false
+            referencedRelation: "theme_presets"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       rate_limits: {
         Row: {
@@ -477,6 +524,69 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      theme_presets: {
+        Row: {
+          accent_color: string | null
+          background_color: string | null
+          background_image_url: string | null
+          background_pattern: string | null
+          body_font: string | null
+          button_style: string | null
+          card_style: string | null
+          created_at: string | null
+          heading_font: string | null
+          id: string
+          is_active: boolean | null
+          layout_style: string | null
+          name: string
+          primary_color: string | null
+          secondary_color: string | null
+          text_color: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          accent_color?: string | null
+          background_color?: string | null
+          background_image_url?: string | null
+          background_pattern?: string | null
+          body_font?: string | null
+          button_style?: string | null
+          card_style?: string | null
+          created_at?: string | null
+          heading_font?: string | null
+          id?: string
+          is_active?: boolean | null
+          layout_style?: string | null
+          name: string
+          primary_color?: string | null
+          secondary_color?: string | null
+          text_color?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          accent_color?: string | null
+          background_color?: string | null
+          background_image_url?: string | null
+          background_pattern?: string | null
+          body_font?: string | null
+          button_style?: string | null
+          card_style?: string | null
+          created_at?: string | null
+          heading_font?: string | null
+          id?: string
+          is_active?: boolean | null
+          layout_style?: string | null
+          name?: string
+          primary_color?: string | null
+          secondary_color?: string | null
+          text_color?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
       }
     }
     Views: {
