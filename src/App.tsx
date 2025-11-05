@@ -1,6 +1,5 @@
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
@@ -33,13 +32,12 @@ import PublicScorecard from "./pages/PublicScorecard";
 
 const App = () => (
   <ErrorBoundary>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <InstallPrompt />
-      <BrowserRouter>
-        <AuthProvider>
-          <Routes>
+    <Toaster />
+    <Sonner />
+    <InstallPrompt />
+    <BrowserRouter>
+      <AuthProvider>
+        <Routes>
               <Route path="/beta" element={<Beta />} />
               <Route path="/" element={<Landing />} />
               <Route path="/auth" element={<Auth />} />
@@ -69,7 +67,6 @@ const App = () => (
           </Routes>
         </AuthProvider>
       </BrowserRouter>
-    </TooltipProvider>
   </ErrorBoundary>
 );
 
