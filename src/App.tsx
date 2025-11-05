@@ -6,7 +6,6 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { InstallPrompt } from "@/components/pwa/InstallPrompt";
-import { useServiceWorkerUpdate } from "@/hooks/use-service-worker-update";
 import Landing from "./pages/Landing";
 import Beta from "./pages/Beta";
 import Offline from "./pages/Offline";
@@ -34,11 +33,8 @@ import EmailConfirmed from "./pages/EmailConfirmed";
 
 const queryClient = new QueryClient();
 
-const App = () => {
-  useServiceWorkerUpdate();
-  
-  return (
-    <ErrorBoundary>
+const App = () => (
+  <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
           <Toaster />
@@ -78,7 +74,6 @@ const App = () => {
       </TooltipProvider>
     </QueryClientProvider>
   </ErrorBoundary>
-  );
-};
+);
 
 export default App;
