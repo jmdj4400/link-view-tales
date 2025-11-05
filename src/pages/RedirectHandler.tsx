@@ -3,8 +3,10 @@ import { useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { hashUserAgent } from "@/lib/security-utils";
 import { Button } from "@/components/ui/button";
-import { ExternalLink } from "lucide-react";
+import { ExternalLink, Copy, Smartphone } from "lucide-react";
 import { logger } from "@/lib/logger";
+import { WebViewRecovery } from "@/lib/webview-recovery";
+import { toast } from "sonner";
 
 export default function RedirectHandler() {
   const { linkId } = useParams();
@@ -202,11 +204,22 @@ export default function RedirectHandler() {
         user_agent_hash: userAgentHash
       });
 
-      // If in-app browser, show fallback instead of direct redirect
+      // If in-app browser, attempt WebView recovery
       if (inAppBrowser) {
         fallbackUsed = true;
         setFallbackUrl(destUrl);
         setShowFallback(true);
+        
+        // Attempt automated recovery
+        const recovery = new WebViewRecovery(
+          linkId,
+          linkData.user_id,
+          destUrl,
+          browser,
+          device
+        );
+        
+        const recoverySuccess = await recovery.attemptRecovery();
         
         // Log redirect with fallback
         await supabase.from('redirects').insert({
@@ -214,7 +227,7 @@ export default function RedirectHandler() {
           referrer: document.referrer,
           browser,
           device,
-          success: true,
+          success: recoverySuccess,
           fallback_used: true,
           user_agent: ua
         });
@@ -248,29 +261,58 @@ export default function RedirectHandler() {
     }
   };
 
+  const handleCopyUrl = async () => {
+    if (!fallbackUrl) return;
+    
+    try {
+      await navigator.clipboard.writeText(fallbackUrl);
+      toast.success('Link copied to clipboard!');
+    } catch (error) {
+      toast.error('Failed to copy link');
+    }
+  };
+
   if (showFallback && fallbackUrl) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-background to-muted p-4">
         <div className="max-w-md w-full bg-card border rounded-lg shadow-lg p-8 text-center space-y-6">
+          <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto">
+            <Smartphone className="h-8 w-8 text-primary" />
+          </div>
+          
           <div className="space-y-2">
-            <h1 className="text-2xl font-bold">Open in Browser</h1>
+            <h1 className="text-2xl font-bold">Almost there!</h1>
             <p className="text-muted-foreground">
-              For the best experience, please open this link in your default browser.
+              We've detected you're using an in-app browser. Choose an option below to continue.
             </p>
           </div>
           
-          <Button 
-            size="lg" 
-            className="w-full"
-            onClick={() => window.location.href = fallbackUrl}
-          >
-            <ExternalLink className="mr-2 h-5 w-5" />
-            Open Link
-          </Button>
+          <div className="space-y-3">
+            <Button 
+              size="lg" 
+              className="w-full"
+              onClick={() => window.location.href = fallbackUrl}
+            >
+              <ExternalLink className="mr-2 h-5 w-5" />
+              Open in Browser
+            </Button>
+            
+            <Button 
+              size="lg" 
+              variant="outline"
+              className="w-full"
+              onClick={handleCopyUrl}
+            >
+              <Copy className="mr-2 h-5 w-5" />
+              Copy Link
+            </Button>
+          </div>
           
-          <p className="text-xs text-muted-foreground">
-            Click the button above to continue to your destination
-          </p>
+          <div className="pt-4 border-t">
+            <p className="text-xs text-muted-foreground">
+              🔒 Your link: <span className="font-mono text-foreground">{fallbackUrl.substring(0, 30)}...</span>
+            </p>
+          </div>
         </div>
       </div>
     );

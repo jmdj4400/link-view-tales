@@ -9,6 +9,8 @@ interface FlowStats {
   fallbacksUsed: number;
   conversions: number;
   flowIntegrityScore: number;
+  sessionsRecovered: number;
+  recoverySuccessRate: number;
   leaks: {
     webViewLost: number;
     redirectFailed: number;
@@ -53,6 +55,13 @@ export function FlowVisualization() {
         .eq('goals.user_id', user.user.id)
         .gte('ts', thirtyDaysAgo);
 
+      // Get recovery attempts
+      const { data: recoveryAttempts } = await supabase
+        .from('recovery_attempts')
+        .select('*')
+        .eq('user_id', user.user.id)
+        .gte('created_at', thirtyDaysAgo);
+
       if (redirects) {
         const totalClicks = clickCount || 0;
         const successfulRedirects = redirects.filter(r => r.success).length;
@@ -69,8 +78,15 @@ export function FlowVisualization() {
 
         const flowIntegrityScore = redirectSuccessRate * conversionRate * 100;
 
-        const webViewLost = fallbacksUsed;
-        const redirectFailed = redirects.filter(r => !r.success).length;
+        // Calculate recovery metrics
+        const totalRecoveryAttempts = recoveryAttempts?.length || 0;
+        const successfulRecoveries = recoveryAttempts?.filter(r => r.success).length || 0;
+        const recoverySuccessRate = totalRecoveryAttempts > 0 
+          ? (successfulRecoveries / totalRecoveryAttempts) * 100 
+          : 0;
+
+        const webViewLost = fallbacksUsed - successfulRecoveries;
+        const redirectFailed = redirects.filter(r => !r.success && !r.fallback_used).length;
         const goalNotReached = totalClicks - totalConversions;
 
         setStats({
@@ -79,6 +95,8 @@ export function FlowVisualization() {
           fallbacksUsed,
           conversions: totalConversions,
           flowIntegrityScore,
+          sessionsRecovered: successfulRecoveries,
+          recoverySuccessRate,
           leaks: {
             webViewLost,
             redirectFailed,
@@ -166,6 +184,24 @@ export function FlowVisualization() {
           </div>
         </div>
 
+        {/* Recovery Stats */}
+        <div className="border-t pt-4">
+          <h4 className="text-sm font-semibold mb-3 flex items-center gap-2">
+            <CheckCircle2 className="h-4 w-4 text-green-600" />
+            WebView Recovery
+          </h4>
+          <div className="grid gap-2">
+            <div className="flex items-center justify-between p-2 rounded bg-green-50 dark:bg-green-950/20">
+              <span className="text-sm">Sessions Recovered</span>
+              <span className="font-semibold text-green-600">{stats.sessionsRecovered}</span>
+            </div>
+            <div className="flex items-center justify-between p-2 rounded bg-blue-50 dark:bg-blue-950/20">
+              <span className="text-sm">Recovery Success Rate</span>
+              <span className="font-semibold text-blue-600">{stats.recoverySuccessRate.toFixed(1)}%</span>
+            </div>
+          </div>
+        </div>
+
         {/* Leak summary */}
         <div className="border-t pt-4">
           <h4 className="text-sm font-semibold mb-3 flex items-center gap-2">
@@ -174,7 +210,7 @@ export function FlowVisualization() {
           </h4>
           <div className="grid gap-2">
             <div className="flex items-center justify-between p-2 rounded bg-orange-50 dark:bg-orange-950/20">
-              <span className="text-sm">WebView Lost (Fallbacks)</span>
+              <span className="text-sm">WebView Lost (Failed Recovery)</span>
               <span className="font-semibold text-orange-600">{stats.leaks.webViewLost}</span>
             </div>
             <div className="flex items-center justify-between p-2 rounded bg-red-50 dark:bg-red-950/20">

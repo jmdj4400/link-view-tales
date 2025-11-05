@@ -848,6 +848,50 @@ export type Database = {
         }
         Relationships: []
       }
+      recovery_attempts: {
+        Row: {
+          browser: string
+          created_at: string
+          device: string
+          id: string
+          link_id: string | null
+          platform: string
+          strategy_used: string
+          success: boolean
+          user_id: string
+        }
+        Insert: {
+          browser: string
+          created_at?: string
+          device: string
+          id?: string
+          link_id?: string | null
+          platform: string
+          strategy_used: string
+          success?: boolean
+          user_id: string
+        }
+        Update: {
+          browser?: string
+          created_at?: string
+          device?: string
+          id?: string
+          link_id?: string | null
+          platform?: string
+          strategy_used?: string
+          success?: boolean
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "recovery_attempts_link_id_fkey"
+            columns: ["link_id"]
+            isOneToOne: false
+            referencedRelation: "links"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       redirects: {
         Row: {
           browser: string | null

@@ -4,10 +4,12 @@ import { Check, BarChart3, Link as LinkIcon, Zap, Palette, Share2, Sparkles, Tre
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { SEOHead } from "@/components/SEOHead";
+import { useAggregateRecoveryStats } from "@/components/analytics/AggregateRecoveryStats";
 
 export default function Landing() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const aggregateStats = useAggregateRecoveryStats();
 
   const plans = [
     {
@@ -92,7 +94,7 @@ export default function Landing() {
             <div className="max-w-2xl">
               <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-primary/5 border border-primary/10 rounded-full text-xs font-medium text-primary mb-6 animate-fade-in">
                 <Zap className="h-3.5 w-3.5" />
-                Traffic integrity: 97.6% • +312 sessions recovered
+                Traffic integrity: {aggregateStats.recoveryRate.toFixed(1)}% • +{aggregateStats.totalRecoveries} sessions recovered
               </div>
               <h2 id="hero-heading" className="text-5xl md:text-6xl font-heading font-bold leading-[1.1] tracking-tight mb-6 animate-fade-in">
                 See every social click, and what it becomes
@@ -128,17 +130,17 @@ export default function Landing() {
                   <CardHeader className="pb-4">
                     <div className="flex items-center justify-between">
                       <CardTitle className="text-sm font-medium text-muted-foreground">Flow integrity</CardTitle>
-                      <span className="text-2xl font-bold text-foreground">97.6%</span>
+                      <span className="text-2xl font-bold text-foreground">{aggregateStats.recoveryRate.toFixed(1)}%</span>
                     </div>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="space-y-2">
                       <div className="flex items-center justify-between text-sm">
                         <span className="text-muted-foreground">Redirect success</span>
-                        <span className="font-semibold">98.3%</span>
+                        <span className="font-semibold">{aggregateStats.redirectSuccessRate.toFixed(1)}%</span>
                       </div>
                       <div className="h-2 bg-muted rounded-full overflow-hidden">
-                        <div className="h-full bg-primary" style={{ width: '98.3%' }}></div>
+                        <div className="h-full bg-primary" style={{ width: `${aggregateStats.redirectSuccessRate}%` }}></div>
                       </div>
                     </div>
                     <div className="space-y-2">
@@ -153,7 +155,7 @@ export default function Landing() {
                     <div className="pt-3 border-t">
                       <div className="text-xs text-muted-foreground mb-2">This week</div>
                       <div className="flex items-baseline gap-2">
-                        <span className="text-3xl font-bold">312</span>
+                        <span className="text-3xl font-bold">{aggregateStats.totalRecoveries}</span>
                         <span className="text-sm text-muted-foreground">sessions recovered</span>
                       </div>
                     </div>
@@ -179,13 +181,13 @@ export default function Landing() {
             {[
               {
                 title: 'Redirect reliability',
-                value: '98.3%',
+                value: `${aggregateStats.redirectSuccessRate.toFixed(1)}%`,
                 description: 'Works inside Instagram, TikTok, and LinkedIn in-app browsers',
                 trend: '+2.1%'
               },
               {
                 title: 'Sessions recovered',
-                value: '312',
+                value: aggregateStats.totalRecoveries.toString(),
                 description: 'Traffic saved from WebView failures this week',
                 trend: '+47'
               },
