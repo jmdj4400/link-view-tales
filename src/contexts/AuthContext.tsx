@@ -1,7 +1,6 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
 import { User, Session } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabase-client";
-import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { logger } from "@/lib/logger";
 import { retrySupabaseFunction } from "@/lib/retry-utils";
@@ -38,7 +37,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [subscriptionStatus, setSubscriptionStatus] = useState<SubscriptionStatus | null>(null);
   const [lastCheckTime, setLastCheckTime] = useState<number>(0);
   const [isChecking, setIsChecking] = useState(false);
-  const navigate = useNavigate();
 
   const checkSubscription = async (currentSession: Session | null, force: boolean = false) => {
     if (!currentSession) {
@@ -161,7 +159,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signOut = async () => {
     await supabase.auth.signOut();
     setSubscriptionStatus(null);
-    navigate('/');
+    window.location.href = '/';
     toast.success('Signed out successfully');
   };
 
