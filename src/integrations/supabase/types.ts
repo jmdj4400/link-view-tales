@@ -1049,30 +1049,66 @@ export type Database = {
     Views: {
       public_profiles: {
         Row: {
+          accent_color: string | null
           avatar_url: string | null
+          background_color: string | null
+          background_image_url: string | null
+          background_pattern: string | null
           bio: string | null
+          body_font: string | null
+          button_style: string | null
+          card_style: string | null
           created_at: string | null
           handle: string | null
+          heading_font: string | null
           id: string | null
+          layout_style: string | null
           name: string | null
+          primary_color: string | null
+          secondary_color: string | null
+          text_color: string | null
           theme: string | null
         }
         Insert: {
+          accent_color?: string | null
           avatar_url?: string | null
+          background_color?: string | null
+          background_image_url?: string | null
+          background_pattern?: string | null
           bio?: string | null
+          body_font?: string | null
+          button_style?: string | null
+          card_style?: string | null
           created_at?: string | null
           handle?: string | null
+          heading_font?: string | null
           id?: string | null
+          layout_style?: string | null
           name?: string | null
+          primary_color?: string | null
+          secondary_color?: string | null
+          text_color?: string | null
           theme?: string | null
         }
         Update: {
+          accent_color?: string | null
           avatar_url?: string | null
+          background_color?: string | null
+          background_image_url?: string | null
+          background_pattern?: string | null
           bio?: string | null
+          body_font?: string | null
+          button_style?: string | null
+          card_style?: string | null
           created_at?: string | null
           handle?: string | null
+          heading_font?: string | null
           id?: string | null
+          layout_style?: string | null
           name?: string | null
+          primary_color?: string | null
+          secondary_color?: string | null
+          text_color?: string | null
           theme?: string | null
         }
         Relationships: []
