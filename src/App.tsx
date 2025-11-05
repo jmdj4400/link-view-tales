@@ -32,11 +32,11 @@ import PublicScorecard from "./pages/PublicScorecard";
 
 const App = () => (
   <ErrorBoundary>
-    <Toaster />
-    <Sonner />
-    <InstallPrompt />
     <BrowserRouter>
       <AuthProvider>
+        <Toaster />
+        <Sonner />
+        <InstallPrompt />
         <Routes>
               <Route path="/beta" element={<Beta />} />
               <Route path="/" element={<Landing />} />
@@ -64,9 +64,9 @@ const App = () => (
               <Route path="/:handle" element={<PublicProfile />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
-          </Routes>
-        </AuthProvider>
-      </BrowserRouter>
+        </Routes>
+      </AuthProvider>
+    </BrowserRouter>
   </ErrorBoundary>
 );
 
