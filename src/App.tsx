@@ -43,48 +43,50 @@ const queryClient = new QueryClient({
   },
 });
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <ErrorBoundary>
-    <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
-      <BrowserRouter>
-        <AuthProvider>
-          <Toaster />
-          <Sonner />
-          <InstallPrompt />
-          <Routes>
-              <Route path="/beta" element={<Beta />} />
-              <Route path="/" element={<Landing />} />
-              <Route path="/auth" element={<Auth />} />
-              <Route path="/verify-email" element={<VerifyEmail />} />
-              <Route path="/email-confirmed" element={<EmailConfirmed />} />
-              <Route path="/onboarding" element={<Onboarding />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/analytics" element={<ProfileAnalytics />} />
-              <Route path="/settings/profile" element={<ProfileSettings />} />
-              <Route path="/settings/links" element={<LinksSettings />} />
-              <Route path="/settings/theme" element={<ThemeSettings />} />
-              <Route path="/settings/leads" element={<LeadsManagement />} />
-              <Route path="/settings/conversions" element={<ConversionTracking />} />
-              <Route path="/insights" element={<Insights />} />
-              <Route path="/billing" element={<Billing />} />
-              <Route path="/terms" element={<TermsOfService />} />
-              <Route path="/privacy" element={<PrivacyPolicy />} />
-              <Route path="/cookies" element={<CookiePolicy />} />
-              <Route path="/help" element={<HelpCenter />} />
-              <Route path="/contact" element={<ContactSupport />} />
-              <Route path="/offline" element={<Offline />} />
-              <Route path="/r/:linkId" element={<RedirectHandler />} />
-              <Route path="/:handle/scorecard" element={<PublicScorecard />} />
-              <Route path="/:handle" element={<PublicProfile />} />
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-              <Route path="*" element={<NotFound />} />
-          </Routes>
-        </AuthProvider>
-      </BrowserRouter>
-    </ThemeProvider>
-  </ErrorBoundary>
-  </QueryClientProvider>
-);
+function App() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <ErrorBoundary>
+        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
+          <BrowserRouter>
+            <AuthProvider>
+              <Toaster />
+              <Sonner />
+              <InstallPrompt />
+              <Routes>
+                <Route path="/beta" element={<Beta />} />
+                <Route path="/" element={<Landing />} />
+                <Route path="/auth" element={<Auth />} />
+                <Route path="/verify-email" element={<VerifyEmail />} />
+                <Route path="/email-confirmed" element={<EmailConfirmed />} />
+                <Route path="/onboarding" element={<Onboarding />} />
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/analytics" element={<ProfileAnalytics />} />
+                <Route path="/settings/profile" element={<ProfileSettings />} />
+                <Route path="/settings/links" element={<LinksSettings />} />
+                <Route path="/settings/theme" element={<ThemeSettings />} />
+                <Route path="/settings/leads" element={<LeadsManagement />} />
+                <Route path="/settings/conversions" element={<ConversionTracking />} />
+                <Route path="/insights" element={<Insights />} />
+                <Route path="/billing" element={<Billing />} />
+                <Route path="/terms" element={<TermsOfService />} />
+                <Route path="/privacy" element={<PrivacyPolicy />} />
+                <Route path="/cookies" element={<CookiePolicy />} />
+                <Route path="/help" element={<HelpCenter />} />
+                <Route path="/contact" element={<ContactSupport />} />
+                <Route path="/offline" element={<Offline />} />
+                <Route path="/r/:linkId" element={<RedirectHandler />} />
+                <Route path="/:handle/scorecard" element={<PublicScorecard />} />
+                <Route path="/:handle" element={<PublicProfile />} />
+                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </AuthProvider>
+          </BrowserRouter>
+        </ThemeProvider>
+      </ErrorBoundary>
+    </QueryClientProvider>
+  );
+}
 
 export default App;
