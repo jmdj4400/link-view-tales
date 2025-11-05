@@ -5,3 +5,12 @@ verify_jwt = false
 
 [functions.send-weekly-report]
 verify_jwt = false
+
+[functions.firewall-decision]
+verify_jwt = false
+
+[functions.incident-detector]
+verify_jwt = false
+
+[functions.scorecard-generate]
+verify_jwt = false

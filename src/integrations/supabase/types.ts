@@ -947,6 +947,7 @@ export type Database = {
           firewall_strategy: string | null
           id: string
           link_id: string | null
+          platform: string | null
           referrer: string | null
           risk_score: number | null
           success: boolean | null
@@ -962,6 +963,7 @@ export type Database = {
           firewall_strategy?: string | null
           id?: string
           link_id?: string | null
+          platform?: string | null
           referrer?: string | null
           risk_score?: number | null
           success?: boolean | null
@@ -977,6 +979,7 @@ export type Database = {
           firewall_strategy?: string | null
           id?: string
           link_id?: string | null
+          platform?: string | null
           referrer?: string | null
           risk_score?: number | null
           success?: boolean | null
