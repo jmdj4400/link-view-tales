@@ -335,11 +335,11 @@ export default function Dashboard() {
         {/* Header */}
         <div className="mb-8 flex items-center justify-between">
           <div>
-            <h2 className="text-3xl font-heading font-semibold mb-2">
+            <h2 className="text-2xl font-heading font-bold mb-1">
               Dashboard
             </h2>
-            <p className="text-muted-foreground">
-              Your analytics overview
+            <p className="text-sm text-muted-foreground">
+              Traffic overview and performance metrics
             </p>
           </div>
           <Button
@@ -349,7 +349,7 @@ export default function Dashboard() {
             disabled={isLoadingAnalytics || chartData.length === 0}
           >
             <Download className="h-4 w-4 mr-2" />
-            Export CSV
+            Export data
           </Button>
         </div>
 
@@ -359,17 +359,17 @@ export default function Dashboard() {
         </div>
 
         {/* Metrics Cards */}
-        <div className="grid md:grid-cols-3 gap-6 mb-8">
+        <div className="grid md:grid-cols-3 gap-5 mb-8">
           {isLoadingAnalytics ? (
             <>
               {[1, 2, 3].map((i) => (
                 <Card key={i}>
                   <CardHeader className="pb-3">
-                    <Skeleton className="h-4 w-32" />
+                    <Skeleton className="h-3 w-24" />
                   </CardHeader>
                   <CardContent>
-                    <Skeleton className="h-10 w-24 mb-2" />
-                    <Skeleton className="h-4 w-40" />
+                    <Skeleton className="h-8 w-20 mb-1" />
+                    <Skeleton className="h-3 w-32" />
                   </CardContent>
                 </Card>
               ))}
@@ -378,39 +378,35 @@ export default function Dashboard() {
             [
               {
                 icon: Eye,
-                label: "Page Views",
+                label: "Page views",
                 value: metrics.views,
-                subtitle: "Total profile visits",
-                tooltip: "Number of times your profile page was viewed"
+                subtitle: "Profile impressions"
               },
               {
                 icon: MousePointerClick,
-                label: "Link Clicks",
+                label: "Link clicks",
                 value: metrics.clicks,
-                subtitle: "Total link interactions",
-                tooltip: "Number of times your links were clicked"
+                subtitle: "Outbound engagements"
               },
               {
                 icon: TrendingUp,
-                label: "Click-Through Rate",
+                label: "Click-through rate",
                 value: `${metrics.ctr}%`,
-                subtitle: "Engagement ratio",
-                tooltip: "Percentage of visitors who clicked at least one link (Clicks ÷ Views × 100)"
+                subtitle: "Engagement efficiency"
               },
             ].map((metric, index) => (
-              <Card key={index} className="transition-all hover:shadow-elegant hover-scale border-2">
-                <CardHeader className="pb-3">
-                  <CardDescription className="flex items-center gap-2 text-sm font-medium">
-                    <metric.icon className="h-4 w-4" />
+              <Card key={index} className="border hover:border-primary/30 transition-colors">
+                <CardHeader className="flex flex-row items-center justify-between pb-3">
+                  <CardTitle className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
                     {metric.label}
-                    <InfoTooltip content={metric.tooltip} />
-                  </CardDescription>
+                  </CardTitle>
+                  <metric.icon className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-4xl font-heading font-bold bg-gradient-to-br from-foreground to-foreground/60 bg-clip-text text-transparent">
+                  <div className="text-2xl font-bold mb-1">
                     {typeof metric.value === 'number' ? metric.value.toLocaleString() : metric.value}
                   </div>
-                  <p className="text-sm text-muted-foreground mt-2">{metric.subtitle}</p>
+                  <p className="text-xs text-muted-foreground">{metric.subtitle}</p>
                 </CardContent>
               </Card>
             ))
@@ -544,42 +540,48 @@ export default function Dashboard() {
             </CardContent>
           </Card>
 
-          <Card className="border-2">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Palette className="h-5 w-5" />
-                Theme & Design
-              </CardTitle>
-              <CardDescription>
-                Customize your profile appearance
-              </CardDescription>
+          <Card className="border hover:border-primary/30 transition-colors">
+            <CardHeader className="pb-3">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-primary/10 rounded-lg">
+                  <Palette className="h-4 w-4 text-primary" />
+                </div>
+                <div>
+                  <CardTitle className="text-base font-semibold">Theme & design</CardTitle>
+                  <CardDescription className="text-xs">Customize appearance</CardDescription>
+                </div>
+              </div>
             </CardHeader>
             <CardContent>
               <Button
                 className="w-full"
                 variant="outline"
+                size="sm"
                 onClick={() => navigate('/settings/theme')}
               >
-                Customize Theme
-                <ArrowRight className="h-4 w-4 ml-2" />
+                Customize theme
+                <ArrowRight className="h-3.5 w-3.5 ml-2" />
               </Button>
             </CardContent>
           </Card>
 
-          <Card className="border-2">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Target className="h-5 w-5" />
-                Conversions
-              </CardTitle>
-              <CardDescription>
-                Track goals and conversions
-              </CardDescription>
+          <Card className="border hover:border-primary/30 transition-colors">
+            <CardHeader className="pb-3">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-primary/10 rounded-lg">
+                  <Target className="h-4 w-4 text-primary" />
+                </div>
+                <div>
+                  <CardTitle className="text-base font-semibold">Conversions</CardTitle>
+                  <CardDescription className="text-xs">Track goals and conversions</CardDescription>
+                </div>
+              </div>
             </CardHeader>
             <CardContent>
               <Button
                 className="w-full"
                 variant="outline"
+                size="sm"
                 onClick={() => navigate('/settings/conversions')}
               >
                 Manage Goals
@@ -588,24 +590,27 @@ export default function Dashboard() {
             </CardContent>
           </Card>
 
-          <Card className="border-2">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <CreditCard className="h-5 w-5" />
-                Subscription
-              </CardTitle>
-              <CardDescription>
-                <span className="font-medium">Current plan: {getPlanName()}</span>
-              </CardDescription>
+          <Card className="border hover:border-primary/30 transition-colors">
+            <CardHeader className="pb-3">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-primary/10 rounded-lg">
+                  <CreditCard className="h-4 w-4 text-primary" />
+                </div>
+                <div>
+                  <CardTitle className="text-base font-semibold">Subscription</CardTitle>
+                  <CardDescription className="text-xs">Current plan: {getPlanName()}</CardDescription>
+                </div>
+              </div>
             </CardHeader>
             <CardContent>
               <Button
                 className="w-full"
                 variant="outline"
+                size="sm"
                 onClick={() => navigate('/billing')}
               >
-                Manage Billing
-                <ArrowRight className="h-4 w-4 ml-2" />
+                Manage billing
+                <ArrowRight className="h-3.5 w-3.5 ml-2" />
               </Button>
             </CardContent>
           </Card>

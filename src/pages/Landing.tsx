@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Check, BarChart3, Link as LinkIcon, Zap, Palette, Share2, Sparkles, TrendingUp, ArrowRight } from "lucide-react";
+import { Check, BarChart3, Link as LinkIcon, Zap, Palette, Share2, Sparkles, TrendingUp, ArrowRight, Target } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -89,57 +89,76 @@ export default function Landing() {
         </nav>
 
         {/* Hero Section */}
-        <section className="container mx-auto px-6 pt-20 pb-16 max-w-7xl" aria-labelledby="hero-heading">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+        <section className="container mx-auto px-6 pt-24 pb-20 max-w-7xl" aria-labelledby="hero-heading">
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
             <div className="max-w-2xl">
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 border border-primary/20 rounded-full text-sm font-medium text-primary mb-6 animate-fade-in">
-                <Zap className="h-4 w-4" />
-                Complete setup in 60s • Get Pro free
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-primary/5 border border-primary/10 rounded-full text-xs font-medium text-primary mb-6 animate-fade-in">
+                <Zap className="h-3.5 w-3.5" />
+                Traffic integrity: 97.6% • +312 sessions recovered
               </div>
-              <h2 id="hero-heading" className="text-5xl md:text-6xl lg:text-7xl font-heading font-bold leading-[1.05] tracking-tight mb-6 animate-fade-in">
-                Social Traffic Intelligence — ensuring every click counts
+              <h2 id="hero-heading" className="text-5xl md:text-6xl font-heading font-bold leading-[1.1] tracking-tight mb-6 animate-fade-in">
+                See every social click, and what it becomes
               </h2>
-              <p className="text-xl text-muted-foreground mb-8 leading-relaxed animate-fade-in">
-                Stop losing traffic in app-browser black holes. Benchmark your performance across every platform. Let AI repair and optimize your social traffic flow.
+              <p className="text-lg text-muted-foreground mb-8 leading-relaxed animate-fade-in">
+                Reliable redirects, conversion tracking, and actionable insights — a cockpit for your social traffic.
               </p>
-              <div className="flex flex-wrap gap-4 animate-fade-in">
+              <div className="flex flex-wrap gap-3 animate-fade-in">
                 <Button 
                   size="lg" 
-                  onClick={() => navigate('/auth')} 
-                  className="text-base shadow-elegant hover:shadow-elegant-xl transition-all"
+                  onClick={() => navigate('/auth')}
                 >
-                  Start Free Trial
+                  Start free
                 </Button>
-                <Button size="lg" variant="outline" onClick={() => window.scrollTo({ top: document.getElementById('how-it-works')?.offsetTop || 0, behavior: 'smooth' })} className="text-base">
-                  See How It Works
+                <Button size="lg" variant="outline" onClick={() => window.scrollTo({ top: document.getElementById('insights')?.offsetTop || 0, behavior: 'smooth' })}>
+                  View insights
                 </Button>
               </div>
-              <p className="text-sm text-muted-foreground mt-6 animate-fade-in">
-                No credit card required • Setup in 60 seconds • 1 month Pro trial
-              </p>
+              <div className="flex items-center gap-6 mt-8 text-sm text-muted-foreground animate-fade-in">
+                <div className="flex items-center gap-1.5">
+                  <div className="w-1.5 h-1.5 rounded-full bg-primary"></div>
+                  <span>No credit card</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <div className="w-1.5 h-1.5 rounded-full bg-primary"></div>
+                  <span>60s setup</span>
+                </div>
+              </div>
             </div>
             <div className="hidden lg:block">
               <div className="relative">
-                <div className="absolute inset-0 gradient-primary opacity-20 blur-3xl rounded-full"></div>
-                <Card className="relative shadow-elegant-xl border-2 hover-scale">
-                  <CardHeader>
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="flex items-center gap-2">
-                        <div className="w-10 h-10 gradient-primary rounded-xl"></div>
-                        <div>
-                          <div className="font-semibold">@creator</div>
-                          <div className="text-sm text-muted-foreground">Creator & Designer</div>
-                        </div>
-                      </div>
+                <Card className="relative shadow-lg border">
+                  <CardHeader className="pb-4">
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="text-sm font-medium text-muted-foreground">Flow integrity</CardTitle>
+                      <span className="text-2xl font-bold text-foreground">97.6%</span>
                     </div>
                   </CardHeader>
-                  <CardContent className="space-y-3">
-                    {['Portfolio', 'YouTube Channel', 'Newsletter'].map((item, i) => (
-                      <div key={i} className="p-4 border rounded-lg hover:border-primary transition-colors cursor-pointer">
-                        <div className="font-medium">{item}</div>
-                        <div className="text-sm text-muted-foreground mt-1">View {item.toLowerCase()}</div>
+                  <CardContent className="space-y-4">
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-muted-foreground">Redirect success</span>
+                        <span className="font-semibold">98.3%</span>
                       </div>
-                    ))}
+                      <div className="h-2 bg-muted rounded-full overflow-hidden">
+                        <div className="h-full bg-primary" style={{ width: '98.3%' }}></div>
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-muted-foreground">Click → Conversion</span>
+                        <span className="font-semibold text-primary">+0.6%</span>
+                      </div>
+                      <div className="h-2 bg-muted rounded-full overflow-hidden">
+                        <div className="h-full bg-primary" style={{ width: '23%' }}></div>
+                      </div>
+                    </div>
+                    <div className="pt-3 border-t">
+                      <div className="text-xs text-muted-foreground mb-2">This week</div>
+                      <div className="flex items-baseline gap-2">
+                        <span className="text-3xl font-bold">312</span>
+                        <span className="text-sm text-muted-foreground">sessions recovered</span>
+                      </div>
+                    </div>
                   </CardContent>
                 </Card>
               </div>
@@ -147,47 +166,48 @@ export default function Landing() {
           </div>
         </section>
 
-        {/* How It Works */}
-        <section id="how-it-works" className="container mx-auto px-6 py-24 max-w-7xl border-t" aria-labelledby="how-it-works-heading">
-          <div className="max-w-2xl mb-16 text-center mx-auto">
-            <h2 id="how-it-works-heading" className="text-4xl md:text-5xl font-heading font-bold mb-4 leading-tight">
-              Setup in 3 simple steps
+        {/* Insights Section */}
+        <section id="insights" className="container mx-auto px-6 py-24 max-w-7xl border-t" aria-labelledby="insights-heading">
+          <div className="max-w-2xl mb-12 mx-auto text-center">
+            <h2 id="insights-heading" className="text-3xl md:text-4xl font-heading font-bold mb-3 leading-tight">
+              Professional social traffic intelligence
             </h2>
-            <p className="text-lg text-muted-foreground">
-              Get started in less than 60 seconds
+            <p className="text-base text-muted-foreground">
+              Built for creators and teams who need reliable data and actionable insights
             </p>
           </div>
           
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-3 gap-6">
             {[
               {
-                step: '1',
-                title: 'Sign up & share your story',
-                description: 'Create your account and add a short bio to introduce yourself to visitors.',
-                icon: '✍️'
+                title: 'Redirect reliability',
+                value: '98.3%',
+                description: 'Works inside Instagram, TikTok, and LinkedIn in-app browsers',
+                trend: '+2.1%'
               },
               {
-                step: '2',
-                title: 'Add your first link',
-                description: 'Add your most important link. You can add unlimited links later.',
-                icon: '🔗'
+                title: 'Sessions recovered',
+                value: '312',
+                description: 'Traffic saved from WebView failures this week',
+                trend: '+47'
               },
               {
-                step: '3',
-                title: 'Share & track',
-                description: 'Get your unique LinkPeek URL and watch real-time analytics roll in.',
-                icon: '📊'
+                title: 'Click → conversion rate',
+                value: '2.4%',
+                description: 'End-to-end attribution from social to goal completion',
+                trend: '+0.6%'
               }
-            ].map((item) => (
-              <Card key={item.step} className="relative overflow-hidden border-2 hover:border-primary transition-all hover-scale">
-                <div className="absolute top-0 right-0 w-32 h-32 gradient-primary opacity-5 rounded-full -mr-16 -mt-16"></div>
-                <CardHeader>
-                  <div className="text-5xl mb-4">{item.icon}</div>
-                  <div className="text-sm font-bold text-primary mb-2">STEP {item.step}</div>
-                  <CardTitle className="text-2xl font-heading">{item.title}</CardTitle>
+            ].map((item, i) => (
+              <Card key={i} className="border hover:border-primary/30 transition-colors">
+                <CardHeader className="pb-3">
+                  <div className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{item.title}</div>
                 </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground leading-relaxed">
+                <CardContent className="space-y-2">
+                  <div className="flex items-baseline gap-2">
+                    <div className="text-3xl font-bold">{item.value}</div>
+                    <div className="text-sm font-medium text-primary">{item.trend}</div>
+                  </div>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
                     {item.description}
                   </p>
                 </CardContent>
@@ -198,64 +218,64 @@ export default function Landing() {
 
         {/* Features */}
         <section className="container mx-auto px-6 py-24 max-w-7xl border-t" aria-labelledby="features-heading">
-          <div className="max-w-2xl mb-16 text-center mx-auto">
-            <h2 id="features-heading" className="text-4xl md:text-5xl font-heading font-bold mb-4 leading-tight">
-              Analytics-first design
+          <div className="max-w-2xl mb-12 text-center mx-auto">
+            <h2 id="features-heading" className="text-3xl md:text-4xl font-heading font-bold mb-3 leading-tight">
+              Data-centric features
             </h2>
-            <p className="text-lg text-muted-foreground">
-              Understand your audience with powerful, privacy-first analytics
+            <p className="text-base text-muted-foreground">
+              Everything you need to understand and optimize your social traffic
             </p>
           </div>
         
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
           {[
             {
+              icon: TrendingUp,
+              title: 'Flow visualization',
+              description: 'See exactly where sessions drop between click and conversion'
+            },
+            {
               icon: BarChart3,
-              title: 'Real-time analytics',
-              description: 'Track every click, view, and interaction as it happens.'
+              title: 'Channel benchmarks',
+              description: 'Compare your performance vs network averages per platform'
             },
             {
-              icon: Share2,
-              title: 'UTM tracking',
-              description: 'Add campaign parameters and track traffic sources.'
-            },
-            {
-              icon: Palette,
-              title: 'Custom branding',
-              description: 'Match your brand with custom themes and domains.'
-            },
-            {
-              icon: Check,
-              title: 'Privacy-first',
-              description: 'GDPR compliant. No cookies. No tracking pixels.'
+              icon: Sparkles,
+              title: 'Smart recommendations',
+              description: 'AI-powered optimization suggestions based on your data'
             },
             {
               icon: Zap,
-              title: 'Click limits',
-              description: 'Set maximum clicks for time-sensitive campaigns.'
+              title: 'WebView recovery',
+              description: 'Automatic fallback for in-app browser redirect failures'
+            },
+            {
+              icon: Target,
+              title: 'Conversion tracking',
+              description: 'Pixel and webhook-based goal tracking with attribution'
+            },
+            {
+              icon: Share2,
+              title: 'UTM builder',
+              description: 'Campaign parameter management and source tracking'
             },
             {
               icon: LinkIcon,
               title: 'QR codes',
-              description: 'Generate QR codes for offline-to-online tracking.'
+              description: 'Generate codes for offline-to-online tracking'
             },
             {
-              icon: BarChart3,
-              title: 'Device insights',
-              description: 'See which devices your audience uses most.'
-            },
-            {
-              icon: TrendingUp,
-              title: 'Export data',
-              description: 'Download your analytics as CSV for deeper analysis.'
+              icon: Check,
+              title: 'Privacy-first',
+              description: 'GDPR compliant with no cookies or tracking pixels'
             }
           ].map((feature, index) => (
-            <Card key={index} className="border-2 hover:border-primary transition-all hover-scale">
-              <CardHeader>
-                <div className="w-12 h-12 gradient-primary rounded-xl flex items-center justify-center mb-3">
-                  <feature.icon className="h-6 w-6 text-white" />
+            <Card key={index} className="border hover:border-primary/30 transition-colors">
+              <CardHeader className="pb-3">
+                <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center mb-3">
+                  <feature.icon className="h-5 w-5 text-primary" />
                 </div>
-                <CardTitle className="text-xl font-heading">{feature.title}</CardTitle>
+                <CardTitle className="text-base font-semibold">{feature.title}</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground text-sm leading-relaxed">
@@ -267,32 +287,36 @@ export default function Landing() {
         </div>
         </section>
 
-        {/* Beta Signup CTA */}
-        <section className="container mx-auto px-6 py-24 max-w-7xl border-t" aria-labelledby="beta-heading">
+        {/* CTA Section */}
+        <section className="container mx-auto px-6 py-24 max-w-7xl border-t" aria-labelledby="cta-heading">
           <div className="relative overflow-hidden">
-            <div className="absolute inset-0 gradient-primary opacity-5"></div>
-            <Card className="relative border-2 border-primary/50 shadow-elegant-xl">
+            <Card className="relative border shadow-lg">
               <CardHeader className="text-center pb-4">
-                <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 border border-primary/20 rounded-full text-sm font-medium text-primary mx-auto mb-4">
-                  <Sparkles className="h-4 w-4" />
-                  Limited Beta Access
-                </div>
-                <CardTitle className="text-3xl md:text-4xl font-heading font-bold mb-4">
-                  Join the beta
+                <CardTitle className="text-2xl md:text-3xl font-heading font-bold mb-3">
+                  Start tracking what matters
                 </CardTitle>
-                <CardDescription className="text-lg max-w-2xl mx-auto">
-                  Be among the first to experience LinkPeek. Complete setup in under 60 seconds and get 1 month Pro free.
+                <CardDescription className="text-base max-w-xl mx-auto">
+                  Join creators and teams using LinkPeek to understand and optimize their social traffic
                 </CardDescription>
               </CardHeader>
-              <CardContent className="flex justify-center pb-8">
-                <Button 
-                  size="lg" 
-                  onClick={() => navigate('/auth')} 
-                  className="text-lg px-8 gradient-primary shadow-elegant"
-                >
-                  Get Early Access
-                  <ArrowRight className="h-5 w-5 ml-2" />
-                </Button>
+              <CardContent className="flex flex-col items-center gap-4 pb-8">
+                <div className="flex flex-wrap gap-3 justify-center">
+                  <Button 
+                    size="lg" 
+                    onClick={() => navigate('/auth')}
+                  >
+                    Start free
+                    <ArrowRight className="h-4 w-4 ml-2" />
+                  </Button>
+                  <Button size="lg" variant="outline" onClick={() => navigate('/auth')}>
+                    View demo
+                  </Button>
+                </div>
+                <div className="flex items-center gap-6 text-xs text-muted-foreground">
+                  <span>No credit card required</span>
+                  <span>•</span>
+                  <span>60-second setup</span>
+                </div>
               </CardContent>
             </Card>
         </div>
