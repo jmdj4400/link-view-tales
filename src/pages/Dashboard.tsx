@@ -624,6 +624,14 @@ export default function Dashboard() {
             <div className="mb-8">
               <CountryStats countryStats={countryStats} />
             </div>
+
+            {/* Pro Features - Traffic Firewall & Incident Monitoring */}
+            {isPaidUser() && (
+              <div className="grid lg:grid-cols-2 gap-6 mb-8">
+                <FirewallStats />
+                <IncidentRadar />
+              </div>
+            )}
           </>
         )}
 
