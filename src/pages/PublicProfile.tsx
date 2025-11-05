@@ -49,8 +49,8 @@ export default function PublicProfile() {
     const { data: profileData, error: profileError } = await supabase
       .from('public_profiles')
       .select('id, name, handle, bio, avatar_url, primary_color, secondary_color, background_color, text_color, accent_color, heading_font, body_font, layout_style, button_style, card_style')
-      .ilike('handle', handle)
-      .single();
+      .eq('handle', handle?.toLowerCase())
+      .maybeSingle();
 
     if (profileError || !profileData) {
       setLoading(false);
@@ -88,8 +88,8 @@ export default function PublicProfile() {
     const { data: profileData } = await supabase
       .from('public_profiles')
       .select('id')
-      .ilike('handle', handle)
-      .single();
+      .eq('handle', handle?.toLowerCase())
+      .maybeSingle();
 
     if (profileData) {
       const userAgentHash = await hashUserAgent(navigator.userAgent);
@@ -106,8 +106,8 @@ export default function PublicProfile() {
     const { data: profileData } = await supabase
       .from('public_profiles')
       .select('id')
-      .ilike('handle', handle)
-      .single();
+      .eq('handle', handle?.toLowerCase())
+      .maybeSingle();
 
     if (profileData) {
       const userAgentHash = await hashUserAgent(navigator.userAgent);
