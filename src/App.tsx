@@ -13,6 +13,7 @@ import Onboarding from "./pages/Onboarding";
 import ProfileSettings from "./pages/ProfileSettings";
 import LinksSettings from "./pages/LinksSettings";
 import ThemeSettings from "./pages/ThemeSettings";
+import LeadsManagement from "./pages/LeadsManagement";
 import Billing from "./pages/Billing";
 import PublicProfile from "./pages/PublicProfile";
 import RedirectHandler from "./pages/RedirectHandler";
@@ -42,6 +43,7 @@ const App = () => (
             <Route path="/settings/profile" element={<ProfileSettings />} />
             <Route path="/settings/links" element={<LinksSettings />} />
             <Route path="/settings/theme" element={<ThemeSettings />} />
+            <Route path="/settings/leads" element={<LeadsManagement />} />
             <Route path="/billing" element={<Billing />} />
             <Route path="/terms" element={<TermsOfService />} />
             <Route path="/privacy" element={<PrivacyPolicy />} />

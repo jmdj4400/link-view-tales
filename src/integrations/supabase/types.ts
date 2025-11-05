@@ -157,6 +157,113 @@ export type Database = {
           },
         ]
       }
+      lead_forms: {
+        Row: {
+          button_text: string | null
+          collect_message: boolean | null
+          collect_name: boolean | null
+          collect_phone: boolean | null
+          created_at: string | null
+          custom_fields: Json | null
+          description: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          redirect_url: string | null
+          send_confirmation_email: boolean | null
+          submission_count: number | null
+          success_message: string | null
+          title: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          button_text?: string | null
+          collect_message?: boolean | null
+          collect_name?: boolean | null
+          collect_phone?: boolean | null
+          created_at?: string | null
+          custom_fields?: Json | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          redirect_url?: string | null
+          send_confirmation_email?: boolean | null
+          submission_count?: number | null
+          success_message?: string | null
+          title: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          button_text?: string | null
+          collect_message?: boolean | null
+          collect_name?: boolean | null
+          collect_phone?: boolean | null
+          created_at?: string | null
+          custom_fields?: Json | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          redirect_url?: string | null
+          send_confirmation_email?: boolean | null
+          submission_count?: number | null
+          success_message?: string | null
+          title?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      leads: {
+        Row: {
+          created_at: string | null
+          email: string
+          form_id: string | null
+          id: string
+          message: string | null
+          metadata: Json | null
+          name: string | null
+          phone: string | null
+          source: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          email: string
+          form_id?: string | null
+          id?: string
+          message?: string | null
+          metadata?: Json | null
+          name?: string | null
+          phone?: string | null
+          source?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          email?: string
+          form_id?: string | null
+          id?: string
+          message?: string | null
+          metadata?: Json | null
+          name?: string | null
+          phone?: string | null
+          source?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "leads_form_id_fkey"
+            columns: ["form_id"]
+            isOneToOne: false
+            referencedRelation: "lead_forms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       link_categories: {
         Row: {
           color: string | null
