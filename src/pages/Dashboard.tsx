@@ -21,6 +21,7 @@ import { InfoTooltip } from "@/components/ui/info-tooltip";
 import { ProfileCompleteness } from "@/components/profile/ProfileCompleteness";
 import { SetupBanner } from "@/components/profile/SetupBanner";
 import { getDeviceType, getBrowserName, convertToCSV, downloadCSV, formatAnalyticsForCSV } from "@/lib/analytics-utils";
+import { logger } from "@/lib/logger";
 
 export default function Dashboard() {
   const { user, signOut, loading, subscriptionStatus, refreshSubscription } = useAuth();
@@ -113,7 +114,9 @@ export default function Dashboard() {
       .lte('created_at', dateRange.to.toISOString());
 
     if (eventsError) {
-      console.error('Error fetching events:', eventsError);
+      logger.error('Error fetching events', eventsError);
+      toast.error('Failed to load analytics data');
+      setIsLoadingAnalytics(false);
       return;
     }
 
@@ -311,8 +314,8 @@ export default function Dashboard() {
       
       toast.success('Analytics exported successfully');
     } catch (error) {
+      logger.error('Failed to export analytics', error);
       toast.error('Failed to export analytics');
-      console.error('Export error:', error);
     }
   };
 

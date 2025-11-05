@@ -41,8 +41,8 @@ export default function Auth() {
       toast.error(error.message);
       localStorage.removeItem('challenge_start_time');
     } else {
-      toast.success("Welcome! Let's set up your profile");
-      navigate('/onboarding');
+      toast.success("Please check your email to verify your account");
+      navigate('/verify-email', { state: { email: signUpData.email } });
     }
     setIsLoading(false);
   };

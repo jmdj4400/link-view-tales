@@ -14,6 +14,7 @@ import { CelebrationModal } from "@/components/onboarding/CelebrationModal";
 import { InstagramSetupGuide } from "@/components/onboarding/InstagramSetupGuide";
 import { SEOHead } from "@/components/SEOHead";
 import { PageLoader } from "@/components/ui/loading-spinner";
+import { logger } from "@/lib/logger";
 
 export default function Onboarding() {
   const { user, loading } = useAuth();
@@ -103,7 +104,7 @@ export default function Onboarding() {
       });
 
       if (trialError) {
-        console.error('Failed to grant trial:', trialError);
+        logger.error('Failed to grant trial', trialError);
       }
       setShowCelebration(true);
     }

@@ -31,6 +31,7 @@ import { ProfileQRDialog } from "@/components/profile/ProfileQRDialog";
 import { ReliabilityMetrics } from "@/components/analytics/ReliabilityMetrics";
 import { ConversionMetrics } from "@/components/analytics/ConversionMetrics";
 import { PageHeader } from "@/components/ui/page-header";
+import { logger } from "@/lib/logger";
 
 export default function ProfileAnalytics() {
   const { user, loading } = useAuth();
@@ -93,7 +94,8 @@ export default function ProfileAnalytics() {
       .lte('created_at', dateRange.to.toISOString());
 
     if (eventsError) {
-      console.error('Error fetching events:', eventsError);
+      logger.error('Error fetching profile analytics events', eventsError);
+      toast.error('Failed to load analytics data');
       setIsLoadingAnalytics(false);
       return;
     }
@@ -269,8 +271,8 @@ export default function ProfileAnalytics() {
       downloadCSV(`profile-analytics-${dateStr}.csv`, overviewCSV);
       toast.success('Analytics exported successfully');
     } catch (error) {
+      logger.error('Failed to export profile analytics', error);
       toast.error('Failed to export analytics');
-      console.error('Export error:', error);
     }
   };
 

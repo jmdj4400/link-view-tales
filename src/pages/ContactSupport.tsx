@@ -13,6 +13,7 @@ import { z } from "zod";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { logger } from "@/lib/logger";
 
 const contactSchema = z.object({
   name: z.string()
@@ -69,7 +70,7 @@ const ContactSupport = () => {
       
       reset();
     } catch (error: any) {
-      console.error("Error sending message:", error);
+      logger.error("Error sending contact message", error);
       toast({
         title: "Failed to send message",
         description: error.message || "Please try again later or email us directly.",

@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Check, ArrowLeft, Loader2, RefreshCw, Calendar, CreditCard } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
+import { logger } from "@/lib/logger";
 
 const PLANS = {
   pro: {
@@ -63,7 +64,7 @@ export default function Billing() {
         window.open(data.url, '_blank');
       }
     } catch (error) {
-      console.error('Checkout error:', error);
+      logger.error('Checkout error', error);
       toast.error('Failed to create checkout session');
     }
     setIsLoading(null);
@@ -83,7 +84,7 @@ export default function Billing() {
         window.open(data.url, '_blank');
       }
     } catch (error) {
-      console.error('Portal error:', error);
+      logger.error('Portal error', error);
       toast.error('Failed to open customer portal');
     }
     setIsLoading(null);

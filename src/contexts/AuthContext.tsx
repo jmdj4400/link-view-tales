@@ -3,6 +3,7 @@ import { User, Session } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabase-client";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { logger } from "@/lib/logger";
 
 interface SubscriptionStatus {
   subscribed: boolean;
@@ -19,6 +20,7 @@ interface AuthContextType {
   signIn: (email: string, password: string) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
   refreshSubscription: () => Promise<void>;
+  resendVerificationEmail: () => Promise<{ error: any }>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -66,7 +68,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (error) throw error;
       setSubscriptionStatus(data);
     } catch (error) {
-      console.error('Error checking subscription:', error);
+      logger.error('Error checking subscription', error);
       // Only set default status on first check, not on rate limit errors
       if (!subscriptionStatus) {
         setSubscriptionStatus({ subscribed: false, product_id: null, subscription_end: null });
@@ -157,6 +159,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     toast.success('Signed out successfully');
   };
 
+  const resendVerificationEmail = async () => {
+    if (!user?.email) {
+      return { error: { message: 'No email found' } };
+    }
+
+    try {
+      const { error } = await supabase.auth.resend({
+        type: 'signup',
+        email: user.email,
+      });
+      return { error };
+    } catch (error) {
+      logger.error('Failed to resend verification email', error);
+      return { error };
+    }
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -168,6 +187,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         signIn,
         signOut,
         refreshSubscription,
+        resendVerificationEmail,
       }}
     >
       {children}

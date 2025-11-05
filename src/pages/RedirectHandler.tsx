@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { hashUserAgent } from "@/lib/security-utils";
 import { Button } from "@/components/ui/button";
 import { ExternalLink } from "lucide-react";
+import { logger } from "@/lib/logger";
 
 export default function RedirectHandler() {
   const { linkId } = useParams();
@@ -231,7 +232,7 @@ export default function RedirectHandler() {
         window.location.href = destUrl;
       }
     } catch (err) {
-      console.error('Redirect error:', err);
+      logger.error('Redirect error', err, { linkId });
       redirectSuccess = false;
       await supabase.from('redirects').insert({
         link_id: linkId,
