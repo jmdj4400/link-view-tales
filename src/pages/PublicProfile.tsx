@@ -3,10 +3,11 @@ import { useParams, Link } from "react-router-dom";
 import { supabase } from "@/lib/supabase-client";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { ExternalLink } from "lucide-react";
+import { ExternalLink, QrCode } from "lucide-react";
 import { SEOHead } from "@/components/SEOHead";
 import { PageLoader } from "@/components/ui/loading-spinner";
 import { hashUserAgent } from "@/lib/security-utils";
+import { ProfileQRDialog } from "@/components/profile/ProfileQRDialog";
 
 interface Profile {
   name: string;
@@ -27,6 +28,7 @@ export default function PublicProfile() {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [links, setLinks] = useState<Link[]>([]);
   const [loading, setLoading] = useState(true);
+  const [qrDialogOpen, setQrDialogOpen] = useState(false);
 
   useEffect(() => {
     fetchProfileData();
@@ -183,6 +185,15 @@ export default function PublicProfile() {
             {profile.bio && (
               <p className="text-center max-w-sm mx-auto text-muted-foreground">{profile.bio}</p>
             )}
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => setQrDialogOpen(true)}
+              className="mt-2"
+            >
+              <QrCode className="h-4 w-4 mr-2" />
+              Share QR Code
+            </Button>
           </header>
 
           <nav className="space-y-3" aria-label="Social links">
@@ -214,6 +225,14 @@ export default function PublicProfile() {
           </footer>
         </article>
       </main>
+      
+      <ProfileQRDialog
+        open={qrDialogOpen}
+        onOpenChange={setQrDialogOpen}
+        profileName={profile.name}
+        profileHandle={profile.handle}
+        profileUrl={canonicalUrl}
+      />
     </>
   );
 }
