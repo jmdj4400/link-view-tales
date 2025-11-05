@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
-import { LogOut, Settings, Link as LinkIcon, CreditCard, Eye, MousePointerClick, TrendingUp, ArrowRight, Download, Plus, BarChart3, Palette, Users, Target } from "lucide-react";
+import { LogOut, Settings, Link as LinkIcon, CreditCard, Eye, MousePointerClick, TrendingUp, ArrowRight, Download, Plus, BarChart3, Palette, Users, Target, Zap, Mail } from "lucide-react";
 import { toast } from "sonner";
 import { AnalyticsChart } from "@/components/analytics/AnalyticsChart";
 import { TopLinksTable } from "@/components/analytics/TopLinksTable";
@@ -503,7 +503,29 @@ export default function Dashboard() {
           <Card className="border-2">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Users className="h-5 w-5" />
+                <Zap className="h-5 w-5" />
+                Traffic Intelligence
+              </CardTitle>
+              <CardDescription>
+                Flow analysis & AI optimization
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button
+                className="w-full"
+                variant="outline"
+                onClick={() => navigate('/insights')}
+              >
+                View Insights
+                <ArrowRight className="h-4 w-4 ml-2" />
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card className="border-2">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Mail className="h-5 w-5" />
                 Lead Generation
               </CardTitle>
               <CardDescription>

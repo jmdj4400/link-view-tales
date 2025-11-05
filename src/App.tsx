@@ -15,6 +15,7 @@ import LinksSettings from "./pages/LinksSettings";
 import ThemeSettings from "./pages/ThemeSettings";
 import LeadsManagement from "./pages/LeadsManagement";
 import ConversionTracking from "./pages/ConversionTracking";
+import Insights from "./pages/Insights";
 import Billing from "./pages/Billing";
 import PublicProfile from "./pages/PublicProfile";
 import RedirectHandler from "./pages/RedirectHandler";
@@ -46,6 +47,7 @@ const App = () => (
             <Route path="/settings/theme" element={<ThemeSettings />} />
             <Route path="/settings/leads" element={<LeadsManagement />} />
             <Route path="/settings/conversions" element={<ConversionTracking />} />
+            <Route path="/insights" element={<Insights />} />
             <Route path="/billing" element={<Billing />} />
             <Route path="/terms" element={<TermsOfService />} />
             <Route path="/privacy" element={<PrivacyPolicy />} />

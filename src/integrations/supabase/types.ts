@@ -80,6 +80,75 @@ export type Database = {
         }
         Relationships: []
       }
+      channel_alerts: {
+        Row: {
+          acknowledged: boolean | null
+          alert_type: string
+          created_at: string | null
+          id: string
+          message: string
+          platform: string
+          recommendation: string | null
+          severity: string | null
+          user_id: string
+        }
+        Insert: {
+          acknowledged?: boolean | null
+          alert_type: string
+          created_at?: string | null
+          id?: string
+          message: string
+          platform: string
+          recommendation?: string | null
+          severity?: string | null
+          user_id: string
+        }
+        Update: {
+          acknowledged?: boolean | null
+          alert_type?: string
+          created_at?: string | null
+          id?: string
+          message?: string
+          platform?: string
+          recommendation?: string | null
+          severity?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      channel_benchmarks: {
+        Row: {
+          avg_conversion_rate: number | null
+          avg_ctr: number | null
+          avg_redirect_success: number | null
+          created_at: string | null
+          id: string
+          platform: string
+          sample_size: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          avg_conversion_rate?: number | null
+          avg_ctr?: number | null
+          avg_redirect_success?: number | null
+          created_at?: string | null
+          id?: string
+          platform: string
+          sample_size?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          avg_conversion_rate?: number | null
+          avg_ctr?: number | null
+          avg_redirect_success?: number | null
+          created_at?: string | null
+          id?: string
+          platform?: string
+          sample_size?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       events: {
         Row: {
           country: string | null
@@ -151,6 +220,67 @@ export type Database = {
           {
             foreignKeyName: "events_variant_id_fkey"
             columns: ["variant_id"]
+            isOneToOne: false
+            referencedRelation: "link_variants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      experiments: {
+        Row: {
+          created_at: string | null
+          end_ts: string | null
+          id: string
+          link_id: string | null
+          start_ts: string | null
+          status: string | null
+          user_id: string
+          variant_a_id: string | null
+          variant_b_id: string | null
+          winner: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          end_ts?: string | null
+          id?: string
+          link_id?: string | null
+          start_ts?: string | null
+          status?: string | null
+          user_id: string
+          variant_a_id?: string | null
+          variant_b_id?: string | null
+          winner?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          end_ts?: string | null
+          id?: string
+          link_id?: string | null
+          start_ts?: string | null
+          status?: string | null
+          user_id?: string
+          variant_a_id?: string | null
+          variant_b_id?: string | null
+          winner?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "experiments_link_id_fkey"
+            columns: ["link_id"]
+            isOneToOne: false
+            referencedRelation: "links"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "experiments_variant_a_id_fkey"
+            columns: ["variant_a_id"]
+            isOneToOne: false
+            referencedRelation: "link_variants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "experiments_variant_b_id_fkey"
+            columns: ["variant_b_id"]
             isOneToOne: false
             referencedRelation: "link_variants"
             referencedColumns: ["id"]
@@ -500,35 +630,44 @@ export type Database = {
       }
       metrics_daily: {
         Row: {
+          avg_session_duration: number | null
           clicks: number | null
           conversion_count: number | null
           created_at: string | null
           ctr: number | null
           date: string
+          flow_integrity_score: number | null
           id: string
           page_views: number | null
+          redirect_success_rate: number | null
           top_referrer: string | null
           user_id: string
         }
         Insert: {
+          avg_session_duration?: number | null
           clicks?: number | null
           conversion_count?: number | null
           created_at?: string | null
           ctr?: number | null
           date: string
+          flow_integrity_score?: number | null
           id?: string
           page_views?: number | null
+          redirect_success_rate?: number | null
           top_referrer?: string | null
           user_id: string
         }
         Update: {
+          avg_session_duration?: number | null
           clicks?: number | null
           conversion_count?: number | null
           created_at?: string | null
           ctr?: number | null
           date?: string
+          flow_integrity_score?: number | null
           id?: string
           page_views?: number | null
+          redirect_success_rate?: number | null
           top_referrer?: string | null
           user_id?: string
         }
@@ -708,6 +847,39 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      rule_templates: {
+        Row: {
+          category: string | null
+          conditions: Json
+          created_at: string | null
+          description: string
+          dest_example: string | null
+          id: string
+          impact_score: number | null
+          name: string
+        }
+        Insert: {
+          category?: string | null
+          conditions: Json
+          created_at?: string | null
+          description: string
+          dest_example?: string | null
+          id?: string
+          impact_score?: number | null
+          name: string
+        }
+        Update: {
+          category?: string | null
+          conditions?: Json
+          created_at?: string | null
+          description?: string
+          dest_example?: string | null
+          id?: string
+          impact_score?: number | null
+          name?: string
+        }
+        Relationships: []
       }
       rules: {
         Row: {
