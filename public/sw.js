@@ -18,6 +18,7 @@ self.addEventListener('install', (event) => {
       return cache.addAll(PRECACHE_ASSETS);
     })
   );
+  // Force the waiting service worker to become the active service worker
   self.skipWaiting();
 });
 
@@ -30,6 +31,13 @@ self.addEventListener('activate', (event) => {
           .filter((name) => name !== CACHE_NAME && name !== RUNTIME_CACHE)
           .map((name) => caches.delete(name))
       );
+    }).then(() => {
+      // Notify all clients that a new version is available
+      return self.clients.matchAll().then((clients) => {
+        clients.forEach((client) => {
+          client.postMessage({ type: 'SW_UPDATED' });
+        });
+      });
     })
   );
   self.clients.claim();
