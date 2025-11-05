@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowDown, ArrowUp, Minus } from "lucide-react";
+import { ArrowDown, ArrowUp, Minus, TrendingUp, Award } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
 interface BenchmarkData {
   platform: string;
@@ -11,6 +12,8 @@ interface BenchmarkData {
   avgConversionRate: number;
   userRedirectSuccess: number;
   avgRedirectSuccess: number;
+  sampleSize: number;
+  percentileRank?: number;
 }
 
 export function ChannelBenchmarks() {
@@ -81,14 +84,27 @@ export function ChannelBenchmarks() {
             ? ((userConversions?.length || 0) / userClicks) * 100 
             : 0;
 
+          // Calculate percentile rank for conversion rate
+          const avgConvRate = globalData?.avg_conversion_rate || 0;
+          let percentileRank = 50; // default
+          if (userConvRate > avgConvRate * 1.5) {
+            percentileRank = 90;
+          } else if (userConvRate > avgConvRate * 1.2) {
+            percentileRank = 75;
+          } else if (userConvRate > avgConvRate) {
+            percentileRank = 60;
+          }
+
           benchmarkData.push({
             platform,
-            userCtr: 0, // Simplified for now
+            userCtr: 0,
             avgCtr: globalData?.avg_ctr || 0,
             userConversionRate: userConvRate,
             avgConversionRate: globalData?.avg_conversion_rate || 0,
             userRedirectSuccess: userRedirectSuccess,
-            avgRedirectSuccess: globalData?.avg_redirect_success || 0
+            avgRedirectSuccess: globalData?.avg_redirect_success || 0,
+            sampleSize: globalData?.sample_size || 0,
+            percentileRank
           });
         }
       }
@@ -159,29 +175,78 @@ export function ChannelBenchmarks() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Channel Benchmarks</CardTitle>
+        <CardTitle className="flex items-center gap-2">
+          <TrendingUp className="h-5 w-5" />
+          Channel Benchmarks
+        </CardTitle>
         <CardDescription>Your performance vs network averages (last 30 days)</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
           {benchmarks.map(benchmark => (
-            <div key={benchmark.platform} className="border rounded-lg p-4">
-              <h4 className="font-semibold mb-3">{benchmark.platform}</h4>
-              <div className="grid grid-cols-2 gap-4 text-sm">
+            <div key={benchmark.platform} className="border rounded-lg p-4 space-y-4">
+              <div className="flex items-center justify-between">
+                <h4 className="font-semibold text-lg">{benchmark.platform}</h4>
+                {benchmark.percentileRank && benchmark.percentileRank >= 75 && (
+                  <Badge variant="default" className="gap-1">
+                    <Award className="h-3 w-3" />
+                    Top {100 - benchmark.percentileRank}%
+                  </Badge>
+                )}
+              </div>
+              
+              <div className="space-y-3">
+                {/* Conversion Rate Comparison */}
                 <div>
-                  <p className="text-muted-foreground mb-1">Conversion Rate</p>
-                  <p className="text-lg font-bold">{benchmark.userConversionRate.toFixed(1)}%</p>
-                  <p className="text-xs mt-1">
-                    {renderComparison(benchmark.userConversionRate, benchmark.avgConversionRate)}
-                  </p>
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm text-muted-foreground">Conversion Rate</span>
+                    <span className="text-sm">
+                      {renderComparison(benchmark.userConversionRate, benchmark.avgConversionRate)}
+                    </span>
+                  </div>
+                  <div className="relative h-2 bg-muted rounded-full overflow-hidden">
+                    <div 
+                      className="absolute h-full bg-muted-foreground/30 rounded-full"
+                      style={{ width: `${Math.min(benchmark.avgConversionRate * 10, 100)}%` }}
+                    />
+                    <div 
+                      className="absolute h-full bg-primary rounded-full"
+                      style={{ width: `${Math.min(benchmark.userConversionRate * 10, 100)}%` }}
+                    />
+                  </div>
+                  <div className="flex items-center justify-between mt-1 text-xs text-muted-foreground">
+                    <span>You: {benchmark.userConversionRate.toFixed(1)}%</span>
+                    <span>Network avg: {benchmark.avgConversionRate.toFixed(1)}%</span>
+                  </div>
                 </div>
+
+                {/* Redirect Success Comparison */}
                 <div>
-                  <p className="text-muted-foreground mb-1">Redirect Success</p>
-                  <p className="text-lg font-bold">{benchmark.userRedirectSuccess.toFixed(1)}%</p>
-                  <p className="text-xs mt-1">
-                    {renderComparison(benchmark.userRedirectSuccess, benchmark.avgRedirectSuccess)}
-                  </p>
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm text-muted-foreground">Redirect Success</span>
+                    <span className="text-sm">
+                      {renderComparison(benchmark.userRedirectSuccess, benchmark.avgRedirectSuccess)}
+                    </span>
+                  </div>
+                  <div className="relative h-2 bg-muted rounded-full overflow-hidden">
+                    <div 
+                      className="absolute h-full bg-muted-foreground/30 rounded-full"
+                      style={{ width: `${benchmark.avgRedirectSuccess}%` }}
+                    />
+                    <div 
+                      className="absolute h-full bg-green-500 rounded-full"
+                      style={{ width: `${benchmark.userRedirectSuccess}%` }}
+                    />
+                  </div>
+                  <div className="flex items-center justify-between mt-1 text-xs text-muted-foreground">
+                    <span>You: {benchmark.userRedirectSuccess.toFixed(1)}%</span>
+                    <span>Network avg: {benchmark.avgRedirectSuccess.toFixed(1)}%</span>
+                  </div>
                 </div>
+              </div>
+
+              <div className="pt-2 border-t text-xs text-muted-foreground">
+                Network sample: {benchmark.sampleSize.toLocaleString()} redirects
               </div>
             </div>
           ))}

@@ -168,7 +168,7 @@ export default function Onboarding() {
               </div>
               <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 border border-primary/20 rounded-full text-sm font-medium text-primary mx-auto mb-4">
                 <Sparkles className="h-4 w-4" />
-                Step {step} of 3
+                {step === 3 ? 'Final Step' : `Step ${step} of 3 • Complete in 60s for Pro trial`}
               </div>
               <CardTitle className="text-3xl font-heading font-bold">
                 {step === 1 ? 'Tell us about yourself' : step === 2 ? 'Add your first link' : 'Share your LinkPeek'}
@@ -247,9 +247,11 @@ export default function Onboarding() {
                     Next
                     <ArrowRight className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform" />
                   </Button>
-                  <p className="text-xs text-center text-muted-foreground pt-1">
-                    Complete in under 60s to get 1 month Pro free
-                  </p>
+                  <div className="bg-primary/5 border border-primary/10 rounded-lg p-3">
+                    <p className="text-xs text-center text-primary font-medium">
+                      ⏱️ Complete in under 60s to unlock 1 month Pro free!
+                    </p>
+                  </div>
                 </form>
               ) : (
                 <InstagramSetupGuide

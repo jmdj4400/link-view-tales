@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { SEOHead } from "@/components/SEOHead";
 import { useAggregateRecoveryStats } from "@/components/analytics/AggregateRecoveryStats";
+import { Testimonials } from "@/components/landing/Testimonials";
 
 export default function Landing() {
   const navigate = useNavigate();
@@ -102,12 +103,19 @@ export default function Landing() {
               <p className="text-lg text-muted-foreground mb-8 leading-relaxed animate-fade-in">
                 Reliable redirects, conversion tracking, and actionable insights — a cockpit for your social traffic.
               </p>
+              <div className="bg-primary/5 border border-primary/10 rounded-xl p-4 mb-8 animate-fade-in">
+                <p className="text-sm font-semibold text-primary mb-2">🎯 60-Second Setup Challenge</p>
+                <p className="text-sm text-muted-foreground">
+                  Complete your profile in under 60 seconds and get <span className="font-semibold text-foreground">1 month Pro free</span> — unlimited links, advanced analytics, and priority support.
+                </p>
+              </div>
               <div className="flex flex-wrap gap-3 animate-fade-in">
                 <Button 
                   size="lg" 
                   onClick={() => navigate('/auth')}
+                  className="shadow-lg"
                 >
-                  Start free
+                  Start 60s Challenge
                 </Button>
                 <Button size="lg" variant="outline" onClick={() => window.scrollTo({ top: document.getElementById('insights')?.offsetTop || 0, behavior: 'smooth' })}>
                   View insights
@@ -317,6 +325,9 @@ export default function Landing() {
           ))}
         </div>
         </section>
+
+        {/* Testimonials */}
+        <Testimonials />
 
         {/* CTA Section */}
         <section className="container mx-auto px-6 py-24 max-w-7xl border-t" aria-labelledby="cta-heading">
