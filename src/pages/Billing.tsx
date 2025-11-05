@@ -8,6 +8,7 @@ import { Check, ArrowLeft, Loader2, RefreshCw, Calendar, CreditCard } from "luci
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { logger } from "@/lib/logger";
+import { retrySupabaseFunction } from "@/lib/retry-utils";
 
 const PLANS = {
   pro: {
@@ -52,16 +53,20 @@ export default function Billing() {
   const handleCheckout = async (priceId: string, planKey: string) => {
     setIsLoading(planKey);
     try {
-      const { data, error } = await supabase.functions.invoke('create-checkout', {
-        body: { priceId },
-        headers: {
-          Authorization: `Bearer ${session?.access_token}`,
-        },
-      });
+      // Use retry logic for checkout creation
+      const result = await retrySupabaseFunction(
+        () => supabase.functions.invoke('create-checkout', {
+          body: { priceId },
+          headers: {
+            Authorization: `Bearer ${session?.access_token}`,
+          },
+        }),
+        { maxAttempts: 2, initialDelay: 1000 }
+      );
 
-      if (error) throw error;
-      if (data?.url) {
-        window.open(data.url, '_blank');
+      if (result.error) throw result.error;
+      if (result.data?.url) {
+        window.open(result.data.url, '_blank');
       }
     } catch (error) {
       logger.error('Checkout error', error);
@@ -73,15 +78,19 @@ export default function Billing() {
   const handleManageSubscription = async () => {
     setIsLoading('portal');
     try {
-      const { data, error } = await supabase.functions.invoke('customer-portal', {
-        headers: {
-          Authorization: `Bearer ${session?.access_token}`,
-        },
-      });
+      // Use retry logic for portal access
+      const result = await retrySupabaseFunction(
+        () => supabase.functions.invoke('customer-portal', {
+          headers: {
+            Authorization: `Bearer ${session?.access_token}`,
+          },
+        }),
+        { maxAttempts: 2, initialDelay: 1000 }
+      );
 
-      if (error) throw error;
-      if (data?.url) {
-        window.open(data.url, '_blank');
+      if (result.error) throw result.error;
+      if (result.data?.url) {
+        window.open(result.data.url, '_blank');
       }
     } catch (error) {
       logger.error('Portal error', error);

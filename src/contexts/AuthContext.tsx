@@ -4,6 +4,7 @@ import { supabase } from "@/lib/supabase-client";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { logger } from "@/lib/logger";
+import { retrySupabaseFunction } from "@/lib/retry-utils";
 
 interface SubscriptionStatus {
   subscribed: boolean;
@@ -59,14 +60,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       setIsChecking(true);
       setLastCheckTime(now);
-      const { data, error } = await supabase.functions.invoke('check-subscription', {
-        headers: {
-          Authorization: `Bearer ${currentSession.access_token}`,
-        },
-      });
+      
+      // Use retry logic for subscription check
+      const result = await retrySupabaseFunction(
+        () => supabase.functions.invoke('check-subscription', {
+          headers: {
+            Authorization: `Bearer ${currentSession.access_token}`,
+          },
+        }),
+        { maxAttempts: 2, initialDelay: 1000 }
+      );
 
-      if (error) throw error;
-      setSubscriptionStatus(data);
+      if (result.error) throw result.error;
+      setSubscriptionStatus(result.data);
     } catch (error) {
       logger.error('Error checking subscription', error);
       // Only set default status on first check, not on rate limit errors

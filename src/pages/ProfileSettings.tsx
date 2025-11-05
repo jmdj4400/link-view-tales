@@ -13,6 +13,9 @@ import { SEOHead } from "@/components/SEOHead";
 import { PageLoader } from "@/components/ui/loading-spinner";
 import { profileValidation } from "@/lib/security-utils";
 import { PageHeader } from "@/components/ui/page-header";
+import { useAutosave } from "@/hooks/use-autosave";
+import { AutosaveIndicator } from "@/components/ui/autosave-indicator";
+import { FormFieldWithValidation } from "@/components/ui/form-field-with-validation";
 
 export default function ProfileSettings() {
   const { user, loading } = useAuth();
@@ -20,6 +23,26 @@ export default function ProfileSettings() {
   const [isLoading, setIsLoading] = useState(false);
   const [isFetchingProfile, setIsFetchingProfile] = useState(true);
   const [profile, setProfile] = useState({ name: "", handle: "", bio: "", avatar_url: "" });
+
+  // Autosave functionality
+  const autosave = useAutosave({
+    data: profile,
+    onSave: async (data) => {
+      const { error } = await supabase
+        .from('profiles')
+        .update({
+          name: data.name,
+          bio: data.bio,
+          avatar_url: data.avatar_url,
+        })
+        .eq('id', user?.id);
+
+      if (error) throw error;
+    },
+    delay: 2000,
+    key: `profile-autosave-${user?.id}`,
+    enabled: !isFetchingProfile && !!user,
+  });
 
   useEffect(() => {
     if (!loading && !user) {
@@ -112,26 +135,26 @@ export default function ProfileSettings() {
         />
 
       <div className="container mx-auto px-6 py-10 max-w-2xl">
-        <div className="mb-6">
-          <h1 className="text-2xl font-semibold mb-1">Profile Settings</h1>
-          <p className="text-muted-foreground">Update your public profile information</p>
+        <div className="mb-6 flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-semibold mb-1">Profile Settings</h1>
+            <p className="text-muted-foreground">Update your public profile information</p>
+          </div>
+          <AutosaveIndicator {...autosave} />
         </div>
         <Card>
           <CardContent className="pt-6">
             <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="space-y-2">
-                <Label htmlFor="name">Name</Label>
-                <Input
-                  id="name"
-                  value={profile.name}
-                  onChange={(e) => setProfile({ ...profile, name: e.target.value })}
-                  maxLength={profileValidation.name.maxLength}
-                  required
-                />
-                <p className="text-xs text-muted-foreground">
-                  {profile.name.length}/{profileValidation.name.maxLength} characters
-                </p>
-              </div>
+              <FormFieldWithValidation
+                id="name"
+                label="Name"
+                value={profile.name}
+                onChange={(value) => setProfile({ ...profile, name: value })}
+                validation={profileValidation.name}
+                maxLength={profileValidation.name.maxLength}
+                showCharCount
+                required
+              />
               
               <div className="space-y-2">
                 <Label htmlFor="handle">Handle</Label>
@@ -144,33 +167,32 @@ export default function ProfileSettings() {
                 <p className="text-xs text-muted-foreground">Handle cannot be changed</p>
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="avatar">Avatar URL (optional)</Label>
-                <Input
-                  id="avatar"
-                  type="url"
-                  placeholder="https://example.com/avatar.jpg"
-                  value={profile.avatar_url}
-                  onChange={(e) => setProfile({ ...profile, avatar_url: e.target.value })}
-                />
-              </div>
+              <FormFieldWithValidation
+                id="avatar"
+                label="Avatar URL"
+                type="url"
+                value={profile.avatar_url}
+                onChange={(value) => setProfile({ ...profile, avatar_url: value })}
+                validation={profileValidation.avatarUrl}
+                placeholder="https://example.com/avatar.jpg"
+                hint="Optional: Link to your profile picture"
+              />
 
-              <div className="space-y-2">
-                <Label htmlFor="bio">Bio (optional)</Label>
-                <Textarea
-                  id="bio"
-                  placeholder="Tell your visitors about yourself..."
-                  value={profile.bio}
-                  onChange={(e) => setProfile({ ...profile, bio: e.target.value })}
-                  maxLength={profileValidation.bio.maxLength}
-                  rows={4}
-                />
-                <p className="text-xs text-muted-foreground">
-                  {profile.bio.length}/{profileValidation.bio.maxLength} characters
-                </p>
-              </div>
+              <FormFieldWithValidation
+                id="bio"
+                label="Bio"
+                type="textarea"
+                value={profile.bio}
+                onChange={(value) => setProfile({ ...profile, bio: value })}
+                validation={profileValidation.bio}
+                maxLength={profileValidation.bio.maxLength}
+                rows={4}
+                showCharCount
+                placeholder="Tell your visitors about yourself..."
+                hint="Optional: A short description about you"
+              />
 
-              <Button type="submit" disabled={isLoading} className="w-full sm:w-auto">
+              <Button type="submit" disabled={isLoading || autosave.isSaving} className="w-full sm:w-auto">
                 {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 {isLoading ? "Saving..." : "Save Changes"}
               </Button>

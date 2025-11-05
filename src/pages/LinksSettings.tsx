@@ -22,6 +22,8 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { SEOHead } from "@/components/SEOHead";
 import { linkValidation } from "@/lib/security-utils";
 import { PageHeader } from "@/components/ui/page-header";
+import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
+import { FormFieldWithValidation } from "@/components/ui/form-field-with-validation";
 
 interface Link {
   id: string;
@@ -59,6 +61,11 @@ export default function LinksSettings() {
   const [scheduleDialog, setScheduleDialog] = useState<{ open: boolean; link: Link | null }>({ open: false, link: null });
   const [clickLimitDialog, setClickLimitDialog] = useState<{ open: boolean; link: Link | null }>({ open: false, link: null });
   const [utmDialog, setUtmDialog] = useState<{ open: boolean; link: Link | null }>({ open: false, link: null });
+  const [deleteConfirmation, setDeleteConfirmation] = useState<{ open: boolean; linkId: string | null; linkTitle: string }>({ 
+    open: false, 
+    linkId: null, 
+    linkTitle: '' 
+  });
 
   useEffect(() => {
     if (!loading && !user) {
@@ -156,9 +163,17 @@ export default function LinksSettings() {
     if (error) {
       toast.error('Failed to delete link');
     } else {
-      toast.success('Link deleted');
+      toast.success('Link deleted successfully');
       fetchLinks();
     }
+  };
+
+  const confirmDeleteLink = (link: Link) => {
+    setDeleteConfirmation({
+      open: true,
+      linkId: link.id,
+      linkTitle: link.title,
+    });
   };
 
   const handleToggleActive = async (id: string, currentState: boolean) => {
@@ -288,29 +303,30 @@ export default function LinksSettings() {
           </CardHeader>
           <CardContent>
             <form onSubmit={handleAddLink} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="title">Link Title</Label>
-                <Input
-                  id="title"
-                  placeholder="My Website"
-                  value={newLink.title}
-                  onChange={(e) => setNewLink({ ...newLink, title: e.target.value })}
-                  maxLength={linkValidation.title.maxLength}
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="url">Destination URL</Label>
-                <Input
-                  id="url"
-                  type="url"
-                  placeholder="https://example.com"
-                  value={newLink.dest_url}
-                  onChange={(e) => setNewLink({ ...newLink, dest_url: e.target.value })}
-                  maxLength={linkValidation.destUrl.maxLength}
-                  required
-                />
-              </div>
+              <FormFieldWithValidation
+                id="title"
+                label="Link Title"
+                value={newLink.title}
+                onChange={(value) => setNewLink({ ...newLink, title: value })}
+                validation={linkValidation.title}
+                maxLength={linkValidation.title.maxLength}
+                placeholder="My Website"
+                showCharCount
+                required
+              />
+              
+              <FormFieldWithValidation
+                id="url"
+                label="Destination URL"
+                type="url"
+                value={newLink.dest_url}
+                onChange={(value) => setNewLink({ ...newLink, dest_url: value })}
+                validation={linkValidation.destUrl}
+                maxLength={linkValidation.destUrl.maxLength}
+                placeholder="https://example.com"
+                required
+              />
+              
               <div className="space-y-2">
                 <Label htmlFor="category">Category (Optional)</Label>
                 <Select
@@ -448,7 +464,8 @@ export default function LinksSettings() {
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => handleDeleteLink(link.id)}
+                    onClick={() => confirmDeleteLink(link)}
+                    title="Delete link"
                   >
                     <Trash2 className="h-4 w-4 text-destructive" />
                   </Button>
@@ -504,6 +521,21 @@ export default function LinksSettings() {
         </TabsContent>
         </Tabs>
       </div>
+
+      {/* Confirmation Dialog for Delete */}
+      <ConfirmationDialog
+        open={deleteConfirmation.open}
+        onOpenChange={(open) => setDeleteConfirmation({ open, linkId: null, linkTitle: '' })}
+        onConfirm={async () => {
+          if (deleteConfirmation.linkId) {
+            await handleDeleteLink(deleteConfirmation.linkId);
+          }
+        }}
+        title="Delete Link?"
+        description={`Are you sure you want to delete "${deleteConfirmation.linkTitle}"? This action cannot be undone.`}
+        confirmText="Delete"
+        variant="destructive"
+      />
       
       {qrCodeDialog.link && (
         <QRCodeDialog

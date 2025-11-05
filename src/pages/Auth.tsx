@@ -9,6 +9,45 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { Loader2, Sparkles } from "lucide-react";
 import { SEOHead } from "@/components/SEOHead";
+import { FormFieldWithValidation } from "@/components/ui/form-field-with-validation";
+import { z } from "zod";
+
+// Validation schemas
+const emailValidation = {
+  validate: (value: string) => {
+    if (!value) return "Email is required";
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) return "Invalid email address";
+    if (value.length > 255) return "Email must be less than 255 characters";
+    return null;
+  }
+};
+
+const passwordValidation = {
+  validate: (value: string) => {
+    if (!value) return "Password is required";
+    if (value.length < 6) return "Password must be at least 6 characters";
+    if (value.length > 72) return "Password must be less than 72 characters";
+    return null;
+  }
+};
+
+const handleValidation = {
+  validate: (value: string) => {
+    if (!value) return "Handle is required";
+    if (!/^[a-z0-9_-]+$/i.test(value)) return "Handle can only contain letters, numbers, hyphens and underscores";
+    if (value.length < 3) return "Handle must be at least 3 characters";
+    if (value.length > 30) return "Handle must be less than 30 characters";
+    return null;
+  }
+};
+
+const nameValidation = {
+  validate: (value: string) => {
+    if (!value) return "Name is required";
+    if (value.length > 100) return "Name must be less than 100 characters";
+    return null;
+  }
+};
 
 export default function Auth() {
   const [isLoading, setIsLoading] = useState(false);
@@ -89,55 +128,50 @@ export default function Auth() {
               
               <TabsContent value="signup">
                 <form onSubmit={handleSignUp} className="space-y-5">
-                  <div className="space-y-2">
-                    <Label htmlFor="name" className="text-sm font-medium">Name</Label>
-                    <Input
-                      id="name"
-                      placeholder="Your name"
-                      value={signUpData.name}
-                      onChange={(e) => setSignUpData({ ...signUpData, name: e.target.value })}
-                      required
-                      className="h-11"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="handle" className="text-sm font-medium">Handle</Label>
-                    <Input
-                      id="handle"
-                      placeholder="yourhandle"
-                      value={signUpData.handle}
-                      onChange={(e) => setSignUpData({ ...signUpData, handle: e.target.value })}
-                      required
-                      className="h-11"
-                    />
-                    <p className="text-xs text-muted-foreground">
-                      Your profile: linkpeek.app/<span className="text-primary font-medium">{signUpData.handle || 'yourhandle'}</span>
-                    </p>
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="signup-email" className="text-sm font-medium">Email</Label>
-                    <Input
-                      id="signup-email"
-                      type="email"
-                      placeholder="name@example.com"
-                      value={signUpData.email}
-                      onChange={(e) => setSignUpData({ ...signUpData, email: e.target.value })}
-                      required
-                      className="h-11"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="signup-password" className="text-sm font-medium">Password</Label>
-                    <Input
-                      id="signup-password"
-                      type="password"
-                      placeholder="••••••••"
-                      value={signUpData.password}
-                      onChange={(e) => setSignUpData({ ...signUpData, password: e.target.value })}
-                      required
-                      className="h-11"
-                    />
-                  </div>
+                  <FormFieldWithValidation
+                    id="name"
+                    label="Name"
+                    value={signUpData.name}
+                    onChange={(value) => setSignUpData({ ...signUpData, name: value })}
+                    validation={nameValidation}
+                    placeholder="Your name"
+                    required
+                  />
+                  
+                  <FormFieldWithValidation
+                    id="handle"
+                    label="Handle"
+                    value={signUpData.handle}
+                    onChange={(value) => setSignUpData({ ...signUpData, handle: value })}
+                    validation={handleValidation}
+                    placeholder="yourhandle"
+                    hint={`Your profile: linkpeek.app/${signUpData.handle || 'yourhandle'}`}
+                    required
+                  />
+                  
+                  <FormFieldWithValidation
+                    id="signup-email"
+                    label="Email"
+                    type="email"
+                    value={signUpData.email}
+                    onChange={(value) => setSignUpData({ ...signUpData, email: value })}
+                    validation={emailValidation}
+                    placeholder="name@example.com"
+                    required
+                  />
+                  
+                  <FormFieldWithValidation
+                    id="signup-password"
+                    label="Password"
+                    type="password"
+                    value={signUpData.password}
+                    onChange={(value) => setSignUpData({ ...signUpData, password: value })}
+                    validation={passwordValidation}
+                    placeholder="••••••••"
+                    hint="At least 6 characters"
+                    required
+                  />
+                  
                   <Button 
                     type="submit" 
                     className="w-full gradient-primary shadow-md" 
@@ -159,30 +193,28 @@ export default function Auth() {
               
               <TabsContent value="signin">
                 <form onSubmit={handleSignIn} className="space-y-5">
-                  <div className="space-y-2">
-                    <Label htmlFor="signin-email" className="text-sm font-medium">Email</Label>
-                    <Input
-                      id="signin-email"
-                      type="email"
-                      placeholder="name@example.com"
-                      value={signInData.email}
-                      onChange={(e) => setSignInData({ ...signInData, email: e.target.value })}
-                      required
-                      className="h-11"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="signin-password" className="text-sm font-medium">Password</Label>
-                    <Input
-                      id="signin-password"
-                      type="password"
-                      placeholder="••••••••"
-                      value={signInData.password}
-                      onChange={(e) => setSignInData({ ...signInData, password: e.target.value })}
-                      required
-                      className="h-11"
-                    />
-                  </div>
+                  <FormFieldWithValidation
+                    id="signin-email"
+                    label="Email"
+                    type="email"
+                    value={signInData.email}
+                    onChange={(value) => setSignInData({ ...signInData, email: value })}
+                    validation={emailValidation}
+                    placeholder="name@example.com"
+                    required
+                  />
+                  
+                  <FormFieldWithValidation
+                    id="signin-password"
+                    label="Password"
+                    type="password"
+                    value={signInData.password}
+                    onChange={(value) => setSignInData({ ...signInData, password: value })}
+                    validation={passwordValidation}
+                    placeholder="••••••••"
+                    required
+                  />
+                  
                   <Button 
                     type="submit" 
                     className="w-full" 
