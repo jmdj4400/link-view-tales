@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
-import { LogOut, Settings, Link as LinkIcon, CreditCard, Eye, MousePointerClick, TrendingUp, ArrowRight, Download, Plus, BarChart3, Palette, Users, Target, Zap, Mail } from "lucide-react";
+import { LogOut, Settings, Link as LinkIcon, CreditCard, Eye, MousePointerClick, TrendingUp, ArrowRight, Download, Plus, BarChart3, Palette, Users, Target, Zap, Mail, FileDown } from "lucide-react";
 import { toast } from "sonner";
 import { AnalyticsChart } from "@/components/analytics/AnalyticsChart";
 import { TopLinksTable } from "@/components/analytics/TopLinksTable";
@@ -14,6 +14,7 @@ import { TrafficSources } from "@/components/analytics/TrafficSources";
 import { DeviceBrowserStats } from "@/components/analytics/DeviceBrowserStats";
 import { CountryStats } from "@/components/analytics/CountryStats";
 import { DateRangePicker } from "@/components/analytics/DateRangePicker";
+import { ComparisonMetrics } from "@/components/analytics/ComparisonMetrics";
 import { PageLoader } from "@/components/ui/loading-spinner";
 import { SEOHead } from "@/components/SEOHead";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -21,10 +22,15 @@ import { InfoTooltip } from "@/components/ui/info-tooltip";
 import { ProfileCompleteness } from "@/components/profile/ProfileCompleteness";
 import { SetupBanner } from "@/components/profile/SetupBanner";
 import { getDeviceType, getBrowserName, convertToCSV, downloadCSV, formatAnalyticsForCSV } from "@/lib/analytics-utils";
+import { exportAnalyticsToPDF } from "@/lib/pdf-export";
+import { triggerSuccessConfetti } from "@/lib/success-animations";
+import { useRealtimeEvents } from "@/hooks/use-realtime-events";
 import { logger } from "@/lib/logger";
 import { BreadcrumbNav } from "@/components/navigation/BreadcrumbNav";
 import { useCommonShortcuts } from "@/hooks/use-keyboard-shortcuts";
 import { KeyboardShortcutsDialog } from "@/components/ui/keyboard-shortcuts-dialog";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 
 export default function Dashboard() {
   useCommonShortcuts();
@@ -47,6 +53,8 @@ export default function Dashboard() {
   const [profile, setProfile] = useState<any>(null);
   const [showSetupBanner, setShowSetupBanner] = useState(false);
   const [profileHandle, setProfileHandle] = useState("");
+  const [comparisonMode, setComparisonMode] = useState(false);
+  const [previousMetrics, setPreviousMetrics] = useState({ views: 0, clicks: 0, ctr: 0 });
 
   useEffect(() => {
     if (!loading && !user) {
@@ -90,8 +98,20 @@ export default function Dashboard() {
       fetchAnalytics();
       fetchLinks();
       fetchProfile();
+      if (comparisonMode) {
+        fetchPreviousPeriodAnalytics();
+      }
     }
-  }, [user, dateRange]);
+  }, [user, dateRange, comparisonMode]);
+
+  // Real-time updates
+  const handleRealtimeUpdate = useCallback(() => {
+    if (user) {
+      fetchAnalytics();
+    }
+  }, [user]);
+
+  useRealtimeEvents({ userId: user?.id, onUpdate: handleRealtimeUpdate });
 
   const fetchProfile = async () => {
     const { data } = await supabase
@@ -307,19 +327,66 @@ export default function Dashboard() {
     return (profile?.plan && profile.plan !== 'free') || subscriptionStatus?.subscribed;
   };
 
+  const fetchPreviousPeriodAnalytics = async () => {
+    const daysDiff = Math.ceil((dateRange.to.getTime() - dateRange.from.getTime()) / (1000 * 60 * 60 * 24));
+    const previousFrom = new Date(dateRange.from);
+    previousFrom.setDate(previousFrom.getDate() - daysDiff);
+    const previousTo = new Date(dateRange.from);
+
+    const { data: events } = await supabase
+      .from('events')
+      .select('*')
+      .eq('user_id', user?.id)
+      .eq('is_bot', false)
+      .gte('created_at', previousFrom.toISOString())
+      .lt('created_at', previousTo.toISOString());
+
+    const viewEvents = events?.filter(e => e.event_type === 'view') || [];
+    const clickEvents = events?.filter(e => e.event_type === 'click') || [];
+    const totalViews = viewEvents.length;
+    const totalClicks = clickEvents.length;
+    const ctr = totalViews > 0 ? (totalClicks / totalViews) * 100 : 0;
+    
+    setPreviousMetrics({ 
+      views: totalViews, 
+      clicks: totalClicks, 
+      ctr: Math.round(ctr * 10) / 10 
+    });
+  };
+
   const handleExportCSV = () => {
     try {
       const formattedData = formatAnalyticsForCSV(chartData, topLinks, trafficSources);
       
-      // Export overview data
       const overviewCSV = convertToCSV(formattedData.overview, ['Date', 'Page Views', 'Link Clicks']);
       const dateStr = `${dateRange.from.toISOString().split('T')[0]}_${dateRange.to.toISOString().split('T')[0]}`;
       downloadCSV(`linkpeek-analytics-${dateStr}.csv`, overviewCSV);
       
+      triggerSuccessConfetti();
       toast.success('Analytics exported successfully');
     } catch (error) {
       logger.error('Failed to export analytics', error);
       toast.error('Failed to export analytics');
+    }
+  };
+
+  const handleExportPDF = () => {
+    try {
+      exportAnalyticsToPDF({
+        dateRange,
+        metrics,
+        chartData,
+        topLinks,
+        trafficSources,
+        deviceStats,
+        browserStats,
+      }, 'Dashboard Analytics Report');
+      
+      triggerSuccessConfetti();
+      toast.success('PDF report generated successfully');
+    } catch (error) {
+      logger.error('Failed to export PDF', error);
+      toast.error('Failed to export PDF');
     }
   };
 
@@ -367,7 +434,7 @@ export default function Dashboard() {
       <div className="container mx-auto px-6 py-10 max-w-7xl">
         <BreadcrumbNav />
         {/* Header */}
-        <div className="mb-8 flex items-center justify-between">
+        <div className="mb-8 flex items-center justify-between flex-wrap gap-4">
           <div>
             <h2 className="text-2xl font-heading font-bold mb-1">
               Dashboard
@@ -376,15 +443,36 @@ export default function Dashboard() {
               Traffic overview and performance metrics
             </p>
           </div>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleExportCSV}
-            disabled={isLoadingAnalytics || chartData.length === 0}
-          >
-            <Download className="h-4 w-4 mr-2" />
-            Export data
-          </Button>
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
+              <Switch
+                id="comparison-mode"
+                checked={comparisonMode}
+                onCheckedChange={setComparisonMode}
+              />
+              <Label htmlFor="comparison-mode" className="text-sm cursor-pointer">
+                Compare periods
+              </Label>
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleExportPDF}
+              disabled={isLoadingAnalytics || chartData.length === 0}
+            >
+              <FileDown className="h-4 w-4 mr-2" />
+              Export PDF
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleExportCSV}
+              disabled={isLoadingAnalytics || chartData.length === 0}
+            >
+              <Download className="h-4 w-4 mr-2" />
+              Export CSV
+            </Button>
+          </div>
         </div>
 
         {/* Setup Banner */}
@@ -403,8 +491,16 @@ export default function Dashboard() {
           <DateRangePicker dateRange={dateRange} onDateRangeChange={setDateRange} />
         </div>
 
-        {/* Metrics Cards */}
-        <div className="grid md:grid-cols-3 gap-5 mb-8">
+        {/* Comparison Metrics or Regular Metrics */}
+        {comparisonMode && !isLoadingAnalytics ? (
+          <div className="mb-8">
+            <ComparisonMetrics
+              currentMetrics={metrics}
+              previousMetrics={previousMetrics}
+            />
+          </div>
+        ) : (
+          <div className="grid md:grid-cols-3 gap-5 mb-8">
           {isLoadingAnalytics ? (
             <>
               {[1, 2, 3].map((i) => (
@@ -456,7 +552,8 @@ export default function Dashboard() {
               </Card>
             ))
           )}
-        </div>
+          </div>
+        )}
 
         {/* Analytics Chart or Empty State */}
         {metrics.views === 0 && metrics.clicks === 0 ? (

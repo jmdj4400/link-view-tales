@@ -1,3 +1,5 @@
+import { useCallback } from "react";
+import { useAuth } from "@/contexts/AuthContext";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FlowVisualization } from "@/components/analytics/FlowVisualization";
 import { ChannelBenchmarks } from "@/components/analytics/ChannelBenchmarks";
@@ -10,9 +12,20 @@ import { PageHeader } from "@/components/ui/page-header";
 import { SEOHead } from "@/components/SEOHead";
 import { BreadcrumbNav } from "@/components/navigation/BreadcrumbNav";
 import { useCommonShortcuts } from "@/hooks/use-keyboard-shortcuts";
+import { useRealtimeEvents } from "@/hooks/use-realtime-events";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function Insights() {
   useCommonShortcuts();
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+
+  const handleRealtimeUpdate = useCallback(() => {
+    queryClient.invalidateQueries({ queryKey: ['analytics'] });
+  }, [queryClient]);
+
+  useRealtimeEvents({ userId: user?.id, onUpdate: handleRealtimeUpdate });
+
   return (
     <>
       <SEOHead 
