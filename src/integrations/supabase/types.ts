@@ -44,13 +44,6 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "audit_logs_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "public_profiles"
-            referencedColumns: ["id"]
-          },
         ]
       }
       beta_whitelist: {
@@ -208,13 +201,6 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "events_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "public_profiles"
             referencedColumns: ["id"]
           },
           {
@@ -619,13 +605,6 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "links_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "public_profiles"
-            referencedColumns: ["id"]
-          },
         ]
       }
       metrics_daily: {
@@ -677,13 +656,6 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "metrics_daily_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "public_profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -782,6 +754,72 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      public_profiles: {
+        Row: {
+          accent_color: string | null
+          avatar_url: string | null
+          background_color: string | null
+          background_image_url: string | null
+          background_pattern: string | null
+          bio: string | null
+          body_font: string | null
+          button_style: string | null
+          card_style: string | null
+          created_at: string | null
+          handle: string
+          heading_font: string | null
+          id: string
+          layout_style: string | null
+          name: string | null
+          primary_color: string | null
+          secondary_color: string | null
+          text_color: string | null
+          theme: string | null
+        }
+        Insert: {
+          accent_color?: string | null
+          avatar_url?: string | null
+          background_color?: string | null
+          background_image_url?: string | null
+          background_pattern?: string | null
+          bio?: string | null
+          body_font?: string | null
+          button_style?: string | null
+          card_style?: string | null
+          created_at?: string | null
+          handle: string
+          heading_font?: string | null
+          id: string
+          layout_style?: string | null
+          name?: string | null
+          primary_color?: string | null
+          secondary_color?: string | null
+          text_color?: string | null
+          theme?: string | null
+        }
+        Update: {
+          accent_color?: string | null
+          avatar_url?: string | null
+          background_color?: string | null
+          background_image_url?: string | null
+          background_pattern?: string | null
+          bio?: string | null
+          body_font?: string | null
+          button_style?: string | null
+          card_style?: string | null
+          created_at?: string | null
+          handle?: string
+          heading_font?: string | null
+          id?: string
+          layout_style?: string | null
+          name?: string | null
+          primary_color?: string | null
+          secondary_color?: string | null
+          text_color?: string | null
+          theme?: string | null
+        }
+        Relationships: []
       }
       rate_limits: {
         Row: {
@@ -973,13 +1011,6 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "subscriptions_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "public_profiles"
-            referencedColumns: ["id"]
-          },
         ]
       }
       theme_presets: {
@@ -1047,72 +1078,7 @@ export type Database = {
       }
     }
     Views: {
-      public_profiles: {
-        Row: {
-          accent_color: string | null
-          avatar_url: string | null
-          background_color: string | null
-          background_image_url: string | null
-          background_pattern: string | null
-          bio: string | null
-          body_font: string | null
-          button_style: string | null
-          card_style: string | null
-          created_at: string | null
-          handle: string | null
-          heading_font: string | null
-          id: string | null
-          layout_style: string | null
-          name: string | null
-          primary_color: string | null
-          secondary_color: string | null
-          text_color: string | null
-          theme: string | null
-        }
-        Insert: {
-          accent_color?: string | null
-          avatar_url?: string | null
-          background_color?: string | null
-          background_image_url?: string | null
-          background_pattern?: string | null
-          bio?: string | null
-          body_font?: string | null
-          button_style?: string | null
-          card_style?: string | null
-          created_at?: string | null
-          handle?: string | null
-          heading_font?: string | null
-          id?: string | null
-          layout_style?: string | null
-          name?: string | null
-          primary_color?: string | null
-          secondary_color?: string | null
-          text_color?: string | null
-          theme?: string | null
-        }
-        Update: {
-          accent_color?: string | null
-          avatar_url?: string | null
-          background_color?: string | null
-          background_image_url?: string | null
-          background_pattern?: string | null
-          bio?: string | null
-          body_font?: string | null
-          button_style?: string | null
-          card_style?: string | null
-          created_at?: string | null
-          handle?: string | null
-          heading_font?: string | null
-          id?: string | null
-          layout_style?: string | null
-          name?: string | null
-          primary_color?: string | null
-          secondary_color?: string | null
-          text_color?: string | null
-          theme?: string | null
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Functions: {
       check_rate_limit: {
