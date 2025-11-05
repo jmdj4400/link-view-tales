@@ -3,7 +3,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Check, BarChart3, Link as LinkIcon, Zap, Palette, Share2, Sparkles, TrendingUp, ArrowRight, Target } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { ThemeToggle } from "@/components/ThemeToggle";
 import { SEOHead } from "@/components/SEOHead";
 
 export default function Landing() {
@@ -71,7 +70,6 @@ export default function Landing() {
             <h1 className="text-xl font-heading font-semibold">LinkPeek</h1>
           </div>
           <div className="flex items-center gap-4">
-            <ThemeToggle />
             {user ? (
               <Button onClick={() => navigate('/dashboard')} variant="default">
                 Dashboard

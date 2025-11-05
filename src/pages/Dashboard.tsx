@@ -14,7 +14,6 @@ import { TrafficSources } from "@/components/analytics/TrafficSources";
 import { DeviceBrowserStats } from "@/components/analytics/DeviceBrowserStats";
 import { CountryStats } from "@/components/analytics/CountryStats";
 import { DateRangePicker } from "@/components/analytics/DateRangePicker";
-import { ThemeToggle } from "@/components/ThemeToggle";
 import { PageLoader } from "@/components/ui/loading-spinner";
 import { SEOHead } from "@/components/SEOHead";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -343,16 +342,15 @@ export default function Dashboard() {
           <div className="flex items-center gap-1">
             <Button variant="ghost" size="sm" onClick={() => navigate('/analytics')}>
               <BarChart3 className="h-4 w-4" />
-              <span className="hidden sm:inline ml-2">Profile Analytics</span>
+              <span className="hidden sm:inline ml-2">Profile analytics</span>
             </Button>
-            <ThemeToggle />
             <Button variant="ghost" size="sm" onClick={() => navigate('/settings/profile')}>
               <Settings className="h-4 w-4" />
               <span className="hidden sm:inline ml-2">Settings</span>
             </Button>
             <Button variant="ghost" size="sm" onClick={signOut}>
               <LogOut className="h-4 w-4" />
-              <span className="hidden sm:inline ml-2">Sign Out</span>
+              <span className="hidden sm:inline ml-2">Sign out</span>
             </Button>
           </div>
         </div>

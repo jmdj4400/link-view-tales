@@ -4,7 +4,6 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Check, Sparkles, Zap, Lock, Mail } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { ThemeToggle } from "@/components/ThemeToggle";
 import { SEOHead } from "@/components/SEOHead";
 import { toast } from "sonner";
 import { supabase } from "@/lib/supabase-client";
@@ -62,7 +61,6 @@ export default function Beta() {
               <h1 className="text-xl font-heading font-semibold">LinkPeek</h1>
             </div>
             <div className="flex items-center gap-4">
-              <ThemeToggle />
               <Button variant="ghost" onClick={() => navigate('/auth')}>Sign in</Button>
             </div>
           </div>

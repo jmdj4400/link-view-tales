@@ -1,7 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Home, ArrowLeft } from "lucide-react";
-import { ThemeToggle } from "@/components/ThemeToggle";
 
 interface PageHeaderProps {
   showBack?: boolean;
@@ -33,7 +32,6 @@ export function PageHeader({ showBack = false, showHome = true, title, actions }
         </div>
         <div className="flex items-center gap-2">
           {actions}
-          <ThemeToggle />
         </div>
       </div>
     </nav>
