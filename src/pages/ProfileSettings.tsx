@@ -16,8 +16,11 @@ import { PageHeader } from "@/components/ui/page-header";
 import { useAutosave } from "@/hooks/use-autosave";
 import { AutosaveIndicator } from "@/components/ui/autosave-indicator";
 import { FormFieldWithValidation } from "@/components/ui/form-field-with-validation";
+import { BreadcrumbNav } from "@/components/navigation/BreadcrumbNav";
+import { useCommonShortcuts } from "@/hooks/use-keyboard-shortcuts";
 
 export default function ProfileSettings() {
+  useCommonShortcuts();
   const { user, loading } = useAuth();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
@@ -126,7 +129,9 @@ export default function ProfileSettings() {
             <Button 
               variant="outline" 
               size="sm"
-              onClick={() => window.open(`/${profile.handle}`, '_blank')}
+              onClick={() => window.open(`/@${profile.handle}`, '_blank')}
+              disabled={!profile.handle}
+              aria-label="View your public profile"
             >
               <Eye className="h-4 w-4 mr-2" />
               View Profile
@@ -135,6 +140,7 @@ export default function ProfileSettings() {
         />
 
       <div className="container mx-auto px-6 py-10 max-w-2xl">
+        <BreadcrumbNav />
         <div className="mb-6 flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-semibold mb-1">Profile Settings</h1>

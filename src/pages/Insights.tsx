@@ -8,8 +8,11 @@ import { ConversionMetrics } from "@/components/analytics/ConversionMetrics";
 import { TrendingUp, Zap, Lightbulb } from "lucide-react";
 import { PageHeader } from "@/components/ui/page-header";
 import { SEOHead } from "@/components/SEOHead";
+import { BreadcrumbNav } from "@/components/navigation/BreadcrumbNav";
+import { useCommonShortcuts } from "@/hooks/use-keyboard-shortcuts";
 
 export default function Insights() {
+  useCommonShortcuts();
   return (
     <>
       <SEOHead 
@@ -20,6 +23,7 @@ export default function Insights() {
       <div className="min-h-screen bg-background">
         <PageHeader title="LinkPeek" />
         <div className="container mx-auto py-8 px-4 space-y-6">
+          <BreadcrumbNav />
           <div>
             <h1 className="text-3xl font-bold mb-2">Social Traffic Intelligence</h1>
             <p className="text-muted-foreground">

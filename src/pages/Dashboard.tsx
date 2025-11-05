@@ -22,8 +22,12 @@ import { ProfileCompleteness } from "@/components/profile/ProfileCompleteness";
 import { SetupBanner } from "@/components/profile/SetupBanner";
 import { getDeviceType, getBrowserName, convertToCSV, downloadCSV, formatAnalyticsForCSV } from "@/lib/analytics-utils";
 import { logger } from "@/lib/logger";
+import { BreadcrumbNav } from "@/components/navigation/BreadcrumbNav";
+import { useCommonShortcuts } from "@/hooks/use-keyboard-shortcuts";
+import { KeyboardShortcutsDialog } from "@/components/ui/keyboard-shortcuts-dialog";
 
 export default function Dashboard() {
+  useCommonShortcuts();
   const { user, signOut, loading, subscriptionStatus, refreshSubscription } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -331,6 +335,7 @@ export default function Dashboard() {
         noindex={true}
       />
       <div className="min-h-screen bg-background">
+        <KeyboardShortcutsDialog />
         {/* Navigation */}
         <nav className="border-b bg-background sticky top-0 z-50" role="navigation" aria-label="Dashboard navigation">
         <div className="container mx-auto px-6 py-4 flex justify-between items-center">
@@ -360,6 +365,7 @@ export default function Dashboard() {
       </nav>
 
       <div className="container mx-auto px-6 py-10 max-w-7xl">
+        <BreadcrumbNav />
         {/* Header */}
         <div className="mb-8 flex items-center justify-between">
           <div>

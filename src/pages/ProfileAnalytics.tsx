@@ -32,8 +32,11 @@ import { ReliabilityMetrics } from "@/components/analytics/ReliabilityMetrics";
 import { ConversionMetrics } from "@/components/analytics/ConversionMetrics";
 import { PageHeader } from "@/components/ui/page-header";
 import { logger } from "@/lib/logger";
+import { BreadcrumbNav } from "@/components/navigation/BreadcrumbNav";
+import { useCommonShortcuts } from "@/hooks/use-keyboard-shortcuts";
 
 export default function ProfileAnalytics() {
+  useCommonShortcuts();
   const { user, loading } = useAuth();
   const navigate = useNavigate();
   const [dateRange, setDateRange] = useState({ 
@@ -297,8 +300,9 @@ export default function ProfileAnalytics() {
             <Button 
               variant="outline" 
               size="sm"
-              onClick={() => setQrDialogOpen(true)}
-            >
+                onClick={() => setQrDialogOpen(true)}
+                aria-label="Share your profile"
+              >
               <Share2 className="h-4 w-4 mr-2" />
               Share Profile
             </Button>
@@ -306,6 +310,7 @@ export default function ProfileAnalytics() {
         />
 
         <div className="container mx-auto px-6 py-10 max-w-7xl">
+          <BreadcrumbNav />
           {/* Header */}
           <div className="mb-8 flex items-center justify-between">
             <div>

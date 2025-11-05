@@ -24,6 +24,8 @@ import { linkValidation } from "@/lib/security-utils";
 import { PageHeader } from "@/components/ui/page-header";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import { FormFieldWithValidation } from "@/components/ui/form-field-with-validation";
+import { BreadcrumbNav } from "@/components/navigation/BreadcrumbNav";
+import { useCommonShortcuts } from "@/hooks/use-keyboard-shortcuts";
 
 interface Link {
   id: string;
@@ -48,6 +50,7 @@ interface Category {
 }
 
 export default function LinksSettings() {
+  useCommonShortcuts();
   const { user, loading } = useAuth();
   const navigate = useNavigate();
   const [links, setLinks] = useState<Link[]>([]);
@@ -275,6 +278,7 @@ export default function LinksSettings() {
                 variant="outline" 
                 size="sm"
                 onClick={() => window.open(`/${userHandle}`, '_blank')}
+                aria-label="View your public profile in a new tab"
               >
                 <Eye className="h-4 w-4 mr-2" />
                 View Profile
@@ -284,6 +288,7 @@ export default function LinksSettings() {
         />
 
       <div className="container mx-auto px-6 py-10 max-w-4xl">
+        <BreadcrumbNav />
         <div className="mb-6">
           <h1 className="text-2xl font-semibold mb-1">Manage Links</h1>
           <p className="text-muted-foreground">Add and organize your profile links</p>
