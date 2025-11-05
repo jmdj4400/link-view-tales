@@ -314,7 +314,10 @@ export default function Dashboard() {
             )}
           </div>
           <div className="flex items-center gap-1">
-            {/* Billing link hidden for beta - will be enabled with Stripe integration */}
+            <Button variant="ghost" size="sm" onClick={() => navigate('/analytics')}>
+              <BarChart3 className="h-4 w-4" />
+              <span className="hidden sm:inline ml-2">Profile Analytics</span>
+            </Button>
             <ThemeToggle />
             <Button variant="ghost" size="sm" onClick={() => navigate('/settings/profile')}>
               <Settings className="h-4 w-4" />

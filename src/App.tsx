@@ -8,6 +8,7 @@ import Landing from "./pages/Landing";
 import Beta from "./pages/Beta";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
+import ProfileAnalytics from "./pages/ProfileAnalytics";
 import Onboarding from "./pages/Onboarding";
 import ProfileSettings from "./pages/ProfileSettings";
 import LinksSettings from "./pages/LinksSettings";
@@ -36,6 +37,7 @@ const App = () => (
             <Route path="/auth" element={<Auth />} />
             <Route path="/onboarding" element={<Onboarding />} />
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/analytics" element={<ProfileAnalytics />} />
             <Route path="/settings/profile" element={<ProfileSettings />} />
             <Route path="/settings/links" element={<LinksSettings />} />
             <Route path="/billing" element={<Billing />} />
