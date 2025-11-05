@@ -5,8 +5,10 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { InstallPrompt } from "@/components/pwa/InstallPrompt";
 import Landing from "./pages/Landing";
 import Beta from "./pages/Beta";
+import Offline from "./pages/Offline";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
 import ProfileAnalytics from "./pages/ProfileAnalytics";
@@ -37,6 +39,7 @@ const App = () => (
       <TooltipProvider>
         <Toaster />
         <Sonner />
+        <InstallPrompt />
         <BrowserRouter>
           <AuthProvider>
             <Routes>
@@ -60,6 +63,7 @@ const App = () => (
               <Route path="/cookies" element={<CookiePolicy />} />
               <Route path="/help" element={<HelpCenter />} />
               <Route path="/contact" element={<ContactSupport />} />
+              <Route path="/offline" element={<Offline />} />
               <Route path="/r/:linkId" element={<RedirectHandler />} />
               <Route path="/:handle" element={<PublicProfile />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
