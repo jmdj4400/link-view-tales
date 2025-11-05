@@ -461,6 +461,8 @@ export default function Dashboard() {
                 onClick: () => {
                   if (profileHandle) {
                     window.open(`/${profileHandle}`, '_blank');
+                  } else {
+                    toast.error('Profile handle not loaded yet');
                   }
                 }
               }}
