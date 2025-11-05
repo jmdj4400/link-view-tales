@@ -49,7 +49,7 @@ export default function LinksSettings() {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
   const [links, setLinks] = useState<Link[]>([]);
-  const [newLink, setNewLink] = useState({ title: "", dest_url: "", category_id: "" });
+  const [newLink, setNewLink] = useState({ title: "", dest_url: "", category_id: "none" });
   const [isLoadingLinks, setIsLoadingLinks] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [userHandle, setUserHandle] = useState("");
@@ -132,6 +132,7 @@ export default function LinksSettings() {
         user_id: user?.id,
         title: newLink.title,
         dest_url: newLink.dest_url,
+        category_id: newLink.category_id === "none" ? null : newLink.category_id,
         position: links.length,
       });
 
@@ -139,7 +140,7 @@ export default function LinksSettings() {
       toast.error('Failed to add link');
     } else {
       toast.success('Link added successfully');
-      setNewLink({ title: "", dest_url: "", category_id: "" });
+      setNewLink({ title: "", dest_url: "", category_id: "none" });
       fetchLinks();
       fetchCategories();
     }
@@ -320,7 +321,7 @@ export default function LinksSettings() {
                     <SelectValue placeholder="No category" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">No category</SelectItem>
+                    <SelectItem value="none">No category</SelectItem>
                     {categories.map((cat) => (
                       <SelectItem key={cat.id} value={cat.id}>
                         <div className="flex items-center gap-2">
