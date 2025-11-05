@@ -87,10 +87,69 @@ export default function RedirectHandler() {
           device,
           success: false,
           fallback_used: false,
-          user_agent: ua
+          user_agent: ua,
+          avoided_failure: false,
+          risk_score: 0
         });
         window.location.href = '/';
         return;
+      }
+
+      // **FIREWALL CHECK** - Check if user has firewall enabled
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('firewall_enabled, plan')
+        .eq('id', linkData.user_id)
+        .single();
+
+      let firewallUsed = false;
+      let riskScore = 0;
+
+      if (profile?.firewall_enabled && profile.plan === 'pro') {
+        try {
+          // Call firewall-decision edge function
+          const platform = browser.toLowerCase().replace('/', '-');
+          const { data: firewallDecision } = await supabase.functions.invoke('firewall-decision', {
+            body: {
+              linkId,
+              userAgent: ua,
+              platform,
+              country: undefined, // Could add geolocation API
+              userId: linkData.user_id,
+            },
+          });
+
+          if (firewallDecision?.useFallback) {
+            // Firewall triggered - use WebView recovery
+            firewallUsed = true;
+            riskScore = firewallDecision.riskScore;
+            fallbackUsed = true;
+            setFallbackUrl(linkData.dest_url);
+            setShowFallback(true);
+
+            // Log firewall intervention
+            await supabase.from('redirects').insert({
+              link_id: linkId,
+              referrer: document.referrer,
+              browser,
+              device,
+              success: true,
+              fallback_used: true,
+              user_agent: ua,
+              avoided_failure: true,
+              firewall_strategy: firewallDecision.strategy,
+              risk_score: riskScore
+            });
+
+            // Show fallback UI
+            return;
+          } else {
+            riskScore = firewallDecision?.riskScore || 0;
+          }
+        } catch (err) {
+          logger.error('Firewall check failed', err);
+          // Continue with normal redirect on error
+        }
       }
 
       // Check scheduling
@@ -240,7 +299,9 @@ export default function RedirectHandler() {
           device,
           success: true,
           fallback_used: false,
-          user_agent: ua
+          user_agent: ua,
+          avoided_failure: firewallUsed,
+          risk_score: riskScore
         });
         window.location.href = destUrl;
       }

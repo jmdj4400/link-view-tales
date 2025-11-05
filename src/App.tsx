@@ -30,6 +30,7 @@ import HelpCenter from "./pages/HelpCenter";
 import ContactSupport from "./pages/ContactSupport";
 import VerifyEmail from "./pages/VerifyEmail";
 import EmailConfirmed from "./pages/EmailConfirmed";
+import PublicScorecard from "./pages/PublicScorecard";
 
 const queryClient = new QueryClient();
 
@@ -65,6 +66,7 @@ const App = () => (
               <Route path="/contact" element={<ContactSupport />} />
               <Route path="/offline" element={<Offline />} />
               <Route path="/r/:linkId" element={<RedirectHandler />} />
+              <Route path="/:handle/scorecard" element={<PublicScorecard />} />
               <Route path="/:handle" element={<PublicProfile />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />

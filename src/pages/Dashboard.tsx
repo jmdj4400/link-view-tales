@@ -33,6 +33,8 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { UsageIndicator } from "@/components/ui/usage-indicator";
 import { UpgradePrompt } from "@/components/ui/upgrade-prompt";
+import { FirewallStats } from "@/components/analytics/FirewallStats";
+import { IncidentRadar } from "@/components/analytics/IncidentRadar";
 
 export default function Dashboard() {
   useCommonShortcuts();
