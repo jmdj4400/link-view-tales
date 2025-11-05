@@ -7,7 +7,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ArrowLeft, Plus, Trash2, GripVertical, Link as LinkIcon, Eye, QrCode, CalendarClock, Gauge, Link2 } from "lucide-react";
+import { ArrowLeft, Plus, Trash2, GripVertical, Link as LinkIcon, Eye, QrCode, CalendarClock, Gauge, Link2, TrendingUp, Folder } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { CategoryManager } from "@/components/links/CategoryManager";
+import { ABTestManager } from "@/components/links/ABTestManager";
 import { toast } from "sonner";
 import { QRCodeDialog } from "@/components/links/QRCodeDialog";
 import { LinkScheduleDialog } from "@/components/links/LinkScheduleDialog";
@@ -31,16 +35,25 @@ interface Link {
   utm_source: string | null;
   utm_medium: string | null;
   utm_campaign: string | null;
+  category_id: string | null;
+}
+
+interface Category {
+  id: string;
+  name: string;
+  color: string;
 }
 
 export default function LinksSettings() {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
   const [links, setLinks] = useState<Link[]>([]);
-  const [newLink, setNewLink] = useState({ title: "", dest_url: "" });
+  const [newLink, setNewLink] = useState({ title: "", dest_url: "", category_id: "" });
   const [isLoadingLinks, setIsLoadingLinks] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [userHandle, setUserHandle] = useState("");
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [selectedLinkForAB, setSelectedLinkForAB] = useState<Link | null>(null);
   const [qrCodeDialog, setQrCodeDialog] = useState<{ open: boolean; link: Link | null }>({ open: false, link: null });
   const [scheduleDialog, setScheduleDialog] = useState<{ open: boolean; link: Link | null }>({ open: false, link: null });
   const [clickLimitDialog, setClickLimitDialog] = useState<{ open: boolean; link: Link | null }>({ open: false, link: null });
@@ -56,8 +69,21 @@ export default function LinksSettings() {
     if (user) {
       fetchLinks();
       fetchUserHandle();
+      fetchCategories();
     }
   }, [user]);
+
+  const fetchCategories = async () => {
+    const { data } = await supabase
+      .from('link_categories')
+      .select('id, name, color')
+      .eq('user_id', user?.id)
+      .order('position');
+    
+    if (data) {
+      setCategories(data);
+    }
+  };
 
   const fetchUserHandle = async () => {
     const { data } = await supabase
@@ -112,8 +138,9 @@ export default function LinksSettings() {
       toast.error('Failed to add link');
     } else {
       toast.success('Link added successfully');
-      setNewLink({ title: "", dest_url: "" });
+      setNewLink({ title: "", dest_url: "", category_id: "" });
       fetchLinks();
+      fetchCategories();
     }
     setIsSubmitting(false);
   };
@@ -241,11 +268,20 @@ export default function LinksSettings() {
           </div>
         </nav>
 
-      <div className="container mx-auto px-6 py-10 max-w-2xl">
+      <div className="container mx-auto px-6 py-10 max-w-4xl">
         <div className="mb-6">
           <h1 className="text-2xl font-semibold mb-1">Manage Links</h1>
           <p className="text-muted-foreground">Add and organize your profile links</p>
         </div>
+
+        <Tabs defaultValue="links" className="space-y-6">
+          <TabsList>
+            <TabsTrigger value="links">Links</TabsTrigger>
+            <TabsTrigger value="categories">Categories</TabsTrigger>
+            <TabsTrigger value="ab-testing">A/B Testing</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="links" className="space-y-6">
         <Card className="mb-6">
           <CardHeader>
             <CardTitle>Add New Link</CardTitle>
@@ -274,6 +310,28 @@ export default function LinksSettings() {
                   maxLength={linkValidation.destUrl.maxLength}
                   required
                 />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="category">Category (Optional)</Label>
+                <Select
+                  value={newLink.category_id}
+                  onValueChange={(value) => setNewLink({ ...newLink, category_id: value })}
+                >
+                  <SelectTrigger id="category">
+                    <SelectValue placeholder="No category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="">No category</SelectItem>
+                    {categories.map((cat) => (
+                      <SelectItem key={cat.id} value={cat.id}>
+                        <div className="flex items-center gap-2">
+                          <div className="w-3 h-3 rounded-full" style={{ backgroundColor: cat.color }} />
+                          {cat.name}
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               <Button type="submit" disabled={isSubmitting}>
                 <Plus className="h-4 w-4 mr-2" />
@@ -317,7 +375,15 @@ export default function LinksSettings() {
                 >
                   <GripVertical className="h-5 w-5 text-muted-foreground cursor-grab active:cursor-grabbing" />
                   <div className="flex-1 min-w-0">
-                    <div className="font-medium truncate">{link.title}</div>
+                    <div className="flex items-center gap-2">
+                      {link.category_id && categories.find(c => c.id === link.category_id) && (
+                        <div 
+                          className="w-3 h-3 rounded-full flex-shrink-0" 
+                          style={{ backgroundColor: categories.find(c => c.id === link.category_id)?.color }}
+                        />
+                      )}
+                      <div className="font-medium truncate">{link.title}</div>
+                    </div>
                     <div className="text-sm text-muted-foreground truncate">{link.dest_url}</div>
                     <div className="flex gap-2 mt-1">
                       {getScheduleStatus(link) && (
@@ -332,6 +398,14 @@ export default function LinksSettings() {
                       )}
                     </div>
                   </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setSelectedLinkForAB(link)}
+                    title="A/B Testing"
+                  >
+                    <TrendingUp className="h-4 w-4" />
+                  </Button>
                   <Button
                     variant="ghost"
                     size="sm"
@@ -383,6 +457,52 @@ export default function LinksSettings() {
             )}
           </CardContent>
         </Card>
+        </TabsContent>
+
+        <TabsContent value="categories">
+          <CategoryManager />
+        </TabsContent>
+
+        <TabsContent value="ab-testing">
+          {selectedLinkForAB ? (
+            <div className="space-y-4">
+              <Button variant="outline" onClick={() => setSelectedLinkForAB(null)}>
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Back to link selection
+              </Button>
+              <ABTestManager linkId={selectedLinkForAB.id} linkTitle={selectedLinkForAB.title} />
+            </div>
+          ) : (
+            <Card>
+              <CardHeader>
+                <CardTitle>Select a Link for A/B Testing</CardTitle>
+                <CardDescription>Choose which link you want to create variants for</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                {links.length === 0 ? (
+                  <p className="text-center text-muted-foreground py-8">
+                    No links available. Create links first.
+                  </p>
+                ) : (
+                  links.map((link) => (
+                    <div
+                      key={link.id}
+                      className="flex items-center justify-between p-3 border rounded-lg hover:bg-accent cursor-pointer"
+                      onClick={() => setSelectedLinkForAB(link)}
+                    >
+                      <div>
+                        <div className="font-medium">{link.title}</div>
+                        <div className="text-sm text-muted-foreground truncate">{link.dest_url}</div>
+                      </div>
+                      <TrendingUp className="h-5 w-5 text-muted-foreground" />
+                    </div>
+                  ))
+                )}
+              </CardContent>
+            </Card>
+          )}
+        </TabsContent>
+        </Tabs>
       </div>
       
       {qrCodeDialog.link && (

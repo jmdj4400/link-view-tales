@@ -41,6 +41,31 @@ export default function RedirectHandler() {
         return;
       }
 
+      // Check for A/B testing variants
+      const { data: variants } = await supabase
+        .from('link_variants')
+        .select('*')
+        .eq('link_id', linkId)
+        .eq('is_active', true);
+
+      let selectedVariant = null;
+      let destUrl = linkData.dest_url;
+
+      // If variants exist, randomly select one based on traffic percentage
+      if (variants && variants.length > 0) {
+        const random = Math.random() * 100;
+        let cumulative = 0;
+        
+        for (const variant of variants) {
+          cumulative += variant.traffic_percentage;
+          if (random <= cumulative) {
+            selectedVariant = variant;
+            destUrl = variant.dest_url;
+            break;
+          }
+        }
+      }
+
     // Check if link is within scheduled time
     const now = new Date();
     const from = linkData.active_from ? new Date(linkData.active_from) : null;
@@ -70,11 +95,11 @@ export default function RedirectHandler() {
         event_type: 'click',
         referrer: document.referrer,
         user_agent_hash: userAgentHash,
+        variant_id: selectedVariant?.id || null,
       });
 
-    // Build destination URL with UTM parameters
-    let destUrl = linkData.dest_url;
-    if (linkData.utm_source || linkData.utm_medium || linkData.utm_campaign) {
+    // Build destination URL with UTM parameters (only if not using variant)
+    if (!selectedVariant && (linkData.utm_source || linkData.utm_medium || linkData.utm_campaign)) {
       const url = new URL(destUrl);
       if (linkData.utm_source) url.searchParams.set('utm_source', linkData.utm_source);
       if (linkData.utm_medium) url.searchParams.set('utm_medium', linkData.utm_medium);

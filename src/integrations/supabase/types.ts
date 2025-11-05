@@ -94,6 +94,7 @@ export type Database = {
           utm_campaign: string | null
           utm_medium: string | null
           utm_source: string | null
+          variant_id: string | null
         }
         Insert: {
           country?: string | null
@@ -108,6 +109,7 @@ export type Database = {
           utm_campaign?: string | null
           utm_medium?: string | null
           utm_source?: string | null
+          variant_id?: string | null
         }
         Update: {
           country?: string | null
@@ -122,6 +124,7 @@ export type Database = {
           utm_campaign?: string | null
           utm_medium?: string | null
           utm_source?: string | null
+          variant_id?: string | null
         }
         Relationships: [
           {
@@ -145,12 +148,94 @@ export type Database = {
             referencedRelation: "public_profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "events_variant_id_fkey"
+            columns: ["variant_id"]
+            isOneToOne: false
+            referencedRelation: "link_variants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      link_categories: {
+        Row: {
+          color: string | null
+          created_at: string | null
+          icon: string | null
+          id: string
+          name: string
+          position: number
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          color?: string | null
+          created_at?: string | null
+          icon?: string | null
+          id?: string
+          name: string
+          position?: number
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          color?: string | null
+          created_at?: string | null
+          icon?: string | null
+          id?: string
+          name?: string
+          position?: number
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      link_variants: {
+        Row: {
+          created_at: string | null
+          dest_url: string
+          id: string
+          is_active: boolean | null
+          link_id: string
+          name: string
+          traffic_percentage: number
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          dest_url: string
+          id?: string
+          is_active?: boolean | null
+          link_id: string
+          name: string
+          traffic_percentage?: number
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          dest_url?: string
+          id?: string
+          is_active?: boolean | null
+          link_id?: string
+          name?: string
+          traffic_percentage?: number
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "link_variants_link_id_fkey"
+            columns: ["link_id"]
+            isOneToOne: false
+            referencedRelation: "links"
+            referencedColumns: ["id"]
+          },
         ]
       }
       links: {
         Row: {
           active_from: string | null
           active_until: string | null
+          category_id: string | null
           created_at: string | null
           current_clicks: number | null
           dest_url: string
@@ -168,6 +253,7 @@ export type Database = {
         Insert: {
           active_from?: string | null
           active_until?: string | null
+          category_id?: string | null
           created_at?: string | null
           current_clicks?: number | null
           dest_url: string
@@ -185,6 +271,7 @@ export type Database = {
         Update: {
           active_from?: string | null
           active_until?: string | null
+          category_id?: string | null
           created_at?: string | null
           current_clicks?: number | null
           dest_url?: string
@@ -200,6 +287,13 @@ export type Database = {
           utm_source?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "links_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "link_categories"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "links_user_id_fkey"
             columns: ["user_id"]
