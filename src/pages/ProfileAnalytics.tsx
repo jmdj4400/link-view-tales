@@ -30,6 +30,7 @@ import { getDeviceType, getBrowserName, convertToCSV, downloadCSV, formatAnalyti
 import { ProfileQRDialog } from "@/components/profile/ProfileQRDialog";
 import { ReliabilityMetrics } from "@/components/analytics/ReliabilityMetrics";
 import { ConversionMetrics } from "@/components/analytics/ConversionMetrics";
+import { PageHeader } from "@/components/ui/page-header";
 
 export default function ProfileAnalytics() {
   const { user, loading } = useAuth();
@@ -287,27 +288,20 @@ export default function ProfileAnalytics() {
         noindex={true}
       />
       <div className="min-h-screen bg-background">
-        {/* Navigation */}
-        <nav className="border-b bg-background sticky top-0 z-50">
-          <div className="container mx-auto px-6 py-4 flex justify-between items-center">
-            <div className="flex items-center gap-3">
-              <Button variant="ghost" size="sm" onClick={() => navigate('/dashboard')}>
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Back to Dashboard
-              </Button>
-            </div>
-            <div className="flex items-center gap-2">
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={() => setQrDialogOpen(true)}
-              >
-                <Share2 className="h-4 w-4 mr-2" />
-                Share Profile
-              </Button>
-            </div>
-          </div>
-        </nav>
+        <PageHeader 
+          showBack 
+          title="LinkPeek"
+          actions={
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => setQrDialogOpen(true)}
+            >
+              <Share2 className="h-4 w-4 mr-2" />
+              Share Profile
+            </Button>
+          }
+        />
 
         <div className="container mx-auto px-6 py-10 max-w-7xl">
           {/* Header */}

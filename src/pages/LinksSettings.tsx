@@ -21,6 +21,7 @@ import { PageLoader } from "@/components/ui/loading-spinner";
 import { EmptyState } from "@/components/ui/empty-state";
 import { SEOHead } from "@/components/SEOHead";
 import { linkValidation } from "@/lib/security-utils";
+import { PageHeader } from "@/components/ui/page-header";
 
 interface Link {
   id: string;
@@ -249,13 +250,11 @@ export default function LinksSettings() {
         noindex={true}
       />
       <div className="min-h-screen bg-background">
-        <nav className="border-b">
-          <div className="container mx-auto px-6 py-4 flex items-center justify-between">
-            <Button variant="ghost" onClick={() => navigate('/dashboard')}>
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back
-            </Button>
-            {userHandle && (
+        <PageHeader 
+          showBack 
+          title="LinkPeek"
+          actions={
+            userHandle ? (
               <Button 
                 variant="outline" 
                 size="sm"
@@ -264,9 +263,9 @@ export default function LinksSettings() {
                 <Eye className="h-4 w-4 mr-2" />
                 View Profile
               </Button>
-            )}
-          </div>
-        </nav>
+            ) : undefined
+          }
+        />
 
       <div className="container mx-auto px-6 py-10 max-w-4xl">
         <div className="mb-6">

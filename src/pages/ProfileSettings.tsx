@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import { SEOHead } from "@/components/SEOHead";
 import { PageLoader } from "@/components/ui/loading-spinner";
 import { profileValidation } from "@/lib/security-utils";
+import { PageHeader } from "@/components/ui/page-header";
 
 export default function ProfileSettings() {
   const { user, loading } = useAuth();
@@ -95,12 +96,10 @@ export default function ProfileSettings() {
         noindex={true}
       />
       <div className="min-h-screen bg-background">
-        <nav className="border-b">
-          <div className="container mx-auto px-6 py-4 flex items-center justify-between">
-            <Button variant="ghost" onClick={() => navigate('/dashboard')}>
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back
-            </Button>
+        <PageHeader 
+          showBack 
+          title="LinkPeek"
+          actions={
             <Button 
               variant="outline" 
               size="sm"
@@ -109,8 +108,8 @@ export default function ProfileSettings() {
               <Eye className="h-4 w-4 mr-2" />
               View Profile
             </Button>
-          </div>
-        </nav>
+          }
+        />
 
       <div className="container mx-auto px-6 py-10 max-w-2xl">
         <div className="mb-6">

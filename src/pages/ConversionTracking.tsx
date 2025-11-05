@@ -11,6 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { SEOHead } from "@/components/SEOHead";
+import { PageHeader } from "@/components/ui/page-header";
 
 interface Goal {
   id: string;
@@ -148,9 +149,11 @@ Content-Type: application/json
       <SEOHead 
         title="Conversion Tracking - LinkPeek"
         description="Track conversions with pixel and webhook integrations"
+        noindex={true}
       />
-      
-      <div className="container mx-auto py-8 px-4 max-w-6xl">
+      <div className="min-h-screen bg-background">
+        <PageHeader title="LinkPeek" />
+        <div className="container mx-auto py-8 px-4 max-w-6xl">
         <div className="mb-8">
           <h1 className="text-3xl font-bold mb-2">Conversion Tracking</h1>
           <p className="text-muted-foreground">
@@ -265,6 +268,7 @@ Content-Type: application/json
             )}
           </CardContent>
         </Card>
+        </div>
       </div>
     </>
   );
