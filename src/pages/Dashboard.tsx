@@ -457,11 +457,10 @@ export default function Dashboard() {
               title="No data yet"
               description="Share your bio link and come back to see your analytics. Your first insights will appear here once people start visiting."
               action={{
-                label: "View Your Profile",
+                label: "View your profile",
                 onClick: () => {
-                  if (user?.id) {
-                    const username = user.email?.split('@')[0] || user.id;
-                    window.open(`/${username}`, '_blank');
+                  if (profileHandle) {
+                    window.open(`/${profileHandle}`, '_blank');
                   }
                 }
               }}
