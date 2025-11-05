@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { InstallPrompt } from "@/components/pwa/InstallPrompt";
+import { ThemeProvider } from "@/components/ThemeProvider";
 import Landing from "./pages/Landing";
 import Beta from "./pages/Beta";
 import Offline from "./pages/Offline";
@@ -32,12 +33,13 @@ import PublicScorecard from "./pages/PublicScorecard";
 
 const App = () => (
   <ErrorBoundary>
-    <BrowserRouter>
-      <AuthProvider>
-        <Toaster />
-        <Sonner />
-        <InstallPrompt />
-        <Routes>
+    <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
+      <BrowserRouter>
+        <AuthProvider>
+          <Toaster />
+          <Sonner />
+          <InstallPrompt />
+          <Routes>
               <Route path="/beta" element={<Beta />} />
               <Route path="/" element={<Landing />} />
               <Route path="/auth" element={<Auth />} />
@@ -64,9 +66,10 @@ const App = () => (
               <Route path="/:handle" element={<PublicProfile />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
-        </Routes>
-      </AuthProvider>
-    </BrowserRouter>
+          </Routes>
+        </AuthProvider>
+      </BrowserRouter>
+    </ThemeProvider>
   </ErrorBoundary>
 );
 
