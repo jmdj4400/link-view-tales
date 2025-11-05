@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import { supabase } from "@/lib/supabase-client";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -128,7 +128,7 @@ export default function PublicProfile() {
             <h1 className="text-2xl font-semibold">Profile not found</h1>
             <p className="text-muted-foreground">This profile doesn't exist</p>
             <Button asChild>
-              <a href="/">Go to Home</a>
+              <Link to="/">Go to Home</Link>
             </Button>
           </article>
         </main>
@@ -205,12 +205,12 @@ export default function PublicProfile() {
           </nav>
 
           <footer className="text-center pt-6">
-            <a 
-              href="/" 
+            <Link 
+              to="/" 
               className="text-sm text-muted-foreground hover:text-foreground transition-colors"
             >
               Create your own with LinkPeek
-            </a>
+            </Link>
           </footer>
         </article>
       </main>
