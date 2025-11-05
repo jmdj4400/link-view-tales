@@ -1,6 +1,7 @@
 // Service Worker for offline support and push notifications
-const CACHE_NAME = 'linkpeek-v1';
-const RUNTIME_CACHE = 'linkpeek-runtime';
+const CACHE_VERSION = '20251105-v2';
+const CACHE_NAME = `linkpeek-${CACHE_VERSION}`;
+const RUNTIME_CACHE = `linkpeek-runtime-${CACHE_VERSION}`;
 
 // Assets to cache on install
 const PRECACHE_ASSETS = [
@@ -34,7 +35,7 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
-// Fetch event - serve from cache, fallback to network
+// Fetch event - Network first for HTML, cache first for assets
 self.addEventListener('fetch', (event) => {
   // Skip non-GET requests
   if (event.request.method !== 'GET') return;
@@ -42,6 +43,32 @@ self.addEventListener('fetch', (event) => {
   // Skip chrome extensions and non-http(s) requests
   if (!event.request.url.startsWith('http')) return;
 
+  // Network-first strategy for HTML pages
+  const acceptHeader = event.request.headers.get('accept') || '';
+  if (acceptHeader.includes('text/html')) {
+    event.respondWith(
+      fetch(event.request)
+        .then((response) => {
+          // Cache the fresh response
+          if (response && response.status === 200 && response.type !== 'error') {
+            const responseClone = response.clone();
+            caches.open(CACHE_NAME).then((cache) => {
+              cache.put(event.request, responseClone);
+            });
+          }
+          return response;
+        })
+        .catch(() => {
+          // Fallback to cache if network fails
+          return caches.match(event.request).then((cachedResponse) => {
+            return cachedResponse || caches.match('/offline');
+          });
+        })
+    );
+    return;
+  }
+
+  // Cache-first strategy for static assets
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
       if (cachedResponse) {
