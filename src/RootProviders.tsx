@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { ThemeProvider } from "next-themes";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { AuthProvider } from "@/contexts/AuthContext";
 
 export default function RootProviders({ children }: { children: React.ReactNode }) {
   // Create QueryClient inside a component using lazy init to avoid module-scope hooks/state
@@ -20,7 +21,9 @@ export default function RootProviders({ children }: { children: React.ReactNode 
     <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
       <QueryClientProvider client={queryClient}>
         <ErrorBoundary>
-          {children}
+          <AuthProvider>
+            {children}
+          </AuthProvider>
         </ErrorBoundary>
       </QueryClientProvider>
     </ThemeProvider>

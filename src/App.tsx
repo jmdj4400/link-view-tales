@@ -1,7 +1,6 @@
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { AuthProvider } from "@/contexts/AuthContext";
 import { InstallPrompt } from "@/components/pwa/InstallPrompt";
 import Landing from "./pages/Landing";
 import Beta from "./pages/Beta";
@@ -32,11 +31,10 @@ import PublicScorecard from "./pages/PublicScorecard";
 function App() {
   return (
     <BrowserRouter>
-      <AuthProvider>
-        <Toaster />
-        <Sonner />
-        <InstallPrompt />
-        <Routes>
+      <Toaster />
+      <Sonner />
+      <InstallPrompt />
+      <Routes>
           <Route path="/beta" element={<Beta />} />
           <Route path="/" element={<Landing />} />
           <Route path="/auth" element={<Auth />} />
@@ -63,8 +61,7 @@ function App() {
           <Route path="/:handle" element={<PublicProfile />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
-        </Routes>
-      </AuthProvider>
+      </Routes>
     </BrowserRouter>
   );
 }
