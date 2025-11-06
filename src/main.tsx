@@ -1,6 +1,7 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
+import RootProviders from "./RootProviders";
 import "./index.css";
 
 // Register custom service worker
@@ -18,6 +19,8 @@ if ('serviceWorker' in navigator) {
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <App />
+    <RootProviders>
+      <App />
+    </RootProviders>
   </StrictMode>
 );
