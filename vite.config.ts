@@ -20,16 +20,17 @@ export default defineConfig(({ mode }) => ({
       "react-dom": path.resolve(__dirname, "./node_modules/react-dom"),
     },
     dedupe: ["react", "react-dom"],
+    preserveSymlinks: false,
   },
   optimizeDeps: {
     include: [
       "react", 
       "react-dom", 
       "react/jsx-runtime",
-      "@tanstack/react-query"
+      "@tanstack/react-query",
+      "next-themes"
     ],
-    exclude: ["next-themes"],
-    force: true,
+    exclude: [],
   },
   cacheDir: mode === "development" ? undefined : ".vite",
   build: {
