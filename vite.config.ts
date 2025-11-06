@@ -27,10 +27,8 @@ export default defineConfig(({ mode }) => ({
       "react", 
       "react-dom", 
       "react/jsx-runtime",
-      "@tanstack/react-query",
-      "next-themes"
     ],
-    exclude: [],
+    exclude: ["@tanstack/react-query", "next-themes"],
   },
   cacheDir: mode === "development" ? undefined : ".vite",
   build: {
