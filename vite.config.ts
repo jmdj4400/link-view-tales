@@ -33,4 +33,9 @@ export default defineConfig(({ mode }) => ({
     force: true,
   },
   cacheDir: mode === "development" ? undefined : ".vite",
+  build: {
+    commonjsOptions: {
+      include: [/node_modules/],
+    },
+  },
 }));

@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, ReactNode } from "react";
+import React, { createContext, useContext, useEffect, useState, ReactNode } from "react";
 import { User, Session } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabase-client";
 import { toast } from "sonner";
@@ -31,12 +31,17 @@ const TIER_MAP = {
 };
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [subscriptionStatus, setSubscriptionStatus] = useState<SubscriptionStatus | null>(null);
-  const [lastCheckTime, setLastCheckTime] = useState<number>(0);
-  const [isChecking, setIsChecking] = useState(false);
+  // Verify React hooks are available
+  React.useEffect(() => {
+    console.log('[AuthProvider] Mounted - React version:', React.version);
+  }, []);
+
+  const [user, setUser] = React.useState<User | null>(null);
+  const [session, setSession] = React.useState<Session | null>(null);
+  const [loading, setLoading] = React.useState(true);
+  const [subscriptionStatus, setSubscriptionStatus] = React.useState<SubscriptionStatus | null>(null);
+  const [lastCheckTime, setLastCheckTime] = React.useState<number>(0);
+  const [isChecking, setIsChecking] = React.useState(false);
 
   const checkSubscription = async (currentSession: Session | null, force: boolean = false) => {
     if (!currentSession) {
@@ -86,7 +91,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await checkSubscription(session, true);
   };
 
-  useEffect(() => {
+  React.useEffect(() => {
     let mounted = true;
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, currentSession) => {
@@ -200,7 +205,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 }
 
 export function useAuth() {
-  const context = useContext(AuthContext);
+  const context = React.useContext(AuthContext);
   if (context === undefined) {
     throw new Error("useAuth must be used within an AuthProvider");
   }
