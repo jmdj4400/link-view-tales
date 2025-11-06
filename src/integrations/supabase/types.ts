@@ -142,6 +142,36 @@ export type Database = {
         }
         Relationships: []
       }
+      email_log: {
+        Row: {
+          created_at: string | null
+          email_type: string
+          error_message: string | null
+          id: string
+          sent_at: string | null
+          success: boolean | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          email_type: string
+          error_message?: string | null
+          id?: string
+          sent_at?: string | null
+          success?: boolean | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          email_type?: string
+          error_message?: string | null
+          id?: string
+          sent_at?: string | null
+          success?: boolean | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       events: {
         Row: {
           country: string | null
