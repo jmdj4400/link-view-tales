@@ -21,9 +21,10 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  const supabase = createClient(supabaseUrl, supabaseKey);
+  
   try {
     const { userId, emailType }: OnboardingEmailRequest = await req.json();
-    const supabase = createClient(supabaseUrl, supabaseKey);
 
     // Fetch user profile
     const { data: profile, error: profileError } = await supabase
@@ -198,8 +199,29 @@ serve(async (req) => {
     });
 
     if (sendError) {
+      // Log failed email attempt
+      await supabase.from('email_log').insert({
+        user_id: userId,
+        email_type: emailType,
+        success: false,
+        error_message: sendError.message || 'Unknown error'
+      });
+      
       throw sendError;
     }
+
+    // Log successful email send
+    const { error: logError } = await supabase.from('email_log').insert({
+      user_id: userId,
+      email_type: emailType,
+      success: true
+    });
+
+    if (logError) {
+      console.error('Failed to log email send:', logError);
+    }
+
+    console.log(`✅ ${emailType} email sent successfully to ${profile.email}`);
 
     return new Response(
       JSON.stringify({ success: true, message: 'Email sent successfully' }),
@@ -210,7 +232,7 @@ serve(async (req) => {
     );
     
   } catch (error: any) {
-    console.error('Error:', error);
+    console.error('❌ Email send failed:', error);
     return new Response(
       JSON.stringify({ error: error.message }),
       { 
