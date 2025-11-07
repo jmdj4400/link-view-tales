@@ -26,6 +26,7 @@ import HelpCenter from "./pages/HelpCenter";
 import ContactSupport from "./pages/ContactSupport";
 import VerifyEmail from "./pages/VerifyEmail";
 import EmailConfirmed from "./pages/EmailConfirmed";
+import ResetPassword from "./pages/ResetPassword";
 import PublicScorecard from "./pages/PublicScorecard";
 import AdminDashboard from "./pages/AdminDashboard";
 
@@ -41,6 +42,7 @@ function App() {
           <Route path="/auth" element={<Auth />} />
           <Route path="/verify-email" element={<VerifyEmail />} />
           <Route path="/email-confirmed" element={<EmailConfirmed />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/onboarding" element={<Onboarding />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/analytics" element={<ProfileAnalytics />} />

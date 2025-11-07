@@ -53,7 +53,9 @@ export default function Auth() {
   const [isLoading, setIsLoading] = useState(false);
   const [signUpData, setSignUpData] = useState({ email: "", password: "", handle: "", name: "" });
   const [signInData, setSignInData] = useState({ email: "", password: "" });
-  const { signUp, signIn, user } = useAuth();
+  const [forgotPasswordEmail, setForgotPasswordEmail] = useState("");
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const { signUp, signIn, user, resetPasswordForEmail } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
@@ -100,6 +102,22 @@ export default function Auth() {
       toast.success("Welcome back! 👋");
       const redirect = searchParams.get('redirect') || '/dashboard';
       navigate(redirect);
+    }
+    setIsLoading(false);
+  };
+
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    const { error } = await resetPasswordForEmail(forgotPasswordEmail);
+
+    if (error) {
+      toast.error(error.message);
+    } else {
+      toast.success("Password reset link sent! Check your email.");
+      setShowForgotPassword(false);
+      setForgotPasswordEmail("");
     }
     setIsLoading(false);
   };
@@ -195,39 +213,96 @@ export default function Auth() {
               </TabsContent>
               
               <TabsContent value="signin">
-                <form onSubmit={handleSignIn} className="space-y-5">
-                  <FormFieldWithValidation
-                    id="signin-email"
-                    label="Email"
-                    type="email"
-                    value={signInData.email}
-                    onChange={(value) => setSignInData({ ...signInData, email: value })}
-                    validation={emailValidation}
-                    placeholder="name@example.com"
-                    required
-                  />
-                  
-                  <FormFieldWithValidation
-                    id="signin-password"
-                    label="Password"
-                    type="password"
-                    value={signInData.password}
-                    onChange={(value) => setSignInData({ ...signInData, password: value })}
-                    validation={passwordValidation}
-                    placeholder="••••••••"
-                    required
-                  />
-                  
-                  <Button 
-                    type="submit" 
-                    className="w-full" 
-                    disabled={isLoading} 
-                    size="lg"
-                  >
-                    {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    Sign In
-                  </Button>
-                </form>
+                {!showForgotPassword ? (
+                  <form onSubmit={handleSignIn} className="space-y-5">
+                    <FormFieldWithValidation
+                      id="signin-email"
+                      label="Email"
+                      type="email"
+                      value={signInData.email}
+                      onChange={(value) => setSignInData({ ...signInData, email: value })}
+                      validation={emailValidation}
+                      placeholder="name@example.com"
+                      required
+                    />
+                    
+                    <FormFieldWithValidation
+                      id="signin-password"
+                      label="Password"
+                      type="password"
+                      value={signInData.password}
+                      onChange={(value) => setSignInData({ ...signInData, password: value })}
+                      validation={passwordValidation}
+                      placeholder="••••••••"
+                      required
+                    />
+                    
+                    <Button 
+                      type="submit" 
+                      className="w-full" 
+                      disabled={isLoading} 
+                      size="lg"
+                    >
+                      {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                      Sign In
+                    </Button>
+                    
+                    <div className="text-center">
+                      <Button
+                        type="button"
+                        variant="link"
+                        className="text-sm text-muted-foreground"
+                        onClick={() => setShowForgotPassword(true)}
+                      >
+                        Forgot password?
+                      </Button>
+                    </div>
+                  </form>
+                ) : (
+                  <form onSubmit={handleForgotPassword} className="space-y-5">
+                    <div className="text-center mb-4">
+                      <h3 className="font-semibold text-lg mb-2">Reset Password</h3>
+                      <p className="text-sm text-muted-foreground">
+                        Enter your email and we'll send you a reset link
+                      </p>
+                    </div>
+                    
+                    <FormFieldWithValidation
+                      id="forgot-email"
+                      label="Email"
+                      type="email"
+                      value={forgotPasswordEmail}
+                      onChange={(value) => setForgotPasswordEmail(value)}
+                      validation={emailValidation}
+                      placeholder="name@example.com"
+                      required
+                    />
+                    
+                    <Button 
+                      type="submit" 
+                      className="w-full" 
+                      disabled={isLoading} 
+                      size="lg"
+                    >
+                      {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                      Send Reset Link
+                    </Button>
+                    
+                    <div className="text-center">
+                      <Button
+                        type="button"
+                        variant="link"
+                        className="text-sm text-muted-foreground"
+                        onClick={() => {
+                          setShowForgotPassword(false);
+                          setForgotPasswordEmail("");
+                        }}
+                      >
+                        Back to sign in
+                      </Button>
+                    </div>
+                  </form>
+                )}
               </TabsContent>
             </Tabs>
           </CardContent>
