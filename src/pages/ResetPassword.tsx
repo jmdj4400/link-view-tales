@@ -29,16 +29,29 @@ export default function ResetPassword() {
   const [isLoading, setIsLoading] = useState(false);
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [isRecoveryMode, setIsRecoveryMode] = useState(false);
   const { updatePassword, user, loading } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
+    // Check for recovery tokens in URL hash
+    const hashParams = new URLSearchParams(window.location.hash.substring(1));
+    const type = hashParams.get('type');
+    const accessToken = hashParams.get('access_token');
+    
+    if (type === 'recovery' && accessToken) {
+      setIsRecoveryMode(true);
+    }
+  }, []);
+
+  useEffect(() => {
     // Wait for auth to finish loading before checking user
-    if (!loading && !user) {
+    // Only redirect if we're not in recovery mode and there's no user after loading
+    if (!loading && !user && !isRecoveryMode) {
       toast.error("Invalid or expired reset link. Please request a new one.");
       navigate('/auth');
     }
-  }, [user, loading, navigate]);
+  }, [user, loading, isRecoveryMode, navigate]);
 
   const handleResetPassword = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -69,7 +82,8 @@ export default function ResetPassword() {
     );
   }
 
-  if (!user) {
+  // Allow rendering if in recovery mode OR if user exists
+  if (!user && !isRecoveryMode) {
     return null;
   }
 
