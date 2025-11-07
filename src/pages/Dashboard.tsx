@@ -118,10 +118,12 @@ export default function Dashboard() {
   useRealtimeEvents({ userId: user?.id, onUpdate: handleRealtimeUpdate });
 
   const fetchProfile = async () => {
+    if (!user?.id) return;
+    
     const { data } = await supabase
       .from('profiles')
       .select('*')
-      .eq('id', user?.id)
+      .eq('id', user.id)
       .single();
     
     if (data) {
@@ -130,13 +132,15 @@ export default function Dashboard() {
   };
 
   const fetchAnalytics = async () => {
+    if (!user?.id) return;
+    
     setIsLoadingAnalytics(true);
 
     // Fetch events (excluding bots)
     const { data: events, error: eventsError } = await supabase
       .from('events')
       .select('*')
-      .eq('user_id', user?.id)
+      .eq('user_id', user.id)
       .eq('is_bot', false)
       .gte('created_at', dateRange.from.toISOString())
       .lte('created_at', dateRange.to.toISOString());
@@ -202,7 +206,7 @@ export default function Dashboard() {
     const { data: linksData } = await supabase
       .from('links')
       .select('*')
-      .eq('user_id', user?.id);
+      .eq('user_id', user.id);
 
     const linksWithStats = (linksData || []).map(link => {
       const linkClicks = linkClickMap.get(link.id) || 0;
@@ -303,10 +307,12 @@ export default function Dashboard() {
   };
 
   const fetchLinks = async () => {
+    if (!user?.id) return;
+    
     const { data, error } = await supabase
       .from('links')
       .select('*')
-      .eq('user_id', user?.id)
+      .eq('user_id', user.id)
       .order('position', { ascending: true });
 
     if (!error && data) {
@@ -332,6 +338,8 @@ export default function Dashboard() {
   };
 
   const fetchPreviousPeriodAnalytics = async () => {
+    if (!user?.id) return;
+    
     const daysDiff = Math.ceil((dateRange.to.getTime() - dateRange.from.getTime()) / (1000 * 60 * 60 * 24));
     const previousFrom = new Date(dateRange.from);
     previousFrom.setDate(previousFrom.getDate() - daysDiff);
@@ -340,7 +348,7 @@ export default function Dashboard() {
     const { data: events } = await supabase
       .from('events')
       .select('*')
-      .eq('user_id', user?.id)
+      .eq('user_id', user.id)
       .eq('is_bot', false)
       .gte('created_at', previousFrom.toISOString())
       .lt('created_at', previousTo.toISOString());

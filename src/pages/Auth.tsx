@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -55,12 +55,14 @@ export default function Auth() {
   const [signInData, setSignInData] = useState({ email: "", password: "" });
   const { signUp, signIn, user } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
   useEffect(() => {
     if (user) {
-      navigate('/dashboard');
+      const redirect = searchParams.get('redirect') || '/dashboard';
+      navigate(redirect);
     }
-  }, [user, navigate]);
+  }, [user, navigate, searchParams]);
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -96,7 +98,8 @@ export default function Auth() {
       toast.error(error.message);
     } else {
       toast.success("Welcome back! 👋");
-      navigate('/dashboard');
+      const redirect = searchParams.get('redirect') || '/dashboard';
+      navigate(redirect);
     }
     setIsLoading(false);
   };

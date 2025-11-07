@@ -88,7 +88,7 @@ serve(async (req) => {
                 </p>
 
                 <div style="text-align: center;">
-                  <a href="${appUrl}/dashboard" class="cta-button">
+                  <a href="${appUrl}/auth?redirect=/dashboard" class="cta-button">
                     Go to Dashboard →
                   </a>
                 </div>
@@ -176,7 +176,7 @@ serve(async (req) => {
                 `}
 
                 <div style="text-align: center;">
-                  <a href="${appUrl}/dashboard" class="cta-button">
+                  <a href="${appUrl}/auth?redirect=/dashboard" class="cta-button">
                     View Full Dashboard →
                   </a>
                 </div>
