@@ -1249,6 +1249,15 @@ export type Database = {
         Args: { p_country: string; p_platform: string; p_user_agent: string }
         Returns: number
       }
+      check_and_increment_rate_limit: {
+        Args: {
+          p_action: string
+          p_identifier: string
+          p_max_requests: number
+          p_window_minutes: number
+        }
+        Returns: boolean
+      }
       check_rate_limit: {
         Args: {
           p_action: string
