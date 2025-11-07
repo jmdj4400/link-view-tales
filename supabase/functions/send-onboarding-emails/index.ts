@@ -192,7 +192,8 @@ serve(async (req) => {
 
     // Send email
     const { error: sendError } = await resend.emails.send({
-      from: 'LinkPeek <hello@linkpeek.app>',
+      from: 'LinkPeek <hello@link-peek.org>',
+      replyTo: 'support@link-peek.org',
       to: [profile.email],
       subject,
       html,

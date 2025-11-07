@@ -99,7 +99,7 @@ const handler = async (req: Request): Promise<Response> => {
     // Send notification email to support team
     const supportEmail = await resend.emails.send({
       from: "LinkPeek Contact Form <noreply@link-peek.org>",
-      to: ["suppport@link-peek.org"],
+      to: ["support@link-peek.org"],
       replyTo: email,
       subject: `[${category.toUpperCase()}] ${subject}`,
       html: `

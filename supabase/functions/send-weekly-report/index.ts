@@ -186,7 +186,8 @@ serve(async (req) => {
         `;
 
         const { error: sendError } = await resend.emails.send({
-          from: 'LinkPeek <weekly@resend.dev>',
+          from: 'LinkPeek <weekly@link-peek.org>',
+          replyTo: 'support@link-peek.org',
           to: [profile.email],
           subject: `📊 Your LinkPeek Weekly Report - ${clickCount} clicks this week!`,
           html: emailHtml,
