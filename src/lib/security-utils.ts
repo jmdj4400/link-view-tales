@@ -65,6 +65,50 @@ export const profileValidation = {
 };
 
 /**
+ * Avatar URL Security Whitelist
+ */
+const ALLOWED_AVATAR_DOMAINS = [
+  'githubusercontent.com',
+  'gravatar.com',
+  'googleusercontent.com',
+  'cloudflare.com',
+  'supabase.co',
+  'imgur.com',
+  'cloudinary.com'
+];
+
+export const avatarValidation = {
+  maxSize: 5 * 1024 * 1024, // 5MB
+  allowedFormats: ['image/jpeg', 'image/png', 'image/gif', 'image/webp'],
+  
+  validateUrl: (url: string): boolean => {
+    if (!url) return true; // Allow empty
+    
+    try {
+      const parsed = new URL(url);
+      
+      // Must be HTTPS
+      if (parsed.protocol !== 'https:') return false;
+      
+      // Check against whitelist
+      const isAllowed = ALLOWED_AVATAR_DOMAINS.some(domain => 
+        parsed.hostname.endsWith(domain)
+      );
+      
+      return isAllowed;
+    } catch {
+      return false;
+    }
+  },
+  
+  sanitizeUrl: (url: string): string | null => {
+    if (!url) return null;
+    if (!avatarValidation.validateUrl(url)) return null;
+    return url;
+  }
+};
+
+/**
  * Validate link input fields
  */
 export const linkValidation = {

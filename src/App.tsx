@@ -27,6 +27,7 @@ import ContactSupport from "./pages/ContactSupport";
 import VerifyEmail from "./pages/VerifyEmail";
 import EmailConfirmed from "./pages/EmailConfirmed";
 import PublicScorecard from "./pages/PublicScorecard";
+import AdminDashboard from "./pages/AdminDashboard";
 
 function App() {
   return (
@@ -56,6 +57,7 @@ function App() {
           <Route path="/help" element={<HelpCenter />} />
           <Route path="/contact" element={<ContactSupport />} />
           <Route path="/offline" element={<Offline />} />
+          <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/r/:linkId" element={<RedirectHandler />} />
           <Route path="/:handle/scorecard" element={<PublicScorecard />} />
           <Route path="/:handle" element={<PublicProfile />} />
