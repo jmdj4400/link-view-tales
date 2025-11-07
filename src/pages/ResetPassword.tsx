@@ -29,16 +29,16 @@ export default function ResetPassword() {
   const [isLoading, setIsLoading] = useState(false);
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const { updatePassword, user } = useAuth();
+  const { updatePassword, user, loading } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    // If no session/user, they need to use the reset link from email
-    if (!user) {
+    // Wait for auth to finish loading before checking user
+    if (!loading && !user) {
       toast.error("Invalid or expired reset link. Please request a new one.");
       navigate('/auth');
     }
-  }, [user, navigate]);
+  }, [user, loading, navigate]);
 
   const handleResetPassword = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -60,6 +60,14 @@ export default function ResetPassword() {
     }
     setIsLoading(false);
   };
+
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   if (!user) {
     return null;
