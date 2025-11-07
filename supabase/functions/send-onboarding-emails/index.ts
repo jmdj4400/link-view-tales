@@ -5,6 +5,7 @@ import { Resend } from "https://esm.sh/resend@4.0.0";
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
 const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+const appUrl = Deno.env.get('APP_URL')!;
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -87,7 +88,7 @@ serve(async (req) => {
                 </p>
 
                 <div style="text-align: center;">
-                  <a href="https://${supabaseUrl.replace('https://', '')}/dashboard" class="cta-button">
+                  <a href="${appUrl}/dashboard" class="cta-button">
                     Go to Dashboard →
                   </a>
                 </div>
@@ -175,7 +176,7 @@ serve(async (req) => {
                 `}
 
                 <div style="text-align: center;">
-                  <a href="https://${supabaseUrl.replace('https://', '')}/dashboard" class="cta-button">
+                  <a href="${appUrl}/dashboard" class="cta-button">
                     View Full Dashboard →
                   </a>
                 </div>
