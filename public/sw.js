@@ -1,44 +1,69 @@
-// NUCLEAR RESET - Service Worker Self-Destruct Mode
-const CACHE_VERSION = '20251110-NUCLEAR';
+const CACHE_VERSION = 'v1';
+const CACHE_NAME = `linkpeek-${CACHE_VERSION}`;
 
-console.log('🔥 NUCLEAR RESET: Service Worker in self-destruct mode');
+// Assets to cache on install
+const STATIC_ASSETS = [
+  '/',
+  '/index.html',
+  '/manifest.json',
+];
 
-// Immediately unregister this service worker on install
+// Install event - cache static assets
 self.addEventListener('install', (event) => {
-  console.log('🔥 NUCLEAR: Unregistering service worker...');
   event.waitUntil(
-    // Delete ALL caches
-    caches.keys().then((cacheNames) => {
-      console.log('🔥 NUCLEAR: Deleting all caches:', cacheNames);
-      return Promise.all(cacheNames.map((name) => caches.delete(name)));
-    }).then(() => {
-      console.log('🔥 NUCLEAR: All caches deleted');
-      // Skip waiting to activate immediately
-      return self.skipWaiting();
+    caches.open(CACHE_NAME).then((cache) => {
+      return cache.addAll(STATIC_ASSETS);
     })
   );
+  self.skipWaiting();
 });
 
-// On activate, unregister immediately
+// Activate event - clean up old caches
 self.addEventListener('activate', (event) => {
-  console.log('🔥 NUCLEAR: Activating self-destruct...');
   event.waitUntil(
-    self.registration.unregister().then(() => {
-      console.log('🔥 NUCLEAR: Service worker unregistered successfully');
-      // Notify all clients to reload
-      return self.clients.matchAll().then((clients) => {
-        clients.forEach((client) => {
-          client.postMessage({ type: 'SW_NUCLEAR_RESET', action: 'reload' });
-        });
-      });
+    caches.keys().then((cacheNames) => {
+      return Promise.all(
+        cacheNames.map((cacheName) => {
+          if (cacheName !== CACHE_NAME) {
+            return caches.delete(cacheName);
+          }
+        })
+      );
     })
   );
   self.clients.claim();
 });
 
-// NUCLEAR RESET: Fetch handler - pass through all requests without caching
+// Fetch event - network first, fallback to cache
 self.addEventListener('fetch', (event) => {
-  console.log('🔥 NUCLEAR: Fetch passthrough for:', event.request.url);
-  // Don't cache anything - just fetch directly from network
-  event.respondWith(fetch(event.request));
+  // Skip non-GET requests
+  if (event.request.method !== 'GET') {
+    return;
+  }
+
+  // Skip cross-origin requests
+  if (!event.request.url.startsWith(self.location.origin)) {
+    return;
+  }
+
+  event.respondWith(
+    fetch(event.request)
+      .then((response) => {
+        // Clone the response before caching
+        const responseToCache = response.clone();
+        
+        // Cache successful responses
+        if (response.status === 200) {
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(event.request, responseToCache);
+          });
+        }
+        
+        return response;
+      })
+      .catch(() => {
+        // Fallback to cache if network fails
+        return caches.match(event.request);
+      })
+  );
 });
