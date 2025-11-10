@@ -58,7 +58,7 @@ export default function Billing() {
       // Use retry logic for checkout creation
       const result = await retrySupabaseFunction(
         () => supabase.functions.invoke('create-checkout', {
-          body: { priceId },
+          body: { priceId, planName: PLANS[planKey as keyof typeof PLANS].name },
           headers: {
             Authorization: `Bearer ${session?.access_token}`,
           },
