@@ -31,6 +31,7 @@ export default function Landing() {
       price: "9",
       description: "For creators and professionals",
       features: [
+        "14-day free trial",
         "Unlimited links",
         "Advanced analytics & insights",
         "Custom domain connection",
@@ -38,7 +39,7 @@ export default function Landing() {
         "Priority email support",
         "Custom themes & colors",
       ],
-      cta: "Start Pro Trial",
+      cta: "Start 14-Day Free Trial",
       featured: true,
     },
     {
@@ -46,13 +47,14 @@ export default function Landing() {
       price: "29",
       description: "For growing teams",
       features: [
+        "14-day free trial",
         "Everything in Pro",
         "Team collaboration (5 seats)",
         "API access",
         "Advanced integrations",
         "Dedicated account manager",
       ],
-      cta: "Contact Sales",
+      cta: "Start 14-Day Free Trial",
       featured: false,
     },
   ];
@@ -115,13 +117,17 @@ export default function Landing() {
                   onClick={() => navigate('/auth')}
                   className="shadow-lg"
                 >
-                  Start 60s Challenge
+                  Start 14-Day Free Trial
                 </Button>
                 <Button size="lg" variant="outline" onClick={() => window.scrollTo({ top: document.getElementById('insights')?.offsetTop || 0, behavior: 'smooth' })}>
                   View insights
                 </Button>
               </div>
               <div className="flex items-center gap-6 mt-8 text-sm text-muted-foreground animate-fade-in">
+                <div className="flex items-center gap-1.5">
+                  <div className="w-1.5 h-1.5 rounded-full bg-primary"></div>
+                  <span>14-day free trial</span>
+                </div>
                 <div className="flex items-center gap-1.5">
                   <div className="w-1.5 h-1.5 rounded-full bg-primary"></div>
                   <span>No credit card</span>
@@ -425,6 +431,10 @@ export default function Landing() {
         {/* Pricing */}
         <section className="container mx-auto px-6 py-24 max-w-7xl border-t" aria-labelledby="pricing-heading">
           <div className="max-w-2xl mb-16 text-center mx-auto">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 border border-primary/20 rounded-full text-sm font-semibold text-primary mb-4">
+              <Sparkles className="h-4 w-4" />
+              14-day free trial on all paid plans
+            </div>
             <h2 id="pricing-heading" className="text-4xl md:text-5xl font-heading font-bold mb-4 leading-tight">
               Simple, transparent pricing
             </h2>
@@ -438,9 +448,16 @@ export default function Landing() {
             <div
               key={plan.name}
               className={`bg-card border rounded-lg p-8 flex flex-col ${
-                plan.featured ? "border-primary" : ""
+                plan.featured ? "border-primary shadow-lg" : ""
               }`}
             >
+              {plan.featured && (
+                <div className="mb-4 -mt-4 -mx-4 px-4 py-2 bg-primary/10 border-b border-primary/20 text-center">
+                  <span className="text-xs font-semibold text-primary uppercase tracking-wide">
+                    ⭐ 14-day free trial included
+                  </span>
+                </div>
+              )}
               <div className="mb-8">
                 <h3 className="text-lg font-heading font-semibold mb-1">{plan.name}</h3>
                 <p className="text-sm text-muted-foreground mb-4">{plan.description}</p>
