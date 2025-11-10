@@ -50,10 +50,11 @@ serve(async (req) => {
       logStep("No customer found, user has no subscription");
       return new Response(JSON.stringify({ 
         subscribed: false,
-        trial_active: false,
-        trial_days_remaining: 0,
+        product_id: null,
         subscription_end: null,
-        price_id: null 
+        status: null,
+        trial_end_date: null,
+        trial_days_remaining: 0
       }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
         status: 200,
@@ -79,10 +80,11 @@ serve(async (req) => {
       logStep("No active subscription found");
       return new Response(JSON.stringify({ 
         subscribed: false,
-        trial_active: false,
-        trial_days_remaining: 0,
+        product_id: null,
         subscription_end: null,
-        price_id: null 
+        status: null,
+        trial_end_date: null,
+        trial_days_remaining: 0
       }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
         status: 200,
@@ -91,57 +93,49 @@ serve(async (req) => {
 
     // Extract subscription details
     const priceId = activeSubscription.items.data[0]?.price.id;
+    const productId = activeSubscription.items.data[0]?.price.product as string;
     const subscriptionEnd = activeSubscription.current_period_end 
       ? new Date(activeSubscription.current_period_end * 1000).toISOString()
       : null;
-    const isTrialing = activeSubscription.status === "trialing";
+    const status = activeSubscription.status;
     
     // Calculate trial info
-    let trialActive = false;
-    let trialDaysRemaining = 0;
     let trialEndDate: string | null = null;
+    let trialDaysRemaining = 0;
 
-    if (isTrialing && activeSubscription.trial_end && typeof activeSubscription.trial_end === 'number') {
-      trialActive = true;
+    if (activeSubscription.trial_end && typeof activeSubscription.trial_end === 'number') {
       trialEndDate = new Date(activeSubscription.trial_end * 1000).toISOString();
       const now = Date.now();
       const trialEndMs = activeSubscription.trial_end * 1000;
-      const msRemaining = Math.max(0, trialEndMs - now);
-      trialDaysRemaining = Math.ceil(msRemaining / (1000 * 60 * 60 * 24));
       
-      logStep("Trial subscription found", { 
-        trialEndDate,
-        trialDaysRemaining 
-      });
-    } else if (activeSubscription.status === "active") {
-      // Check if user ever had a trial (trial_end exists but trial is over)
-      if (activeSubscription.trial_end && typeof activeSubscription.trial_end === 'number' && activeSubscription.trial_end * 1000 < Date.now()) {
-        trialActive = false;
-        trialDaysRemaining = 0;
-        logStep("Trial ended, now on paid subscription", {
-          trialEndedAt: new Date(activeSubscription.trial_end * 1000).toISOString()
-        });
+      // Only calculate days remaining if trial hasn't ended
+      if (trialEndMs > now) {
+        const msRemaining = trialEndMs - now;
+        trialDaysRemaining = Math.ceil(msRemaining / (1000 * 60 * 60 * 24));
       }
+      
+      logStep("Trial info calculated", { 
+        trialEndDate,
+        trialDaysRemaining,
+        status 
+      });
     }
 
     logStep("Active subscription found", { 
       subscriptionId: activeSubscription.id, 
-      status: activeSubscription.status,
-      priceId,
-      trialActive,
+      status,
+      productId,
       trialDaysRemaining,
       subscriptionEnd 
     });
 
     return new Response(JSON.stringify({
       subscribed: true,
-      price_id: priceId,
-      subscription_status: activeSubscription.status,
+      product_id: productId,
       subscription_end: subscriptionEnd,
-      trial_active: trialActive,
-      trial_days_remaining: trialDaysRemaining,
+      status,
       trial_end_date: trialEndDate,
-      cancel_at_period_end: activeSubscription.cancel_at_period_end,
+      trial_days_remaining: trialDaysRemaining,
     }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 200,

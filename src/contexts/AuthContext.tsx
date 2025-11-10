@@ -9,6 +9,9 @@ interface SubscriptionStatus {
   subscribed: boolean;
   product_id: string | null;
   subscription_end: string | null;
+  status?: string;
+  trial_end_date?: string | null;
+  trial_days_remaining?: number;
 }
 
 interface AuthContextType {
@@ -77,7 +80,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       );
 
       if (result.error) throw result.error;
-      setSubscriptionStatus(result.data);
+      
+      // Calculate trial days remaining if in trial
+      const subscriptionData = result.data;
+      if (subscriptionData?.trial_end_date) {
+        const trialEnd = new Date(subscriptionData.trial_end_date);
+        const now = new Date();
+        const daysRemaining = Math.max(0, Math.ceil((trialEnd.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)));
+        subscriptionData.trial_days_remaining = daysRemaining;
+      }
+      
+      setSubscriptionStatus(subscriptionData);
     } catch (error) {
       logger.error('Error checking subscription', error);
       // Only set default status on first check, not on rate limit errors

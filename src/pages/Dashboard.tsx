@@ -36,6 +36,8 @@ import { UpgradePrompt } from "@/components/ui/upgrade-prompt";
 import { FirewallStats } from "@/components/analytics/FirewallStats";
 import { IncidentRadar } from "@/components/analytics/IncidentRadar";
 import { PlanBadge } from "@/components/ui/plan-badge";
+import { TrialCountdownBanner } from "@/components/ui/trial-countdown-banner";
+import { PageHeader } from "@/components/ui/page-header";
 
 export default function Dashboard() {
   useCommonShortcuts();
@@ -502,6 +504,20 @@ export default function Dashboard() {
               userId={user!.id}
               profileUrl={`${window.location.origin}/${profileHandle}`}
               onDismiss={() => setShowSetupBanner(false)}
+            />
+          </div>
+        )}
+
+        {/* Trial Countdown Banner */}
+        {subscriptionStatus?.subscribed && 
+         subscriptionStatus?.status === 'trialing' && 
+         subscriptionStatus?.trial_days_remaining !== undefined &&
+         subscriptionStatus?.trial_end_date && (
+          <div className="mb-8">
+            <TrialCountdownBanner 
+              trialDaysRemaining={subscriptionStatus.trial_days_remaining}
+              planName={getPlanName()}
+              trialEndDate={subscriptionStatus.trial_end_date}
             />
           </div>
         )}

@@ -118,10 +118,10 @@ export default function VerifyEmail() {
                 <CardTitle className="text-3xl font-heading font-bold mb-2">
                   Check your email
                 </CardTitle>
-                <CardDescription className="text-base">
-                  We sent a verification link to
-                </CardDescription>
-                <p className="text-sm font-medium text-foreground mt-2">{email}</p>
+            <CardDescription>
+              Please verify your email address to activate all features.
+            </CardDescription>
+            <p className="text-sm font-medium text-foreground mt-2">{email}</p>
               </div>
             </CardHeader>
             <CardContent className="space-y-4">
