@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { ThemeProvider } from "next-themes";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
@@ -7,12 +7,12 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 
 export default function RootProviders({ children }: { children: React.ReactNode }) {
   // Verify React is properly loaded
-  React.useEffect(() => {
+  useEffect(() => {
     console.log('[RootProviders] Mounted - React version:', React.version);
   }, []);
 
   // Create QueryClient inside a component using lazy init to avoid module-scope hooks/state
-  const [queryClient] = React.useState(() => new QueryClient({
+  const [queryClient] = useState(() => new QueryClient({
     defaultOptions: {
       queries: {
         staleTime: 5 * 60 * 1000,
