@@ -11,7 +11,7 @@ const CookiePolicy = () => {
       <SEOHead
         title="Cookie Policy - LinkPeek"
         description="Learn about how LinkPeek uses cookies and similar technologies to provide and improve our services. Understand your cookie preferences and choices."
-        canonicalUrl="https://yourapp.lovable.app/cookies"
+        canonicalUrl="https://link-peek.org/cookies"
       />
       
       <div className="min-h-screen bg-background">

@@ -81,7 +81,7 @@ const handler = async (req: Request): Promise<Response> => {
                 </ul>
                 
                 <p>In the meantime, you might find helpful resources in our Help Center:</p>
-                <a href="https://yourapp.lovable.app/help" class="button">Visit Help Center</a>
+                <a href="https://link-peek.org/help" class="button">Visit Help Center</a>
                 
                 <p>Best regards,<br><strong>The LinkPeek Support Team</strong></p>
                 

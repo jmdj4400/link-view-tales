@@ -11,7 +11,7 @@ const PrivacyPolicy = () => {
       <SEOHead
         title="Privacy Policy - LinkPeek"
         description="Learn how LinkPeek collects, uses, and protects your personal information. Read our comprehensive privacy policy for transparency on data handling."
-        canonicalUrl="https://yourapp.lovable.app/privacy"
+        canonicalUrl="https://link-peek.org/privacy"
       />
       
       <div className="min-h-screen bg-background">

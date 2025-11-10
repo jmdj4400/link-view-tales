@@ -11,7 +11,7 @@ const TermsOfService = () => {
       <SEOHead
         title="Terms of Service - LinkPeek"
         description="Read LinkPeek's Terms of Service to understand the rules and guidelines for using our URL shortening and link management platform."
-        canonicalUrl="https://yourapp.lovable.app/terms"
+        canonicalUrl="https://link-peek.org/terms"
       />
       
       <div className="min-h-screen bg-background">

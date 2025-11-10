@@ -96,7 +96,7 @@ const ContactSupport = () => {
       <SEOHead
         title="Contact Support - LinkPeek"
         description="Get help with LinkPeek. Contact our support team for technical issues, billing questions, feature requests, or general inquiries."
-        canonicalUrl="https://yourapp.lovable.app/contact"
+        canonicalUrl="https://link-peek.org/contact"
       />
 
       <div className="min-h-screen bg-background">

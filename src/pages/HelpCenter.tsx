@@ -243,7 +243,7 @@ const HelpCenter = () => {
       <SEOHead
         title="Help Center - LinkPeek Support & Documentation"
         description="Find answers to your LinkPeek questions. Browse FAQs, guides, and tutorials for link management, analytics, account settings, and billing."
-        canonicalUrl="https://yourapp.lovable.app/help"
+        canonicalUrl="https://link-peek.org/help"
       />
 
       <div className="min-h-screen bg-background">

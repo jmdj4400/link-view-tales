@@ -5,4 +5,4 @@ Disallow: /settings
 Disallow: /billing
 Disallow: /onboarding
 
-Sitemap: https://yourapp.lovable.app/sitemap.xml
+Sitemap: https://link-peek.org/sitemap.xml
