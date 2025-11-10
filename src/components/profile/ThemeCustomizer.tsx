@@ -135,25 +135,33 @@ export function ThemeCustomizer() {
       }
 
       console.log('ThemeCustomizer: Updating profile for user', user.id);
-      const { error } = await supabase
+      const { data: responseData, error } = await supabase
         .from("profiles")
         .update(themeData)
-        .eq("id", user.id);
+        .eq("id", user.id)
+        .select();
 
       if (error) {
-        console.error('ThemeCustomizer: Update failed', error);
+        console.error('ThemeCustomizer: Update failed', { 
+          error,
+          errorCode: error.code,
+          errorMessage: error.message,
+          errorDetails: error.details,
+          userId: user.id,
+          themeData
+        });
         throw error;
       }
-      console.log('ThemeCustomizer: Update successful');
+      console.log('ThemeCustomizer: Update successful', { responseData });
     },
     onSuccess: () => {
       console.log('ThemeCustomizer: Mutation success, invalidating queries');
       queryClient.invalidateQueries({ queryKey: ["profile-theme"] });
       toast.success("Theme updated successfully");
     },
-    onError: (error) => {
+    onError: (error: any) => {
       console.error('ThemeCustomizer: Mutation error', error);
-      toast.error("Failed to update theme");
+      toast.error(`Failed to update theme: ${error.message || 'Unknown error'}`);
     },
   });
 

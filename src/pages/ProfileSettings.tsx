@@ -32,21 +32,29 @@ export default function ProfileSettings() {
   const autosave = useAutosave({
     data: profile,
     onSave: async (data) => {
-      console.log('ProfileSettings: Autosave triggered', { data });
-      const { error } = await supabase
+      console.log('ProfileSettings: Autosave triggered', { data, userId: user?.id });
+      
+      const { data: responseData, error } = await supabase
         .from('profiles')
         .update({
           name: data.name,
           bio: data.bio,
           avatar_url: data.avatar_url,
         })
-        .eq('id', user?.id);
+        .eq('id', user?.id)
+        .select();
 
       if (error) {
-        console.error('ProfileSettings: Autosave failed', error);
+        console.error('ProfileSettings: Autosave failed', { 
+          error,
+          errorCode: error.code,
+          errorMessage: error.message,
+          errorDetails: error.details,
+          userId: user?.id
+        });
         throw error;
       }
-      console.log('ProfileSettings: Autosave successful');
+      console.log('ProfileSettings: Autosave successful', { responseData });
     },
     delay: 2000,
     key: `profile-autosave-${user?.id}`,
@@ -102,20 +110,36 @@ export default function ProfileSettings() {
       return;
     }
 
-    const { error } = await supabase
+    console.log('ProfileSettings: Sending update request...', { 
+      userId: user?.id,
+      data: {
+        name: profile.name,
+        bio: profile.bio,
+        avatar_url: profile.avatar_url,
+      }
+    });
+
+    const { data, error } = await supabase
       .from('profiles')
       .update({
         name: profile.name,
         bio: profile.bio,
         avatar_url: profile.avatar_url,
       })
-      .eq('id', user?.id);
+      .eq('id', user?.id)
+      .select();
 
     if (error) {
-      console.error('ProfileSettings: Save failed', error);
-      toast.error('Failed to update profile');
+      console.error('ProfileSettings: Save failed', { 
+        error, 
+        errorCode: error.code,
+        errorMessage: error.message,
+        errorDetails: error.details,
+        userId: user?.id 
+      });
+      toast.error(`Failed to update profile: ${error.message}`);
     } else {
-      console.log('ProfileSettings: Save successful');
+      console.log('ProfileSettings: Save successful', { data });
       toast.success('Profile updated successfully');
     }
     setIsLoading(false);
