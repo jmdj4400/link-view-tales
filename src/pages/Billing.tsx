@@ -13,10 +13,11 @@ import { retrySupabaseFunction } from "@/lib/retry-utils";
 const PLANS = {
   pro: {
     name: "Pro",
-    price: "39 DKK",
+    price: "$9",
     priceId: "price_1SOuubFmM9HF7Fk31nMk3kIe",
     productId: "prod_TLc8xSNHXDJoLm",
     features: [
+      "14-day free trial",
       "Unlimited links",
       "90 days data history",
       "Advanced analytics & CSV export",
@@ -26,10 +27,11 @@ const PLANS = {
   },
   business: {
     name: "Business",
-    price: "99 DKK",
+    price: "$29",
     priceId: "price_1SOuvFFmM9HF7Fk3KZ2I0CHV",
     productId: "prod_TLc9WRMahXD66M",
     features: [
+      "14-day free trial",
       "Everything in Pro",
       "Team collaboration",
       "Custom domain",
