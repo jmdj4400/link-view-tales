@@ -29,3 +29,12 @@ verify_jwt = true
 
 [functions.customer-portal]
 verify_jwt = true
+
+[functions.send-team-invitation]
+verify_jwt = true
+
+[functions.generate-api-key]
+verify_jwt = true
+
+[functions.verify-domain]
+verify_jwt = true

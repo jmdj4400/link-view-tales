@@ -32,6 +32,9 @@ import Verify from "./pages/Verify";
 import PublicScorecard from "./pages/PublicScorecard";
 import AdminDashboard from "./pages/AdminDashboard";
 import CheckoutSuccess from "./pages/CheckoutSuccess";
+import TeamManagement from "./pages/TeamManagement";
+import CustomDomains from "./pages/CustomDomains";
+import APIKeys from "./pages/APIKeys";
 
 function App() {
   useServiceWorkerUpdate();
@@ -67,6 +70,9 @@ function App() {
           <Route path="/offline" element={<Offline />} />
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/checkout/success" element={<CheckoutSuccess />} />
+          <Route path="/team" element={<TeamManagement />} />
+          <Route path="/domains" element={<CustomDomains />} />
+          <Route path="/api-keys" element={<APIKeys />} />
           <Route path="/r/:linkId" element={<RedirectHandler />} />
           <Route path="/:handle/scorecard" element={<PublicScorecard />} />
           <Route path="/:handle" element={<PublicProfile />} />
