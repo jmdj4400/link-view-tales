@@ -167,6 +167,28 @@ async function handleSubscriptionCreatedOrUpdated(
       status = "inactive";
   }
 
+  // Get price ID from subscription items
+  const priceId = subscription.items.data[0]?.price.id;
+  logStep("Subscription price ID", { priceId });
+
+  // Determine plan based on price (Pro vs Business)
+  // Note: Update these price IDs with your actual Stripe price IDs
+  let plan = 'pro'; // Default to pro
+  if (priceId) {
+    // You can add logic here to determine if it's business plan
+    // For now, default to 'pro' - user should update this mapping
+    plan = 'pro';
+  }
+
+  // Calculate trial end date if in trialing status
+  let trialEndDate = null;
+  let trialGranted = false;
+  if (status === "trialing" && subscription.trial_end) {
+    trialEndDate = new Date(subscription.trial_end * 1000).toISOString();
+    trialGranted = true;
+    logStep("Trial detected", { trialEndDate });
+  }
+
   // Update or insert subscription
   const { error: upsertError } = await supabaseClient
     .from('subscriptions')
@@ -174,7 +196,10 @@ async function handleSubscriptionCreatedOrUpdated(
       user_id: profile.id,
       stripe_customer_id: subscription.customer as string,
       stripe_subscription_id: subscription.id,
+      stripe_price_id: priceId,
       status,
+      trial_granted: trialGranted,
+      trial_end_date: trialEndDate,
       current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
       updated_at: new Date().toISOString(),
     }, {
@@ -190,7 +215,7 @@ async function handleSubscriptionCreatedOrUpdated(
   if (status === "active" || status === "trialing") {
     const { error: profileUpdateError } = await supabaseClient
       .from('profiles')
-      .update({ plan: 'pro' })
+      .update({ plan })
       .eq('id', profile.id);
 
     if (profileUpdateError) {
@@ -201,6 +226,10 @@ async function handleSubscriptionCreatedOrUpdated(
   logStep("Subscription updated successfully", { 
     userId: profile.id, 
     status,
+    plan,
+    trialGranted,
+    trialEndDate,
+    priceId,
     subscriptionId: subscription.id 
   });
 }
@@ -240,11 +269,13 @@ async function handleSubscriptionDeleted(
     throw new Error(`User not found for email: ${email}`);
   }
 
-  // Update subscription to canceled
+  // Update subscription to canceled and clear trial data
   const { error: updateError } = await supabaseClient
     .from('subscriptions')
     .update({
       status: 'canceled',
+      trial_granted: false,
+      trial_end_date: null,
       updated_at: new Date().toISOString(),
     })
     .eq('user_id', profile.id);
@@ -298,21 +329,36 @@ async function handlePaymentSucceeded(
           .single();
 
         if (profile) {
+          // Get price ID to determine plan
+          const priceId = subscription.items.data[0]?.price.id;
+          let plan = 'pro'; // Default to pro
+          
+          // Check if trial just ended (status changed from trialing to active)
+          const isTrialEnding = subscription.status === 'active' && subscription.trial_end && 
+                               (subscription.trial_end * 1000) < Date.now();
+
           await supabaseClient
             .from('subscriptions')
             .update({
               status: 'active',
+              stripe_price_id: priceId,
               current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
+              // Keep trial_granted true if it was set, but clear trial_end_date since trial is over
+              trial_end_date: isTrialEnding ? null : undefined,
               updated_at: new Date().toISOString(),
             })
             .eq('user_id', profile.id);
 
           await supabaseClient
             .from('profiles')
-            .update({ plan: 'pro' })
+            .update({ plan })
             .eq('id', profile.id);
 
-          logStep("Payment succeeded - subscription activated", { userId: profile.id });
+          logStep("Payment succeeded - subscription activated", { 
+            userId: profile.id, 
+            priceId,
+            isTrialEnding 
+          });
         }
       }
     }

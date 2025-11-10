@@ -1176,6 +1176,7 @@ export type Database = {
           id: string
           status: Database["public"]["Enums"]["subscription_status"] | null
           stripe_customer_id: string | null
+          stripe_price_id: string | null
           stripe_subscription_id: string | null
           trial_end_date: string | null
           trial_granted: boolean | null
@@ -1188,6 +1189,7 @@ export type Database = {
           id?: string
           status?: Database["public"]["Enums"]["subscription_status"] | null
           stripe_customer_id?: string | null
+          stripe_price_id?: string | null
           stripe_subscription_id?: string | null
           trial_end_date?: string | null
           trial_granted?: boolean | null
@@ -1200,6 +1202,7 @@ export type Database = {
           id?: string
           status?: Database["public"]["Enums"]["subscription_status"] | null
           stripe_customer_id?: string | null
+          stripe_price_id?: string | null
           stripe_subscription_id?: string | null
           trial_end_date?: string | null
           trial_granted?: boolean | null
