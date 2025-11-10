@@ -2,6 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { InstallPrompt } from "@/components/pwa/InstallPrompt";
+import { useServiceWorkerUpdate } from "@/hooks/use-service-worker-update";
 import Landing from "./pages/Landing";
 import Beta from "./pages/Beta";
 import Offline from "./pages/Offline";
@@ -32,6 +33,8 @@ import PublicScorecard from "./pages/PublicScorecard";
 import AdminDashboard from "./pages/AdminDashboard";
 
 function App() {
+  useServiceWorkerUpdate();
+  
   return (
     <BrowserRouter>
       <Toaster />
