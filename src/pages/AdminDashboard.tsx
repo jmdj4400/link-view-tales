@@ -8,7 +8,8 @@ import { AdminUserManagement } from "@/components/admin/AdminUserManagement";
 import { AdminSystemMetrics } from "@/components/admin/AdminSystemMetrics";
 import { AdminActivityLog } from "@/components/admin/AdminActivityLog";
 import { AdminRoleManagement } from "@/components/admin/AdminRoleManagement";
-import { Shield, Users, Activity, Settings } from "lucide-react";
+import { AdminAuthLogs } from "@/components/admin/AdminAuthLogs";
+import { Shield, Users, Activity, Settings, Lock } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
 export default function AdminDashboard() {
@@ -42,7 +43,7 @@ export default function AdminDashboard() {
         </Alert>
 
         <Tabs defaultValue="users" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="users">
               <Users className="h-4 w-4 mr-2" />
               Users
@@ -50,6 +51,10 @@ export default function AdminDashboard() {
             <TabsTrigger value="roles">
               <Shield className="h-4 w-4 mr-2" />
               Roles
+            </TabsTrigger>
+            <TabsTrigger value="auth">
+              <Lock className="h-4 w-4 mr-2" />
+              Auth Logs
             </TabsTrigger>
             <TabsTrigger value="metrics">
               <Activity className="h-4 w-4 mr-2" />
@@ -67,6 +72,10 @@ export default function AdminDashboard() {
 
           <TabsContent value="roles" className="space-y-4">
             <AdminRoleManagement />
+          </TabsContent>
+
+          <TabsContent value="auth" className="space-y-4">
+            <AdminAuthLogs />
           </TabsContent>
 
           <TabsContent value="metrics" className="space-y-4">

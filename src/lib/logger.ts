@@ -4,10 +4,33 @@
  * In development: full console logging with context
  */
 
+import { supabase } from '@/integrations/supabase/client';
+
 type LogLevel = 'info' | 'warn' | 'error' | 'debug';
 
 interface LogContext {
   [key: string]: any;
+}
+
+export type AuthEventType = 
+  | 'signup' 
+  | 'signin' 
+  | 'signout' 
+  | 'password_reset_request' 
+  | 'password_reset_complete' 
+  | 'email_verification' 
+  | 'session_refresh' 
+  | 'auth_error';
+
+export type AuthEventStatus = 'success' | 'failure' | 'pending';
+
+interface AuthLogData {
+  eventType: AuthEventType;
+  status: AuthEventStatus;
+  userId?: string;
+  errorCode?: string;
+  errorMessage?: string;
+  metadata?: Record<string, any>;
 }
 
 class Logger {
@@ -81,6 +104,45 @@ class Logger {
 
   debug(message: string, context?: LogContext) {
     this.log('debug', message, context);
+  }
+
+  /**
+   * Log authentication events to database for security monitoring
+   * This runs asynchronously and never blocks the auth flow
+   */
+  async logAuthEvent(data: AuthLogData) {
+    const sanitizedMetadata = this.sanitize(data.metadata || {});
+    
+    // Always log to console in development
+    if (this.isDevelopment) {
+      console.log('[AUTH EVENT]', {
+        eventType: data.eventType,
+        status: data.status,
+        userId: data.userId || 'anonymous',
+        errorCode: data.errorCode,
+        timestamp: new Date().toISOString(),
+      });
+    }
+
+    // Attempt to persist to database (non-blocking)
+    try {
+      const userAgent = typeof navigator !== 'undefined' ? navigator.userAgent : null;
+      
+      await supabase.from('auth_logs').insert({
+        user_id: data.userId || null,
+        event_type: data.eventType,
+        status: data.status,
+        error_code: data.errorCode || null,
+        error_message: data.errorMessage || null,
+        metadata: sanitizedMetadata,
+        user_agent: userAgent,
+      });
+    } catch (error) {
+      // Silently fail - don't let logging errors break auth flow
+      if (this.isDevelopment) {
+        console.warn('[AUTH LOGGING ERROR]', error);
+      }
+    }
   }
 }
 
