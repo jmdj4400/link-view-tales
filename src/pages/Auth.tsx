@@ -11,6 +11,7 @@ import { Loader2, Sparkles } from "lucide-react";
 import { SEOHead } from "@/components/SEOHead";
 import { FormFieldWithValidation } from "@/components/ui/form-field-with-validation";
 import { z } from "zod";
+import logo from "@/assets/logo.png";
 
 // Validation schemas
 const emailValidation = {
@@ -133,7 +134,7 @@ export default function Auth() {
           <Card className="shadow-elegant-xl border-2">
             <CardHeader className="space-y-3 text-center pb-6">
               <div className="flex justify-center mb-2">
-                <div className="w-14 h-14 gradient-primary rounded-2xl shadow-lg"></div>
+                <img src={logo} alt="LinkPeek Logo" className="h-16" />
               </div>
               <CardTitle className="text-3xl font-heading font-bold">Welcome to LinkPeek</CardTitle>
               <CardDescription className="text-base">

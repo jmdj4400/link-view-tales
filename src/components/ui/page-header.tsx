@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Home, ArrowLeft } from "lucide-react";
+import logo from "@/assets/logo.png";
 
 interface PageHeaderProps {
   showBack?: boolean;
@@ -15,7 +16,8 @@ export function PageHeader({ showBack = false, showHome = true, title, actions }
   return (
     <nav className="border-b bg-background sticky top-0 z-50" role="navigation">
       <div className="container mx-auto px-6 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
+          {!showBack && !showHome && <img src={logo} alt="LinkPeek Logo" className="h-7" />}
           {showBack && (
             <Button variant="ghost" size="sm" onClick={() => navigate(-1)}>
               <ArrowLeft className="h-4 w-4 mr-2" />

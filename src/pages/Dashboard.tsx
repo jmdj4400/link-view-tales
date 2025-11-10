@@ -38,6 +38,7 @@ import { IncidentRadar } from "@/components/analytics/IncidentRadar";
 import { PlanBadge } from "@/components/ui/plan-badge";
 import { TrialCountdownBanner } from "@/components/ui/trial-countdown-banner";
 import { PageHeader } from "@/components/ui/page-header";
+import logo from "@/assets/logo.png";
 
 export default function Dashboard() {
   useCommonShortcuts();
@@ -422,7 +423,7 @@ export default function Dashboard() {
         <nav className="border-b bg-background sticky top-0 z-50" role="navigation" aria-label="Dashboard navigation">
         <div className="container mx-auto px-6 py-4 flex justify-between items-center">
           <div className="flex items-center gap-3">
-            <h1 className="text-xl font-heading font-semibold">LinkPeek</h1>
+            <img src={logo} alt="LinkPeek Logo" className="h-7" />
             {subscriptionStatus?.subscribed ? (
               <PlanBadge plan={getPlanName()} className="hidden sm:inline-flex" />
             ) : (

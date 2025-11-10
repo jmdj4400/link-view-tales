@@ -6,6 +6,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { SEOHead } from "@/components/SEOHead";
 import { useAggregateRecoveryStats } from "@/components/analytics/AggregateRecoveryStats";
 import { Testimonials } from "@/components/landing/Testimonials";
+import logo from "@/assets/logo.png";
 
 export default function Landing() {
   const navigate = useNavigate();
@@ -72,9 +73,8 @@ export default function Landing() {
         {/* Navigation */}
         <nav className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50" role="navigation" aria-label="Main navigation">
         <div className="container mx-auto px-6 py-4 flex justify-between items-center max-w-7xl">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-primary rounded-lg"></div>
-            <h1 className="text-xl font-heading font-semibold">LinkPeek</h1>
+          <div className="flex items-center gap-3">
+            <img src={logo} alt="LinkPeek Logo" className="h-8" />
           </div>
           <div className="flex items-center gap-4">
             {user ? (

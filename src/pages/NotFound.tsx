@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Home, Search } from "lucide-react";
 import { SEOHead } from "@/components/SEOHead";
 import { logger } from "@/lib/logger";
+import logo from "@/assets/logo.png";
 
 const NotFound = () => {
   const location = useLocation();
@@ -21,6 +22,9 @@ const NotFound = () => {
       />
       <main className="flex min-h-screen items-center justify-center bg-background p-4">
         <article className="text-center max-w-md space-y-6">
+          <div className="flex justify-center mb-4">
+            <img src={logo} alt="LinkPeek Logo" className="h-16" />
+          </div>
           <div className="space-y-2">
             <h1 className="text-6xl font-bold text-primary">404</h1>
             <h2 className="text-2xl font-semibold">Page Not Found</h2>
