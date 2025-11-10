@@ -15,6 +15,7 @@ import { InstagramSetupGuide } from "@/components/onboarding/InstagramSetupGuide
 import { SEOHead } from "@/components/SEOHead";
 import { PageLoader } from "@/components/ui/loading-spinner";
 import { logger } from "@/lib/logger";
+import { ProductTour } from "@/components/ui/product-tour";
 
 export default function Onboarding() {
   const { user, loading } = useAuth();
@@ -34,10 +35,38 @@ export default function Onboarding() {
   const [link, setLink] = useState({ title: "", dest_url: "" });
   const [showCelebration, setShowCelebration] = useState(false);
   const [completionTime, setCompletionTime] = useState(0);
+  const [showTour, setShowTour] = useState(false);
+
+  const tourSteps = [
+    {
+      title: "Welcome to LinkPeek! 👋",
+      description: "Let's take a quick tour to help you get started. This will only take a minute!",
+    },
+    {
+      title: "Create Your Profile",
+      description: "First, tell us a bit about yourself. Add your bio and create your unique handle.",
+    },
+    {
+      title: "Add Your First Link",
+      description: "Add links to your content - your website, products, or anything you want to share.",
+    },
+    {
+      title: "Connect Instagram",
+      description: "Add your LinkPeek URL to your Instagram bio to start tracking clicks and engagement.",
+    },
+    {
+      title: "Track Analytics",
+      description: "Once live, you'll see real-time analytics on your dashboard. Let's get started!",
+    },
+  ];
 
   useEffect(() => {
     if (!loading && !user) {
       navigate('/auth');
+    } else if (user) {
+      // Show tour after a brief delay
+      const timer = setTimeout(() => setShowTour(true), 1000);
+      return () => clearTimeout(timer);
     }
   }, [user, loading, navigate]);
 
@@ -153,6 +182,14 @@ export default function Onboarding() {
         description="Complete your LinkPeek profile setup in under 60 seconds."
         noindex={true}
       />
+      
+      <ProductTour
+        steps={tourSteps}
+        show={showTour}
+        onComplete={() => setShowTour(false)}
+        onSkip={() => setShowTour(false)}
+      />
+      
       <CountdownTimer startTime={startTime} />
       <CelebrationModal 
         open={showCelebration}

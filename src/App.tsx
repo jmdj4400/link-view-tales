@@ -3,6 +3,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { InstallPrompt } from "@/components/pwa/InstallPrompt";
 import { useServiceWorkerUpdate } from "@/hooks/use-service-worker-update";
+import { SupportChat } from "@/components/ui/support-chat";
 import Landing from "./pages/Landing";
 import Beta from "./pages/Beta";
 import Offline from "./pages/Offline";
@@ -44,6 +45,7 @@ function App() {
       <Toaster />
       <Sonner />
       <InstallPrompt />
+      <SupportChat />
       <Routes>
           <Route path="/beta" element={<Beta />} />
           <Route path="/" element={<Landing />} />

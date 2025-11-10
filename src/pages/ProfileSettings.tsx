@@ -18,6 +18,7 @@ import { AutosaveIndicator } from "@/components/ui/autosave-indicator";
 import { FormFieldWithValidation } from "@/components/ui/form-field-with-validation";
 import { BreadcrumbNav } from "@/components/navigation/BreadcrumbNav";
 import { useCommonShortcuts } from "@/hooks/use-keyboard-shortcuts";
+import { ReportSettings } from "@/components/profile/ReportSettings";
 
 export default function ProfileSettings() {
   useCommonShortcuts();
@@ -257,6 +258,8 @@ export default function ProfileSettings() {
             </div>
           </CardContent>
         </Card>
+
+        <ReportSettings />
       </div>
     </div>
     </>

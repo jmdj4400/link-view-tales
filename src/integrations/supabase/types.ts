@@ -916,6 +916,7 @@ export type Database = {
           id: string
           instagram_bio_setup_completed: boolean | null
           layout_style: string | null
+          monthly_report_enabled: boolean | null
           name: string | null
           onboarding_completed_at: string | null
           plan: Database["public"]["Enums"]["subscription_plan"] | null
@@ -925,6 +926,7 @@ export type Database = {
           text_color: string | null
           theme: string | null
           updated_at: string | null
+          weekly_report_enabled: boolean | null
         }
         Insert: {
           accent_color?: string | null
@@ -945,6 +947,7 @@ export type Database = {
           id: string
           instagram_bio_setup_completed?: boolean | null
           layout_style?: string | null
+          monthly_report_enabled?: boolean | null
           name?: string | null
           onboarding_completed_at?: string | null
           plan?: Database["public"]["Enums"]["subscription_plan"] | null
@@ -954,6 +957,7 @@ export type Database = {
           text_color?: string | null
           theme?: string | null
           updated_at?: string | null
+          weekly_report_enabled?: boolean | null
         }
         Update: {
           accent_color?: string | null
@@ -974,6 +978,7 @@ export type Database = {
           id?: string
           instagram_bio_setup_completed?: boolean | null
           layout_style?: string | null
+          monthly_report_enabled?: boolean | null
           name?: string | null
           onboarding_completed_at?: string | null
           plan?: Database["public"]["Enums"]["subscription_plan"] | null
@@ -983,6 +988,7 @@ export type Database = {
           text_color?: string | null
           theme?: string | null
           updated_at?: string | null
+          weekly_report_enabled?: boolean | null
         }
         Relationships: [
           {

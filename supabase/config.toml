@@ -6,6 +6,9 @@ verify_jwt = false
 [functions.send-weekly-report]
 verify_jwt = false
 
+[functions.send-scheduled-report]
+verify_jwt = false
+
 [functions.firewall-decision]
 verify_jwt = false
 
