@@ -1,17 +1,40 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@18.5.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
+import { Resend } from "npm:resend@4.0.0";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, stripe-signature",
 };
 
+const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
+
 // Helper logging function for debugging
 const logStep = (step: string, details?: any) => {
   const detailsStr = details ? ` - ${JSON.stringify(details)}` : '';
   console.log(`[STRIPE-WEBHOOK] ${step}${detailsStr}`);
 };
+
+// Helper function to send emails
+async function sendEmail(to: string, subject: string, html: string) {
+  try {
+    const { error } = await resend.emails.send({
+      from: "Linkbolt <onboarding@resend.dev>",
+      to: [to],
+      subject,
+      html,
+    });
+    
+    if (error) {
+      logStep("Failed to send email", { error: error.message, to, subject });
+    } else {
+      logStep("Email sent successfully", { to, subject });
+    }
+  } catch (error) {
+    logStep("Error sending email", { error: error instanceof Error ? error.message : String(error), to, subject });
+  }
+}
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -299,6 +322,18 @@ async function handleSubscriptionDeleted(
     userId: profile.id,
     subscriptionId: subscription.id 
   });
+
+  // Send cancellation email
+  await sendEmail(
+    email,
+    "Your subscription has been canceled",
+    `
+      <h1>Subscription Canceled</h1>
+      <p>Your subscription has been canceled. You will continue to have access until the end of your billing period.</p>
+      <p>If you'd like to reactivate your subscription, simply visit your billing page and subscribe again.</p>
+      <p>Thank you for using Linkbolt!</p>
+    `
+  );
 }
 
 async function handlePaymentSucceeded(
@@ -359,6 +394,20 @@ async function handlePaymentSucceeded(
             priceId,
             isTrialEnding 
           });
+
+          // Send trial ending email if trial just ended
+          if (isTrialEnding && email) {
+            await sendEmail(
+              email,
+              "Your trial has ended - Welcome to paid subscription!",
+              `
+                <h1>Welcome to Your Paid Subscription!</h1>
+                <p>Your trial period has ended and your subscription is now active.</p>
+                <p>Your payment method has been charged and you now have full access to all features.</p>
+                <p>Thank you for choosing Linkbolt!</p>
+              `
+            );
+          }
         }
       }
     }
@@ -402,6 +451,19 @@ async function handlePaymentFailed(
             .eq('user_id', profile.id);
 
           logStep("Payment failed - subscription marked past_due", { userId: profile.id });
+
+          // Send payment failed email
+          await sendEmail(
+            email,
+            "Payment Failed - Action Required",
+            `
+              <h1>Payment Failed</h1>
+              <p>We were unable to process your payment for your Linkbolt subscription.</p>
+              <p>Please update your payment method to avoid service interruption.</p>
+              <p>You can manage your subscription and payment methods in your billing settings.</p>
+              <p>If you need assistance, please contact our support team.</p>
+            `
+          );
         }
       }
     }
