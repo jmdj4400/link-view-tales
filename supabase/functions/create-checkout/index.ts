@@ -7,32 +7,83 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
+// Helper logging function for debugging
+const logStep = (step: string, details?: any) => {
+  const detailsStr = details ? ` - ${JSON.stringify(details)}` : '';
+  console.log(`[CREATE-CHECKOUT] ${step}${detailsStr}`);
+};
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
-  const supabaseClient = createClient(
-    Deno.env.get("SUPABASE_URL") ?? "",
-    Deno.env.get("SUPABASE_ANON_KEY") ?? ""
-  );
-
   try {
-    const authHeader = req.headers.get("Authorization")!;
+    logStep("Function started");
+
+    const supabaseClient = createClient(
+      Deno.env.get("SUPABASE_URL") ?? "",
+      Deno.env.get("SUPABASE_ANON_KEY") ?? ""
+    );
+
+    // Authenticate user
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader) {
+      throw new Error("No authorization header provided");
+    }
+    
     const token = authHeader.replace("Bearer ", "");
-    const { data } = await supabaseClient.auth.getUser(token);
+    logStep("Authenticating user");
+    
+    const { data, error: authError } = await supabaseClient.auth.getUser(token);
+    if (authError) {
+      throw new Error(`Authentication error: ${authError.message}`);
+    }
+    
     const user = data.user;
-    if (!user?.email) throw new Error("User not authenticated or email not available");
+    if (!user?.email) {
+      throw new Error("User not authenticated or email not available");
+    }
+    logStep("User authenticated", { userId: user.id, email: user.email });
 
-    const { priceId } = await req.json();
-    if (!priceId) throw new Error("Price ID is required");
+    // Parse request body
+    const body = await req.json();
+    const { priceId, planName } = body;
+    
+    if (!priceId) {
+      throw new Error("Price ID is required");
+    }
+    logStep("Price ID received", { priceId, planName });
 
-    const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", { apiVersion: "2024-11-20.acacia" });
+    // Initialize Stripe
+    const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
+    if (!stripeKey) {
+      throw new Error("STRIPE_SECRET_KEY is not configured");
+    }
+    
+    const stripe = new Stripe(stripeKey, { apiVersion: "2025-08-27.basil" });
+    logStep("Stripe initialized");
+
+    // Find or create customer
     const customers = await stripe.customers.list({ email: user.email, limit: 1 });
-    let customerId;
+    let customerId: string | undefined;
+    
     if (customers.data.length > 0) {
       customerId = customers.data[0].id;
+      logStep("Existing customer found", { customerId });
+    } else {
+      logStep("No existing customer, will create during checkout");
     }
+
+    // Get origin for redirect URLs
+    const origin = req.headers.get("origin") || "http://localhost:8080";
+    
+    // Create checkout session with 14-day trial
+    logStep("Creating checkout session", { 
+      priceId, 
+      trialDays: 14,
+      customerId: customerId || "new" 
+    });
 
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
@@ -46,9 +97,24 @@ serve(async (req) => {
       mode: "subscription",
       subscription_data: {
         trial_period_days: 14,
+        metadata: {
+          user_id: user.id,
+          plan_name: planName || "Pro",
+        },
       },
-      success_url: `${req.headers.get("origin")}/dashboard?success=true`,
-      cancel_url: `${req.headers.get("origin")}/billing`,
+      metadata: {
+        user_id: user.id,
+        user_email: user.email,
+        plan_name: planName || "Pro",
+      },
+      success_url: `${origin}/dashboard?success=true&trial=true`,
+      cancel_url: `${origin}/billing`,
+      allow_promotion_codes: true,
+    });
+
+    logStep("Checkout session created", { 
+      sessionId: session.id, 
+      url: session.url 
     });
 
     return new Response(JSON.stringify({ url: session.url }), {
@@ -57,6 +123,8 @@ serve(async (req) => {
     });
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
+    logStep("ERROR in create-checkout", { message: errorMessage });
+    
     return new Response(JSON.stringify({ error: errorMessage }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 500,
