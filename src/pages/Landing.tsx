@@ -28,7 +28,8 @@ export default function Landing() {
     },
     {
       name: "Pro",
-      price: "9",
+      price: "39",
+      currency: "DKK",
       description: "For creators and professionals",
       features: [
         "14-day free trial",
@@ -44,7 +45,8 @@ export default function Landing() {
     },
     {
       name: "Business",
-      price: "29",
+      price: "99",
+      currency: "DKK",
       description: "For growing teams",
       features: [
         "14-day free trial",
@@ -462,7 +464,9 @@ export default function Landing() {
                 <h3 className="text-lg font-heading font-semibold mb-1">{plan.name}</h3>
                 <p className="text-sm text-muted-foreground mb-4">{plan.description}</p>
                 <div className="flex items-baseline gap-1">
-                  <span className="text-4xl font-heading font-semibold">${plan.price}</span>
+                  <span className="text-4xl font-heading font-semibold">
+                    {plan.name === "Free" ? "$0" : `${plan.price} kr`}
+                  </span>
                   <span className="text-muted-foreground" aria-label="per month">/month</span>
                 </div>
               </div>

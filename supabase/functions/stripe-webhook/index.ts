@@ -194,13 +194,16 @@ async function handleSubscriptionCreatedOrUpdated(
   const priceId = subscription.items.data[0]?.price.id;
   logStep("Subscription price ID", { priceId });
 
-  // Determine plan based on price (Pro vs Business)
-  // Note: Update these price IDs with your actual Stripe price IDs
+  // Determine plan based on price ID
   let plan = 'pro'; // Default to pro
-  if (priceId) {
-    // You can add logic here to determine if it's business plan
-    // For now, default to 'pro' - user should update this mapping
+  if (priceId === 'price_1SOuvFFmM9HF7Fk3KZ2I0CHV') {
+    plan = 'business';
+  } else if (priceId === 'price_1SOuubFmM9HF7Fk31nMk3kIe') {
     plan = 'pro';
+  }
+  // If unknown price ID, log warning but default to pro
+  if (priceId && !['price_1SOuvFFmM9HF7Fk3KZ2I0CHV', 'price_1SOuubFmM9HF7Fk31nMk3kIe'].includes(priceId)) {
+    logStep("WARNING: Unknown price ID, defaulting to pro", { priceId });
   }
 
   // Calculate trial end date if in trialing status

@@ -13,7 +13,7 @@ import { retrySupabaseFunction } from "@/lib/retry-utils";
 const PLANS = {
   pro: {
     name: "Pro",
-    price: "$9",
+    price: "39 kr",
     priceId: "price_1SOuubFmM9HF7Fk31nMk3kIe",
     productId: "prod_TLc8xSNHXDJoLm",
     features: [
@@ -27,7 +27,7 @@ const PLANS = {
   },
   business: {
     name: "Business",
-    price: "$29",
+    price: "99 kr",
     priceId: "price_1SOuvFFmM9HF7Fk3KZ2I0CHV",
     productId: "prod_TLc9WRMahXD66M",
     features: [
