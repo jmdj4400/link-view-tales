@@ -91,15 +91,17 @@ serve(async (req) => {
 
     // Extract subscription details
     const priceId = activeSubscription.items.data[0]?.price.id;
-    const subscriptionEnd = new Date(activeSubscription.current_period_end * 1000).toISOString();
+    const subscriptionEnd = activeSubscription.current_period_end 
+      ? new Date(activeSubscription.current_period_end * 1000).toISOString()
+      : null;
     const isTrialing = activeSubscription.status === "trialing";
     
     // Calculate trial info
     let trialActive = false;
     let trialDaysRemaining = 0;
-    let trialEndDate = null;
+    let trialEndDate: string | null = null;
 
-    if (isTrialing && activeSubscription.trial_end) {
+    if (isTrialing && activeSubscription.trial_end && typeof activeSubscription.trial_end === 'number') {
       trialActive = true;
       trialEndDate = new Date(activeSubscription.trial_end * 1000).toISOString();
       const now = Date.now();
@@ -113,7 +115,7 @@ serve(async (req) => {
       });
     } else if (activeSubscription.status === "active") {
       // Check if user ever had a trial (trial_end exists but trial is over)
-      if (activeSubscription.trial_end && activeSubscription.trial_end * 1000 < Date.now()) {
+      if (activeSubscription.trial_end && typeof activeSubscription.trial_end === 'number' && activeSubscription.trial_end * 1000 < Date.now()) {
         trialActive = false;
         trialDaysRemaining = 0;
         logStep("Trial ended, now on paid subscription", {
