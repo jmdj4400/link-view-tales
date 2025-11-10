@@ -21,8 +21,10 @@ export default defineConfig(({ mode }) => ({
     },
     dedupe: ["react", "react-dom"],
     preserveSymlinks: false,
+    conditions: ["browser", "module", "import", "default"],
   },
   optimizeDeps: {
+    force: true, // Force re-bundling to clear any cache issues
     include: [
       "react", 
       "react-dom", 
@@ -30,7 +32,12 @@ export default defineConfig(({ mode }) => ({
       "@tanstack/react-query",
       "next-themes",
       "@radix-ui/react-tooltip",
+      "@radix-ui/react-tooltip/dist/index",
     ],
+    esbuildOptions: {
+      conditions: ["browser", "module", "import"],
+      mainFields: ["browser", "module", "main"],
+    },
   },
   cacheDir: mode === "development" ? undefined : ".vite",
   build: {

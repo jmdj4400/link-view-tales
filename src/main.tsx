@@ -4,6 +4,13 @@ import App from "./App.tsx";
 import RootProviders from "./RootProviders";
 import "./index.css";
 
+// Verify React is properly loaded - diagnostic check
+if (typeof React === 'undefined') {
+  console.error('❌ React is not loaded!');
+} else {
+  console.log('✅ React loaded successfully - version:', React.version);
+}
+
 // Register custom service worker
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
