@@ -217,14 +217,17 @@ export default function LinksSettings() {
   };
 
   const handleToggleActive = async (id: string, currentState: boolean) => {
+    console.log('LinksSettings: Toggling link active state', { id, currentState });
     const { error } = await supabase
       .from('links')
       .update({ is_active: !currentState })
       .eq('id', id);
 
     if (error) {
+      console.error('LinksSettings: Toggle failed', error);
       toast.error('Failed to update link');
     } else {
+      console.log('LinksSettings: Toggle successful');
       fetchLinks();
     }
   };

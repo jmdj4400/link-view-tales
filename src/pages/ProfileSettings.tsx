@@ -32,6 +32,7 @@ export default function ProfileSettings() {
   const autosave = useAutosave({
     data: profile,
     onSave: async (data) => {
+      console.log('ProfileSettings: Autosave triggered', { data });
       const { error } = await supabase
         .from('profiles')
         .update({
@@ -41,7 +42,11 @@ export default function ProfileSettings() {
         })
         .eq('id', user?.id);
 
-      if (error) throw error;
+      if (error) {
+        console.error('ProfileSettings: Autosave failed', error);
+        throw error;
+      }
+      console.log('ProfileSettings: Autosave successful');
     },
     delay: 2000,
     key: `profile-autosave-${user?.id}`,
@@ -83,12 +88,15 @@ export default function ProfileSettings() {
     e.preventDefault();
     setIsLoading(true);
 
+    console.log('ProfileSettings: Starting save...', { userId: user?.id, profile });
+
     // Validate inputs
     const nameError = profileValidation.name.validate(profile.name);
     const bioError = profileValidation.bio.validate(profile.bio);
     const avatarError = profileValidation.avatarUrl.validate(profile.avatar_url);
 
     if (nameError || bioError || avatarError) {
+      console.error('ProfileSettings: Validation error', { nameError, bioError, avatarError });
       toast.error(nameError || bioError || avatarError || 'Validation error');
       setIsLoading(false);
       return;
@@ -104,8 +112,10 @@ export default function ProfileSettings() {
       .eq('id', user?.id);
 
     if (error) {
+      console.error('ProfileSettings: Save failed', error);
       toast.error('Failed to update profile');
     } else {
+      console.log('ProfileSettings: Save successful');
       toast.success('Profile updated successfully');
     }
     setIsLoading(false);

@@ -510,8 +510,8 @@ export default function Landing() {
             <div className="space-y-4">
               <h4 className="font-heading font-semibold">Product</h4>
               <ul className="space-y-3 text-sm text-muted-foreground">
-                <li><button onClick={() => navigate('/')} className="hover:text-foreground transition-colors">Features</button></li>
-                <li><button onClick={() => navigate('/')} className="hover:text-foreground transition-colors">Pricing</button></li>
+                <li><button onClick={() => window.scrollTo({ top: document.getElementById('insights')?.offsetTop || 0, behavior: 'smooth' })} className="hover:text-foreground transition-colors">Features</button></li>
+                <li><button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="hover:text-foreground transition-colors">Pricing</button></li>
                 <li><button onClick={() => navigate('/auth')} className="hover:text-foreground transition-colors">Sign Up</button></li>
               </ul>
             </div>
@@ -521,7 +521,7 @@ export default function Landing() {
               <ul className="space-y-3 text-sm text-muted-foreground">
                 <li><button onClick={() => navigate('/help')} className="hover:text-foreground transition-colors">Help Center</button></li>
                 <li><button onClick={() => navigate('/contact')} className="hover:text-foreground transition-colors">Contact Support</button></li>
-                <li><button onClick={() => navigate('/')} className="hover:text-foreground transition-colors">API Documentation</button></li>
+                <li><button onClick={() => navigate('/api-keys')} className="hover:text-foreground transition-colors">API Keys</button></li>
               </ul>
             </div>
             

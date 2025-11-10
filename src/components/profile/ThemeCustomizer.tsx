@@ -127,21 +127,34 @@ export function ThemeCustomizer() {
 
   const updateProfileMutation = useMutation({
     mutationFn: async (themeData: ThemeData) => {
+      console.log('ThemeCustomizer: Starting theme save...', themeData);
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not authenticated");
+      if (!user) {
+        console.error('ThemeCustomizer: User not authenticated');
+        throw new Error("Not authenticated");
+      }
 
+      console.log('ThemeCustomizer: Updating profile for user', user.id);
       const { error } = await supabase
         .from("profiles")
         .update(themeData)
         .eq("id", user.id);
 
-      if (error) throw error;
+      if (error) {
+        console.error('ThemeCustomizer: Update failed', error);
+        throw error;
+      }
+      console.log('ThemeCustomizer: Update successful');
     },
     onSuccess: () => {
+      console.log('ThemeCustomizer: Mutation success, invalidating queries');
       queryClient.invalidateQueries({ queryKey: ["profile-theme"] });
       toast.success("Theme updated successfully");
     },
-    onError: () => toast.error("Failed to update theme"),
+    onError: (error) => {
+      console.error('ThemeCustomizer: Mutation error', error);
+      toast.error("Failed to update theme");
+    },
   });
 
   const savePresetMutation = useMutation({
