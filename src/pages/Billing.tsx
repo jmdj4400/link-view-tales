@@ -4,11 +4,12 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabase-client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Check, ArrowLeft, Loader2, RefreshCw, Calendar, CreditCard } from "lucide-react";
+import { Check, ArrowLeft, Loader2, RefreshCw, Calendar, CreditCard, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { logger } from "@/lib/logger";
 import { retrySupabaseFunction } from "@/lib/retry-utils";
+import { Badge } from "@/components/ui/badge";
 
 const PLANS = {
   pro: {
@@ -68,7 +69,8 @@ export default function Billing() {
 
       if (result.error) throw result.error;
       if (result.data?.url) {
-        window.open(result.data.url, '_blank');
+        // Open in same tab and redirect to success page after
+        window.location.href = result.data.url;
       }
     } catch (error) {
       logger.error('Checkout error', error);
@@ -168,38 +170,50 @@ export default function Billing() {
             return (
               <Card 
                 key={key} 
-                className={isCurrent ? "border-2 border-primary" : ""}
+                className={isCurrent ? "border-2 border-primary shadow-xl" : "border-2 hover:border-primary/30 transition-all"}
               >
                 {isCurrent && (
-                  <div className="bg-primary text-primary-foreground text-center py-2 text-sm font-medium rounded-t-lg">
-                    Current Plan
+                  <div className="bg-gradient-to-r from-primary to-accent text-primary-foreground text-center py-3 text-sm font-semibold rounded-t-lg flex items-center justify-center gap-2">
+                    <CheckCircle2 className="h-4 w-4" />
+                    Your Current Plan
                   </div>
                 )}
                 <CardHeader className="pb-6">
-                  <CardTitle className="text-xl">{plan.name}</CardTitle>
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-2xl">{plan.name}</CardTitle>
+                    {!isCurrent && key === 'business' && (
+                      <Badge className="bg-gradient-to-r from-purple-500 to-pink-500 text-white">Most Popular</Badge>
+                    )}
+                  </div>
                   <div className="pt-4">
-                    <span className="text-4xl font-semibold">{plan.price}</span>
-                    <span className="text-muted-foreground">/month</span>
+                    <span className="text-5xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">{plan.price}</span>
+                    <span className="text-muted-foreground text-lg">/month</span>
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                  <ul className="space-y-3">
+                  <ul className="space-y-4">
                     {plan.features.map((feature) => (
                       <li key={feature} className="flex items-start gap-3">
-                        <Check className="h-5 w-5 flex-shrink-0 mt-0.5" />
-                        <span>{feature}</span>
+                        <Check className="h-5 w-5 flex-shrink-0 mt-0.5 text-primary" />
+                        <span className="text-sm">{feature}</span>
                       </li>
                     ))}
                   </ul>
                   <Button
-                    className="w-full"
+                    size="lg"
+                    className={isCurrent ? "w-full" : "w-full shadow-lg"}
                     variant={isCurrent ? "outline" : "default"}
                     disabled={isCurrent || isLoading === key}
                     onClick={() => handleCheckout(plan.priceId, key)}
                   >
                     {isLoading === key && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    {isCurrent ? 'Current Plan' : `Upgrade to ${plan.name}`}
+                    {isCurrent ? '✓ Current Plan' : `Start 14-Day Free Trial`}
                   </Button>
+                  {!isCurrent && (
+                    <p className="text-xs text-center text-muted-foreground">
+                      No credit card required • Cancel anytime
+                    </p>
+                  )}
                 </CardContent>
               </Card>
             );

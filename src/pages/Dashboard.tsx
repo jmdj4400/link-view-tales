@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
-import { LogOut, Settings, Link as LinkIcon, CreditCard, Eye, MousePointerClick, TrendingUp, ArrowRight, Download, Plus, BarChart3, Palette, Users, Target, Zap, Mail, FileDown } from "lucide-react";
+import { LogOut, Settings, Link as LinkIcon, CreditCard, Eye, MousePointerClick, TrendingUp, ArrowRight, Download, Plus, BarChart3, Palette, Users, Target, Zap, Mail, FileDown, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { AnalyticsChart } from "@/components/analytics/AnalyticsChart";
 import { TopLinksTable } from "@/components/analytics/TopLinksTable";
@@ -35,6 +35,7 @@ import { UsageIndicator } from "@/components/ui/usage-indicator";
 import { UpgradePrompt } from "@/components/ui/upgrade-prompt";
 import { FirewallStats } from "@/components/analytics/FirewallStats";
 import { IncidentRadar } from "@/components/analytics/IncidentRadar";
+import { PlanBadge } from "@/components/ui/plan-badge";
 
 export default function Dashboard() {
   useCommonShortcuts();
@@ -420,10 +421,10 @@ export default function Dashboard() {
         <div className="container mx-auto px-6 py-4 flex justify-between items-center">
           <div className="flex items-center gap-3">
             <h1 className="text-xl font-heading font-semibold">LinkPeek</h1>
-            {subscriptionStatus?.subscribed && (
-              <span className="hidden sm:inline-block px-2 py-1 bg-muted rounded text-xs font-medium text-muted-foreground">
-                {getPlanName()}
-              </span>
+            {subscriptionStatus?.subscribed ? (
+              <PlanBadge plan={getPlanName()} className="hidden sm:inline-flex" />
+            ) : (
+              <PlanBadge plan="free" className="hidden sm:inline-flex" />
             )}
           </div>
           <div className="flex items-center gap-1">
@@ -447,13 +448,20 @@ export default function Dashboard() {
         <BreadcrumbNav />
         {/* Header */}
         <div className="mb-8 flex items-center justify-between flex-wrap gap-4">
-          <div>
-            <h2 className="text-2xl font-heading font-bold mb-1">
-              Dashboard
-            </h2>
-            <p className="text-sm text-muted-foreground">
-              Traffic overview and performance metrics
-            </p>
+          <div className="flex items-center gap-3">
+            <div>
+              <h2 className="text-2xl font-heading font-bold mb-1">
+                Dashboard
+              </h2>
+              <p className="text-sm text-muted-foreground">
+                Traffic overview and performance metrics
+              </p>
+            </div>
+            {subscriptionStatus?.subscribed && (
+              <div className="hidden md:block">
+                <PlanBadge plan={getPlanName()} showIcon={true} />
+              </div>
+            )}
           </div>
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-2">
@@ -500,27 +508,42 @@ export default function Dashboard() {
 
         {/* Usage & Upgrade Section for Free Users */}
         {!isPaidUser() && (
-          <div className="grid md:grid-cols-2 gap-6 mb-8">
-            <Card>
+          <div className="mb-8">
+            <Card className="border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-accent/5">
               <CardHeader>
-                <CardTitle className="text-base">Link Usage</CardTitle>
-                <CardDescription>Track your current plan limits</CardDescription>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="text-lg">You're on the Free Plan</CardTitle>
+                    <CardDescription>Upgrade to unlock premium features</CardDescription>
+                  </div>
+                  <PlanBadge plan="free" />
+                </div>
               </CardHeader>
-              <CardContent>
+              <CardContent className="space-y-4">
                 <UsageIndicator
                   current={links.length}
                   limit={5}
                   label="Active links"
                 />
+                {links.length >= 4 && (
+                  <div className="bg-warning/10 border border-warning/20 rounded-lg p-4">
+                    <p className="text-sm text-warning-foreground font-medium mb-2">
+                      ⚠️ You're almost at your link limit!
+                    </p>
+                    <p className="text-xs text-muted-foreground mb-3">
+                      Upgrade to Pro for unlimited links, advanced analytics, A/B testing, and more.
+                    </p>
+                    <Button 
+                      size="sm" 
+                      onClick={() => navigate('/billing')}
+                      className="w-full"
+                    >
+                      View Plans & Pricing
+                    </Button>
+                  </div>
+                )}
               </CardContent>
             </Card>
-            {links.length >= 4 && (
-              <UpgradePrompt
-                title="Unlock Unlimited Links"
-                description="Upgrade to Pro for unlimited links, advanced analytics, and priority support."
-                feature="Pro"
-              />
-            )}
           </div>
         )}
 
@@ -635,10 +658,28 @@ export default function Dashboard() {
 
             {/* Pro Features - Traffic Firewall & Incident Monitoring */}
             {isPaidUser() && (
-              <div className="grid lg:grid-cols-2 gap-6 mb-8">
-                <FirewallStats />
-                <IncidentRadar />
-              </div>
+              <>
+                <div className="mb-6">
+                  <Card className="border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-accent/5">
+                    <CardHeader>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <Sparkles className="h-5 w-5 text-primary" />
+                          <CardTitle className="text-lg">Premium Features</CardTitle>
+                        </div>
+                        <PlanBadge plan={getPlanName()} />
+                      </div>
+                      <CardDescription>
+                        Advanced monitoring and protection for your links
+                      </CardDescription>
+                    </CardHeader>
+                  </Card>
+                </div>
+                <div className="grid lg:grid-cols-2 gap-6 mb-8">
+                  <FirewallStats />
+                  <IncidentRadar />
+                </div>
+              </>
             )}
           </>
         )}

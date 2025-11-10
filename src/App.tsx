@@ -31,6 +31,7 @@ import ResetPassword from "./pages/ResetPassword";
 import Verify from "./pages/Verify";
 import PublicScorecard from "./pages/PublicScorecard";
 import AdminDashboard from "./pages/AdminDashboard";
+import CheckoutSuccess from "./pages/CheckoutSuccess";
 
 function App() {
   useServiceWorkerUpdate();
@@ -65,6 +66,7 @@ function App() {
           <Route path="/contact" element={<ContactSupport />} />
           <Route path="/offline" element={<Offline />} />
           <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/checkout/success" element={<CheckoutSuccess />} />
           <Route path="/r/:linkId" element={<RedirectHandler />} />
           <Route path="/:handle/scorecard" element={<PublicScorecard />} />
           <Route path="/:handle" element={<PublicProfile />} />

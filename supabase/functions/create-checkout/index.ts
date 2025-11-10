@@ -107,7 +107,7 @@ serve(async (req) => {
         user_email: user.email,
         plan_name: planName || "Pro",
       },
-      success_url: `${origin}/dashboard?success=true&trial=true`,
+      success_url: `${origin}/checkout/success`,
       cancel_url: `${origin}/billing`,
       allow_promotion_codes: true,
     });
