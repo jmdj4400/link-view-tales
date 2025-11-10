@@ -3,7 +3,6 @@ import { ThemeProvider } from "next-themes";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { AuthProvider } from "@/contexts/AuthContext";
-import { TooltipProvider } from "@/components/ui/tooltip";
 
 export default function RootProviders({ children }: { children: React.ReactNode }) {
   // Verify React is properly loaded
@@ -26,13 +25,11 @@ export default function RootProviders({ children }: { children: React.ReactNode 
   return (
     <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
       <QueryClientProvider client={queryClient}>
-        <TooltipProvider delayDuration={200} skipDelayDuration={300}>
-          <ErrorBoundary>
-            <AuthProvider>
-              {children}
-            </AuthProvider>
-          </ErrorBoundary>
-        </TooltipProvider>
+        <ErrorBoundary>
+          <AuthProvider>
+            {children}
+          </AuthProvider>
+        </ErrorBoundary>
       </QueryClientProvider>
     </ThemeProvider>
   );

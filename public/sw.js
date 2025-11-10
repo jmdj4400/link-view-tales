@@ -1,5 +1,5 @@
 // Service Worker for offline support and push notifications
-const CACHE_VERSION = '20251110-v1';
+const CACHE_VERSION = '20251110-v2';
 const CACHE_NAME = `linkpeek-${CACHE_VERSION}`;
 const RUNTIME_CACHE = `linkpeek-runtime-${CACHE_VERSION}`;
 
