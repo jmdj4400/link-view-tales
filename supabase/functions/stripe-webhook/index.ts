@@ -159,7 +159,7 @@ async function handleSubscriptionCreatedOrUpdated(
   // Find user by email
   const { data: profile, error: profileError } = await supabaseClient
     .from('profiles')
-    .select('id')
+    .select('id, name, handle')
     .eq('email', email)
     .single();
 
@@ -255,6 +255,79 @@ async function handleSubscriptionCreatedOrUpdated(
     priceId,
     subscriptionId: subscription.id 
   });
+
+  // Send trial welcome email if this is a new trial
+  if (event.type === "customer.subscription.created" && status === "trialing" && trialEndDate) {
+    const planName = plan === 'business' ? 'Business' : 'Pro';
+    const trialDays = subscription.trial_end 
+      ? Math.ceil((subscription.trial_end * 1000 - Date.now()) / (1000 * 60 * 60 * 24))
+      : 14;
+    
+    await sendEmail(
+      email,
+      `Welcome to your ${planName} trial! 🎉`,
+      `
+        <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 600px; margin: 0 auto;">
+          <div style="background: linear-gradient(135deg, #4753FF 0%, #7C3AED 100%); color: white; padding: 40px 32px; text-align: center; border-radius: 16px 16px 0 0;">
+            <h1 style="margin: 0; font-size: 28px;">🎉 Welcome to Linkbolt ${planName}!</h1>
+            <p style="margin: 12px 0 0; opacity: 0.9; font-size: 16px;">Your ${trialDays}-day trial has started</p>
+          </div>
+          
+          <div style="background: white; padding: 32px; border-radius: 0 0 16px 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.08);">
+            <p style="margin: 0 0 24px; font-size: 16px; color: #374151; line-height: 1.6;">
+              Hi ${profile.name || 'there'} 👋
+            </p>
+            
+            <p style="font-size: 16px; color: #374151; line-height: 1.6;">
+              Welcome to Linkbolt ${planName}! You now have access to all premium features for the next ${trialDays} days.
+            </p>
+
+            <div style="background: #f8f9fa; border-left: 4px solid #4753FF; padding: 20px; margin: 24px 0; border-radius: 8px;">
+              <h3 style="margin: 0 0 12px; color: #111827; font-size: 18px;">🚀 What's Included in Your ${planName} Plan:</h3>
+              <ul style="margin: 8px 0; padding-left: 20px; color: #6B7280; line-height: 1.8;">
+                <li><strong>Unlimited Links</strong> - Create as many links as you need</li>
+                <li><strong>Advanced Analytics</strong> - Track clicks, conversions, and user behavior</li>
+                <li><strong>A/B Testing</strong> - Test different destinations to optimize performance</li>
+                <li><strong>Custom Scheduling</strong> - Schedule links to activate/deactivate automatically</li>
+                <li><strong>UTM Parameters</strong> - Track campaign performance</li>
+                <li><strong>QR Codes</strong> - Generate QR codes for offline marketing</li>
+                <li><strong>Lead Capture Forms</strong> - Collect leads directly from your links</li>
+                <li><strong>Priority Support</strong> - Get help when you need it</li>
+              </ul>
+            </div>
+
+            <div style="background: #FEF3C7; border: 1px solid #FCD34D; border-radius: 12px; padding: 16px; margin: 24px 0;">
+              <h3 style="margin: 0 0 8px; color: #92400E; font-size: 16px;">💡 Make the Most of Your Trial:</h3>
+              <ol style="margin: 8px 0; padding-left: 20px; color: #92400E; line-height: 1.8;">
+                <li>Create your first smart link with UTM parameters</li>
+                <li>Set up A/B testing to compare different destinations</li>
+                <li>Add a lead capture form to collect audience info</li>
+                <li>Check your analytics daily to track growth</li>
+                <li>Try QR codes for offline marketing</li>
+              </ol>
+            </div>
+
+            <p style="font-size: 16px; color: #374151; line-height: 1.6;">
+              Your trial will end on <strong>${new Date(trialEndDate).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}</strong>. After that, you'll be charged automatically and keep all your settings and data.
+            </p>
+
+            <div style="text-align: center; margin: 32px 0;">
+              <a href="${Deno.env.get("APP_URL")}/dashboard" 
+                 style="display: inline-block; background: #4753FF; color: white; padding: 14px 32px; border-radius: 12px; text-decoration: none; font-weight: 600; font-size: 16px;">
+                Get Started Now →
+              </a>
+            </div>
+
+            <p style="font-size: 14px; color: #6B7280; margin-top: 32px; padding-top: 24px; border-top: 1px solid #e5e7eb; line-height: 1.6;">
+              Need help getting started? Reply to this email or check out our <a href="${Deno.env.get("APP_URL")}/help" style="color: #4753FF;">Help Center</a>. We're here to help you succeed! 🚀
+            </p>
+          </div>
+        </div>
+      `
+    );
+
+    logStep("Trial welcome email sent", { email, plan: planName });
+  }
 }
 
 async function handleSubscriptionDeleted(
