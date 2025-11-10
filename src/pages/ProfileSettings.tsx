@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
-import { ArrowLeft, Loader2, Eye, Copy, ExternalLink, Share2 } from "lucide-react";
+import { ArrowLeft, Loader2, Eye, Copy, ExternalLink, Share2, Monitor } from "lucide-react";
 import { toast } from "sonner";
 import { SEOHead } from "@/components/SEOHead";
 import { PageLoader } from "@/components/ui/loading-spinner";
@@ -19,6 +19,8 @@ import { FormFieldWithValidation } from "@/components/ui/form-field-with-validat
 import { BreadcrumbNav } from "@/components/navigation/BreadcrumbNav";
 import { useCommonShortcuts } from "@/hooks/use-keyboard-shortcuts";
 import { ReportSettings } from "@/components/profile/ReportSettings";
+import { PublicProfilePreview } from "@/components/profile/PublicProfilePreview";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 export default function ProfileSettings() {
   useCommonShortcuts();
@@ -27,6 +29,8 @@ export default function ProfileSettings() {
   const [isLoading, setIsLoading] = useState(false);
   const [isFetchingProfile, setIsFetchingProfile] = useState(true);
   const [profile, setProfile] = useState({ name: "", handle: "", bio: "", avatar_url: "" });
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [links, setLinks] = useState<any[]>([]);
 
   // Autosave functionality
   const autosave = useAutosave({
@@ -88,6 +92,18 @@ export default function ProfileSettings() {
         bio: data.bio || "",
         avatar_url: data.avatar_url || "",
       });
+      
+      // Fetch links for preview
+      const { data: linksData } = await supabase
+        .from('links')
+        .select('id, title, dest_url, position')
+        .eq('user_id', user?.id)
+        .eq('is_active', true)
+        .order('position', { ascending: true });
+      
+      if (linksData) {
+        setLinks(linksData);
+      }
     }
     setIsFetchingProfile(false);
   };
@@ -161,16 +177,28 @@ export default function ProfileSettings() {
           showBack 
           title="LinkPeek"
           actions={
-            <Button 
-              variant="outline" 
-              size="sm"
-              onClick={() => window.open(`/@${profile.handle}`, '_blank')}
-              disabled={!profile.handle}
-              aria-label="View your public profile"
-            >
-              <Eye className="h-4 w-4 mr-2" />
-              View Profile
-            </Button>
+            <div className="flex gap-2">
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => setPreviewOpen(true)}
+                disabled={!profile.handle}
+                aria-label="Preview your public profile"
+              >
+                <Monitor className="h-4 w-4 mr-2" />
+                Preview
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => window.open(`/@${profile.handle}`, '_blank')}
+                disabled={!profile.handle}
+                aria-label="View your public profile"
+              >
+                <Eye className="h-4 w-4 mr-2" />
+                View Live
+              </Button>
+            </div>
           }
         />
 
@@ -295,6 +323,25 @@ export default function ProfileSettings() {
 
         <ReportSettings />
       </div>
+
+      <Dialog open={previewOpen} onOpenChange={setPreviewOpen}>
+        <DialogContent className="max-w-full h-screen p-0 m-0">
+          <DialogHeader className="absolute top-4 left-4 right-4 z-10 bg-background/95 backdrop-blur-sm p-4 rounded-lg border">
+            <DialogTitle>Profile Preview - This is how visitors see your profile</DialogTitle>
+          </DialogHeader>
+          <div className="w-full h-full overflow-auto">
+            <PublicProfilePreview 
+              profile={{
+                name: profile.name,
+                handle: profile.handle,
+                bio: profile.bio,
+                avatar_url: profile.avatar_url,
+              }}
+              links={links}
+            />
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
     </>
   );
