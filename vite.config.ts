@@ -24,7 +24,6 @@ export default defineConfig(({ mode }) => ({
     conditions: ["browser", "module", "import", "default"],
   },
   optimizeDeps: {
-    force: true, // Force re-bundling to clear any cache issues
     include: [
       "react", 
       "react-dom", 
