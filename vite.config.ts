@@ -38,7 +38,7 @@ export default defineConfig(({ mode }) => ({
       mainFields: ["browser", "module", "main"],
     },
   },
-  cacheDir: ".vite-temp",
+  cacheDir: ".vite-nuclear-reset", // NUCLEAR RESET: Force fresh build cache
   build: {
     commonjsOptions: {
       include: [/node_modules/],

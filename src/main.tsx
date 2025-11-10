@@ -13,6 +13,14 @@ if (typeof React === 'undefined') {
 
 // Register custom service worker
 if ('serviceWorker' in navigator) {
+  // Listen for nuclear reset message
+  navigator.serviceWorker.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'SW_NUCLEAR_RESET') {
+      console.log('🔥 NUCLEAR RESET: Received reload command from service worker');
+      window.location.reload();
+    }
+  });
+
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/sw.js')
       .then(registration => {
