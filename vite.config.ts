@@ -31,7 +31,6 @@ export default defineConfig(({ mode }) => ({
       "@tanstack/react-query",
       "next-themes",
       "@radix-ui/react-tooltip",
-      "@radix-ui/react-tooltip/dist/index",
     ],
     esbuildOptions: {
       conditions: ["browser", "module", "import"],
