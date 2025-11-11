@@ -36,6 +36,9 @@ import CheckoutSuccess from "./pages/CheckoutSuccess";
 import TeamManagement from "./pages/TeamManagement";
 import CustomDomains from "./pages/CustomDomains";
 import APIKeys from "./pages/APIKeys";
+import Blog from "./pages/Blog";
+import BlogArticle from "./pages/BlogArticle";
+import BlogManagement from "./pages/BlogManagement";
 
 function App() {
   useServiceWorkerUpdate();
@@ -75,6 +78,9 @@ function App() {
           <Route path="/team" element={<TeamManagement />} />
           <Route path="/domains" element={<CustomDomains />} />
           <Route path="/api-keys" element={<APIKeys />} />
+          <Route path="/blog" element={<Blog />} />
+          <Route path="/blog/manage" element={<BlogManagement />} />
+          <Route path="/blog/:slug" element={<BlogArticle />} />
           <Route path="/r/:linkId" element={<RedirectHandler />} />
           <Route path="/:handle/scorecard" element={<PublicScorecard />} />
           <Route path="/:handle" element={<PublicProfile />} />

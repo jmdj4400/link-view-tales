@@ -77,6 +77,7 @@ export default function Landing() {
             <img src={logo} alt="LinkPeek Logo" className="h-8" />
           </div>
           <div className="flex items-center gap-4">
+            <Button variant="ghost" onClick={() => navigate('/blog')}>Blog</Button>
             {user ? (
               <Button onClick={() => navigate('/dashboard')} variant="default">
                 Dashboard
