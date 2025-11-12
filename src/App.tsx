@@ -39,6 +39,7 @@ import APIKeys from "./pages/APIKeys";
 import Blog from "./pages/Blog";
 import BlogArticle from "./pages/BlogArticle";
 import BlogManagement from "./pages/BlogManagement";
+import BlogEditor from "./pages/BlogEditor";
 
 function App() {
   useServiceWorkerUpdate();
