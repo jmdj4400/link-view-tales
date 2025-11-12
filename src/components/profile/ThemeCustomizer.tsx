@@ -25,6 +25,12 @@ interface ThemeData {
   card_style: string;
   background_pattern: string | null;
   background_image_url: string | null;
+  profile_layout: string;
+  gradient_enabled: boolean;
+  gradient_from: string;
+  gradient_to: string;
+  animation_enabled: boolean;
+  card_border_width: number;
 }
 
 const FONT_OPTIONS = [
@@ -37,6 +43,14 @@ const LAYOUT_STYLES = [
   { value: "modern", label: "Modern" },
   { value: "minimal", label: "Minimal" },
   { value: "bold", label: "Bold" },
+];
+
+const PROFILE_LAYOUTS = [
+  { value: "classic", label: "Classic List", description: "Traditional vertical list" },
+  { value: "bento", label: "Bento Grid", description: "Modern grid layout" },
+  { value: "neon", label: "Neon Data", description: "Tech-inspired with glows" },
+  { value: "gradient", label: "Gradient Glass", description: "Glassmorphism with gradients" },
+  { value: "minimal", label: "Ultra Minimal", description: "Clean and simple" },
 ];
 
 const BUTTON_STYLES = [
@@ -70,6 +84,12 @@ export function ThemeCustomizer() {
     card_style: "elevated",
     background_pattern: null,
     background_image_url: null,
+    profile_layout: "classic",
+    gradient_enabled: false,
+    gradient_from: "#3b82f6",
+    gradient_to: "#8b5cf6",
+    animation_enabled: true,
+    card_border_width: 1,
   });
 
   const { data: profile } = useQuery({
@@ -121,6 +141,12 @@ export function ThemeCustomizer() {
         card_style: profile.card_style || "elevated",
         background_pattern: profile.background_pattern,
         background_image_url: profile.background_image_url,
+        profile_layout: profile.profile_layout || "classic",
+        gradient_enabled: profile.gradient_enabled || false,
+        gradient_from: profile.gradient_from || "#3b82f6",
+        gradient_to: profile.gradient_to || "#8b5cf6",
+        animation_enabled: profile.animation_enabled !== false,
+        card_border_width: profile.card_border_width || 1,
       });
     }
   }, [profile]);
@@ -205,6 +231,12 @@ export function ThemeCustomizer() {
         card_style: preset.card_style,
         background_pattern: preset.background_pattern,
         background_image_url: preset.background_image_url,
+        profile_layout: preset.profile_layout || "classic",
+        gradient_enabled: preset.gradient_enabled || false,
+        gradient_from: preset.gradient_from || "#3b82f6",
+        gradient_to: preset.gradient_to || "#8b5cf6",
+        animation_enabled: preset.animation_enabled !== false,
+        card_border_width: preset.card_border_width || 1,
       };
 
       setTheme(themeData);
@@ -368,8 +400,115 @@ export function ThemeCustomizer() {
         <TabsContent value="layout" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>Layout & Style</CardTitle>
-              <CardDescription>Choose your layout preferences</CardDescription>
+              <CardTitle>Profile Layout</CardTitle>
+              <CardDescription>Choose how your profile looks to visitors</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+                {PROFILE_LAYOUTS.map((layout) => (
+                  <button
+                    key={layout.value}
+                    onClick={() => setTheme({ ...theme, profile_layout: layout.value })}
+                    className={`p-4 rounded-lg border-2 transition-all text-left ${
+                      theme.profile_layout === layout.value
+                        ? 'border-primary bg-primary/5'
+                        : 'border-border hover:border-primary/50'
+                    }`}
+                  >
+                    <div className="font-semibold mb-1">{layout.label}</div>
+                    <div className="text-sm text-muted-foreground">{layout.description}</div>
+                  </button>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Layout Options</CardTitle>
+              <CardDescription>Fine-tune your layout appearance</CardDescription>
+            </CardHeader>
+            <CardContent className="grid gap-6 md:grid-cols-2">
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="gradient-enabled">Enable Gradients</Label>
+                  <input
+                    id="gradient-enabled"
+                    type="checkbox"
+                    checked={theme.gradient_enabled}
+                    onChange={(e) => setTheme({ ...theme, gradient_enabled: e.target.checked })}
+                    className="rounded"
+                  />
+                </div>
+                {theme.gradient_enabled && (
+                  <div className="grid gap-2">
+                    <div className="space-y-1">
+                      <Label htmlFor="gradient-from">Gradient From</Label>
+                      <div className="flex gap-2">
+                        <Input
+                          id="gradient-from"
+                          type="color"
+                          value={theme.gradient_from}
+                          onChange={(e) => setTheme({ ...theme, gradient_from: e.target.value })}
+                          className="w-16 h-10"
+                        />
+                        <Input
+                          value={theme.gradient_from}
+                          onChange={(e) => setTheme({ ...theme, gradient_from: e.target.value })}
+                        />
+                      </div>
+                    </div>
+                    <div className="space-y-1">
+                      <Label htmlFor="gradient-to">Gradient To</Label>
+                      <div className="flex gap-2">
+                        <Input
+                          id="gradient-to"
+                          type="color"
+                          value={theme.gradient_to}
+                          onChange={(e) => setTheme({ ...theme, gradient_to: e.target.value })}
+                          className="w-16 h-10"
+                        />
+                        <Input
+                          value={theme.gradient_to}
+                          onChange={(e) => setTheme({ ...theme, gradient_to: e.target.value })}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="animation-enabled">Enable Animations</Label>
+                  <input
+                    id="animation-enabled"
+                    type="checkbox"
+                    checked={theme.animation_enabled}
+                    onChange={(e) => setTheme({ ...theme, animation_enabled: e.target.checked })}
+                    className="rounded"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="border-width">Card Border Width</Label>
+                  <Input
+                    id="border-width"
+                    type="number"
+                    min="0"
+                    max="5"
+                    value={theme.card_border_width}
+                    onChange={(e) => setTheme({ ...theme, card_border_width: parseInt(e.target.value) || 1 })}
+                  />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Legacy Layout Style</CardTitle>
+              <CardDescription>Style options for classic layout</CardDescription>
             </CardHeader>
             <CardContent className="grid gap-4 md:grid-cols-3">
               <div className="space-y-2">
