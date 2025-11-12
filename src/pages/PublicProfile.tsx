@@ -8,6 +8,10 @@ import { SEOHead } from "@/components/SEOHead";
 import { PageLoader } from "@/components/ui/loading-spinner";
 import { hashUserAgent } from "@/lib/security-utils";
 import { ProfileQRDialog } from "@/components/profile/ProfileQRDialog";
+import { ProfileLayoutBento } from "@/components/profile/layouts/ProfileLayoutBento";
+import { ProfileLayoutNeon } from "@/components/profile/layouts/ProfileLayoutNeon";
+import { ProfileLayoutGradient } from "@/components/profile/layouts/ProfileLayoutGradient";
+import { ProfileLayoutMinimal } from "@/components/profile/layouts/ProfileLayoutMinimal";
 
 interface Profile {
   name: string;
@@ -24,6 +28,13 @@ interface Profile {
   layout_style?: string;
   button_style?: string;
   card_style?: string;
+  profile_layout?: string;
+  gradient_enabled?: boolean;
+  gradient_from?: string;
+  gradient_to?: string;
+  animation_enabled?: boolean;
+  background_blur?: boolean;
+  card_border_width?: number;
 }
 
 interface Link {
@@ -48,7 +59,7 @@ export default function PublicProfile() {
   const fetchProfileData = async () => {
     const { data: profileData, error: profileError } = await supabase
       .from('public_profiles')
-      .select('id, name, handle, bio, avatar_url, primary_color, secondary_color, background_color, text_color, accent_color, heading_font, body_font, layout_style, button_style, card_style')
+      .select('*')
       .eq('handle', handle?.toLowerCase())
       .maybeSingle();
 
@@ -164,7 +175,147 @@ export default function PublicProfile() {
     layoutStyle: profile.layout_style || "classic",
     buttonStyle: profile.button_style || "rounded",
     cardStyle: profile.card_style || "elevated",
+    profileLayout: profile.profile_layout || "classic",
+    gradientEnabled: profile.gradient_enabled || false,
+    gradientFrom: profile.gradient_from || "#3b82f6",
+    gradientTo: profile.gradient_to || "#8b5cf6",
+    animationEnabled: profile.animation_enabled !== false,
+    backgroundBlur: profile.background_blur || false,
+    cardBorderWidth: profile.card_border_width || 1,
   };
+
+  // Render appropriate layout
+  const renderProfileLayout = () => {
+    const commonProps = {
+      profile,
+      links,
+      theme,
+      onLinkClick: handleLinkClick,
+      animationEnabled: theme.animationEnabled,
+    };
+
+    switch (theme.profileLayout) {
+      case "bento":
+        return <ProfileLayoutBento {...commonProps} />;
+      case "neon":
+        return <ProfileLayoutNeon {...commonProps} />;
+      case "gradient":
+        return <ProfileLayoutGradient 
+          {...commonProps} 
+          gradientFrom={theme.gradientFrom}
+          gradientTo={theme.gradientTo}
+        />;
+      case "minimal":
+        return <ProfileLayoutMinimal {...commonProps} />;
+      default:
+        return renderClassicLayout();
+    }
+  };
+
+  const renderClassicLayout = () => (
+    <main 
+      className="min-h-screen flex items-center justify-center p-6"
+      style={{
+        backgroundColor: theme.backgroundColor,
+        color: theme.textColor,
+        fontFamily: theme.bodyFont,
+      }}
+    >
+      <article className={getContainerClasses()}>
+        <header className="text-center space-y-4">
+          <Avatar 
+            className="h-24 w-24 mx-auto"
+            style={{ border: `3px solid ${theme.primaryColor}` }}
+          >
+            <AvatarImage 
+              src={profile.avatar_url} 
+              alt={`${profile.name}'s profile picture`}
+              loading="lazy"
+            />
+            <AvatarFallback 
+              className="text-xl"
+              style={{ backgroundColor: theme.primaryColor, color: 'white' }}
+            >
+              {profile.name.substring(0, 2).toUpperCase()}
+            </AvatarFallback>
+          </Avatar>
+          <div>
+            <h1 
+              className="text-3xl font-bold mb-1"
+              style={{ fontFamily: theme.headingFont, color: theme.textColor }}
+            >
+              {profile.name}
+            </h1>
+            <p style={{ color: theme.textColor, opacity: 0.7 }}>@{profile.handle}</p>
+          </div>
+          {profile.bio && (
+            <p 
+              className="text-center max-w-sm mx-auto"
+              style={{ color: theme.textColor, opacity: 0.8 }}
+            >
+              {profile.bio}
+            </p>
+          )}
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={() => setQrDialogOpen(true)}
+            className="mt-2"
+            style={{
+              borderColor: theme.accentColor,
+              color: theme.accentColor,
+            }}
+          >
+            <QrCode className="h-4 w-4 mr-2" />
+            Share QR Code
+          </Button>
+        </header>
+
+        <nav className="space-y-3" aria-label="Social links">
+          {links.length === 0 ? (
+            <p 
+              className="text-center py-8"
+              style={{ color: theme.textColor, opacity: 0.7 }}
+            >
+              No links yet
+            </p>
+          ) : (
+            links.map((link) => (
+              <button
+                key={link.id}
+                className={getButtonClasses()}
+                onClick={() => handleLinkClick(link.id, link.dest_url)}
+                aria-label={`Visit ${link.title}`}
+                style={{
+                  backgroundColor: theme.layoutStyle === "bold" ? theme.primaryColor : "white",
+                  color: theme.layoutStyle === "bold" ? "white" : theme.textColor,
+                  borderWidth: `${theme.cardBorderWidth}px`,
+                  borderColor: theme.primaryColor,
+                  fontFamily: theme.bodyFont,
+                }}
+              >
+                <span className="font-medium">{link.title}</span>
+                <ExternalLink className="h-4 w-4 ml-2" aria-hidden="true" />
+              </button>
+            ))
+          )}
+        </nav>
+
+        <footer className="text-center pt-6">
+          <Link 
+            to="/" 
+            className="text-sm transition-colors"
+            style={{ 
+              color: theme.textColor, 
+              opacity: 0.6,
+            }}
+          >
+            Create your own with LinkPeek
+          </Link>
+        </footer>
+      </article>
+    </main>
+  );
 
   const getButtonClasses = () => {
     const base = "w-full h-auto py-4 justify-between transition-all";
@@ -215,108 +366,8 @@ export default function PublicProfile() {
       <script type="application/ld+json">
         {JSON.stringify(structuredData)}
       </script>
-      <main 
-        className="min-h-screen flex items-center justify-center p-6"
-        style={{
-          backgroundColor: theme.backgroundColor,
-          color: theme.textColor,
-          fontFamily: theme.bodyFont,
-        }}
-      >
-        <article className={getContainerClasses()}>
-          <header className="text-center space-y-4">
-            <Avatar 
-              className="h-24 w-24 mx-auto"
-              style={{ borderColor: theme.primaryColor, borderWidth: '3px' }}
-            >
-              <AvatarImage 
-                src={profile.avatar_url} 
-                alt={`${profile.name}'s profile picture`}
-                loading="lazy"
-              />
-              <AvatarFallback 
-                className="text-xl"
-                style={{ backgroundColor: theme.primaryColor, color: 'white' }}
-              >
-                {profile.name.substring(0, 2).toUpperCase()}
-              </AvatarFallback>
-            </Avatar>
-            <div>
-              <h1 
-                className="text-3xl font-bold mb-1"
-                style={{ fontFamily: theme.headingFont, color: theme.textColor }}
-              >
-                {profile.name}
-              </h1>
-              <p style={{ color: theme.textColor, opacity: 0.7 }}>@{profile.handle}</p>
-            </div>
-            {profile.bio && (
-              <p 
-                className="text-center max-w-sm mx-auto"
-                style={{ color: theme.textColor, opacity: 0.8 }}
-              >
-                {profile.bio}
-              </p>
-            )}
-            <Button 
-              variant="outline" 
-              size="sm"
-              onClick={() => setQrDialogOpen(true)}
-              className="mt-2"
-              style={{
-                borderColor: theme.accentColor,
-                color: theme.accentColor,
-              }}
-            >
-              <QrCode className="h-4 w-4 mr-2" />
-              Share QR Code
-            </Button>
-          </header>
-
-          <nav className="space-y-3" aria-label="Social links">
-            {links.length === 0 ? (
-              <p 
-                className="text-center py-8"
-                style={{ color: theme.textColor, opacity: 0.7 }}
-              >
-                No links yet
-              </p>
-            ) : (
-              links.map((link) => (
-                <button
-                  key={link.id}
-                  className={getButtonClasses()}
-                  onClick={() => handleLinkClick(link.id, link.dest_url)}
-                  aria-label={`Visit ${link.title}`}
-                  style={{
-                    backgroundColor: theme.layoutStyle === "bold" ? theme.primaryColor : "white",
-                    color: theme.layoutStyle === "bold" ? "white" : theme.textColor,
-                    borderWidth: theme.cardStyle === "outlined" ? "2px" : "1px",
-                    borderColor: theme.primaryColor,
-                    fontFamily: theme.bodyFont,
-                  }}
-                >
-                  <span className="font-medium">{link.title}</span>
-                  <ExternalLink className="h-4 w-4 ml-2" aria-hidden="true" />
-                </button>
-              ))
-            )}
-          </nav>
-
-          <footer className="text-center pt-6">
-            <Link 
-              to="/" 
-              className="text-sm transition-colors"
-              style={{ 
-                color: theme.textColor, 
-                opacity: 0.6,
-              }}
-            >
-              Create your own with LinkPeek
-            </Link>
-          </footer>
-        </article>
-      </main>
+      
+      {renderProfileLayout()}
       
       <ProfileQRDialog
         open={qrDialogOpen}
