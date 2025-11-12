@@ -37,8 +37,8 @@ export function ProfileLayoutBento({ profile, links, theme, onLinkClick, animati
         <header className="text-center space-y-4">
           <div className={animationEnabled ? "animate-fade-in" : ""}>
             <Avatar 
-              className="h-24 w-24 mx-auto ring-4"
-              style={{ ringColor: theme.primaryColor }}
+              className="h-24 w-24 mx-auto"
+              style={{ border: `4px solid ${theme.primaryColor}` }}
             >
               <AvatarImage src={profile.avatar_url} alt={profile.name} />
               <AvatarFallback style={{ backgroundColor: theme.primaryColor, color: 'white' }}>
