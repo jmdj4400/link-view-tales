@@ -231,6 +231,12 @@ export function ThemeCustomizer() {
         card_style: preset.card_style,
         background_pattern: preset.background_pattern,
         background_image_url: preset.background_image_url,
+        profile_layout: preset.profile_layout || "classic",
+        gradient_enabled: preset.gradient_enabled || false,
+        gradient_from: preset.gradient_from || "#3b82f6",
+        gradient_to: preset.gradient_to || "#8b5cf6",
+        animation_enabled: preset.animation_enabled !== false,
+        card_border_width: preset.card_border_width || 1,
       };
 
       setTheme(themeData);
