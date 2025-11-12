@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import { useUserRoles } from "@/hooks/use-user-roles";
 import { supabase } from "@/integrations/supabase/client";
 import { SEOHead } from "@/components/SEOHead";
 import { PageHeader } from "@/components/ui/page-header";
@@ -36,6 +37,7 @@ interface Article {
 
 export default function BlogManagement() {
   const { user, loading: authLoading } = useAuth();
+  const { isAdmin, isLoading: rolesLoading } = useUserRoles();
   const navigate = useNavigate();
   const [articles, setArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState(true);
@@ -51,11 +53,17 @@ export default function BlogManagement() {
 
   const fetchArticles = async () => {
     try {
-      const { data, error } = await supabase
+      let query = supabase
         .from("articles")
-        .select("id, slug, title, description, category, published, published_at, view_count, created_at")
-        .eq("author_id", user!.id)
+        .select("id, slug, title, description, category, published, published_at, view_count, created_at, author_id")
         .order("created_at", { ascending: false });
+
+      // If not admin, only show own articles
+      if (!isAdmin) {
+        query = query.eq("author_id", user!.id);
+      }
+
+      const { data, error } = await query;
 
       if (error) throw error;
       setArticles(data || []);
@@ -100,7 +108,7 @@ export default function BlogManagement() {
     }
   };
 
-  if (authLoading || loading) {
+  if (authLoading || loading || rolesLoading) {
     return <PageLoader />;
   }
 
@@ -120,7 +128,7 @@ export default function BlogManagement() {
             <div>
               <h1 className="text-3xl font-bold">Manage Articles</h1>
               <p className="text-muted-foreground mt-1">
-                Create and manage your blog content
+                {isAdmin ? "Manage all blog articles" : "Create and manage your blog content"}
               </p>
             </div>
             <Button onClick={() => navigate("/blog/new")}>
