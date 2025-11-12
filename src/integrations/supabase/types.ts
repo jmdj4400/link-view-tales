@@ -957,17 +957,23 @@ export type Database = {
         Row: {
           accent_color: string | null
           active_theme_id: string | null
+          animation_enabled: boolean | null
           avatar_url: string | null
+          background_blur: boolean | null
           background_color: string | null
           background_image_url: string | null
           background_pattern: string | null
           bio: string | null
           body_font: string | null
           button_style: string | null
+          card_border_width: number | null
           card_style: string | null
           created_at: string | null
           email: string
           firewall_enabled: boolean | null
+          gradient_enabled: boolean | null
+          gradient_from: string | null
+          gradient_to: string | null
           handle: string
           heading_font: string | null
           id: string
@@ -978,8 +984,10 @@ export type Database = {
           onboarding_completed_at: string | null
           plan: Database["public"]["Enums"]["subscription_plan"] | null
           primary_color: string | null
+          profile_layout: string | null
           secondary_color: string | null
           setup_guide_dismissed: boolean | null
+          social_icon_style: string | null
           text_color: string | null
           theme: string | null
           updated_at: string | null
@@ -988,17 +996,23 @@ export type Database = {
         Insert: {
           accent_color?: string | null
           active_theme_id?: string | null
+          animation_enabled?: boolean | null
           avatar_url?: string | null
+          background_blur?: boolean | null
           background_color?: string | null
           background_image_url?: string | null
           background_pattern?: string | null
           bio?: string | null
           body_font?: string | null
           button_style?: string | null
+          card_border_width?: number | null
           card_style?: string | null
           created_at?: string | null
           email: string
           firewall_enabled?: boolean | null
+          gradient_enabled?: boolean | null
+          gradient_from?: string | null
+          gradient_to?: string | null
           handle: string
           heading_font?: string | null
           id: string
@@ -1009,8 +1023,10 @@ export type Database = {
           onboarding_completed_at?: string | null
           plan?: Database["public"]["Enums"]["subscription_plan"] | null
           primary_color?: string | null
+          profile_layout?: string | null
           secondary_color?: string | null
           setup_guide_dismissed?: boolean | null
+          social_icon_style?: string | null
           text_color?: string | null
           theme?: string | null
           updated_at?: string | null
@@ -1019,17 +1035,23 @@ export type Database = {
         Update: {
           accent_color?: string | null
           active_theme_id?: string | null
+          animation_enabled?: boolean | null
           avatar_url?: string | null
+          background_blur?: boolean | null
           background_color?: string | null
           background_image_url?: string | null
           background_pattern?: string | null
           bio?: string | null
           body_font?: string | null
           button_style?: string | null
+          card_border_width?: number | null
           card_style?: string | null
           created_at?: string | null
           email?: string
           firewall_enabled?: boolean | null
+          gradient_enabled?: boolean | null
+          gradient_from?: string | null
+          gradient_to?: string | null
           handle?: string
           heading_font?: string | null
           id?: string
@@ -1040,8 +1062,10 @@ export type Database = {
           onboarding_completed_at?: string | null
           plan?: Database["public"]["Enums"]["subscription_plan"] | null
           primary_color?: string | null
+          profile_layout?: string | null
           secondary_color?: string | null
           setup_guide_dismissed?: boolean | null
+          social_icon_style?: string | null
           text_color?: string | null
           theme?: string | null
           updated_at?: string | null
@@ -1410,60 +1434,84 @@ export type Database = {
       theme_presets: {
         Row: {
           accent_color: string | null
+          animation_enabled: boolean | null
+          background_blur: boolean | null
           background_color: string | null
           background_image_url: string | null
           background_pattern: string | null
           body_font: string | null
           button_style: string | null
+          card_border_width: number | null
           card_style: string | null
           created_at: string | null
+          gradient_enabled: boolean | null
+          gradient_from: string | null
+          gradient_to: string | null
           heading_font: string | null
           id: string
           is_active: boolean | null
           layout_style: string | null
           name: string
           primary_color: string | null
+          profile_layout: string | null
           secondary_color: string | null
+          social_icon_style: string | null
           text_color: string | null
           updated_at: string | null
           user_id: string
         }
         Insert: {
           accent_color?: string | null
+          animation_enabled?: boolean | null
+          background_blur?: boolean | null
           background_color?: string | null
           background_image_url?: string | null
           background_pattern?: string | null
           body_font?: string | null
           button_style?: string | null
+          card_border_width?: number | null
           card_style?: string | null
           created_at?: string | null
+          gradient_enabled?: boolean | null
+          gradient_from?: string | null
+          gradient_to?: string | null
           heading_font?: string | null
           id?: string
           is_active?: boolean | null
           layout_style?: string | null
           name: string
           primary_color?: string | null
+          profile_layout?: string | null
           secondary_color?: string | null
+          social_icon_style?: string | null
           text_color?: string | null
           updated_at?: string | null
           user_id: string
         }
         Update: {
           accent_color?: string | null
+          animation_enabled?: boolean | null
+          background_blur?: boolean | null
           background_color?: string | null
           background_image_url?: string | null
           background_pattern?: string | null
           body_font?: string | null
           button_style?: string | null
+          card_border_width?: number | null
           card_style?: string | null
           created_at?: string | null
+          gradient_enabled?: boolean | null
+          gradient_from?: string | null
+          gradient_to?: string | null
           heading_font?: string | null
           id?: string
           is_active?: boolean | null
           layout_style?: string | null
           name?: string
           primary_color?: string | null
+          profile_layout?: string | null
           secondary_color?: string | null
+          social_icon_style?: string | null
           text_color?: string | null
           updated_at?: string | null
           user_id?: string
