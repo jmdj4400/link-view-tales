@@ -81,6 +81,8 @@ function App() {
           <Route path="/api-keys" element={<APIKeys />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/blog/manage" element={<BlogManagement />} />
+          <Route path="/blog/new" element={<BlogEditor />} />
+          <Route path="/blog/edit/:id" element={<BlogEditor />} />
           <Route path="/blog/:slug" element={<BlogArticle />} />
           <Route path="/r/:linkId" element={<RedirectHandler />} />
           <Route path="/:handle/scorecard" element={<PublicScorecard />} />
