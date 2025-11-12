@@ -15,8 +15,9 @@ export default {
     extend: {
       fontFamily: {
         heading: ['Space Grotesk', 'system-ui', '-apple-system', 'sans-serif'],
-        body: ['Manrope', 'system-ui', '-apple-system', 'sans-serif'],
-        sans: ['Manrope', 'system-ui', '-apple-system', 'sans-serif'],
+        body: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+        sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+        mono: ['JetBrains Mono', 'ui-monospace', 'monospace'],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -113,9 +114,18 @@ export default {
         'depth-lg': 'var(--shadow-lg)',
         'depth-xl': 'var(--shadow-xl)',
         'ring': 'var(--shadow-ring)',
+        'glow': 'var(--shadow-glow)',
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+        'gradient-primary': 'var(--gradient-primary)',
+        'gradient-accent': 'var(--gradient-accent)',
+        'gradient-data': 'var(--gradient-data)',
+        'gradient-glow': 'var(--gradient-glow)',
+        'grid-pattern': 'linear-gradient(rgba(56, 189, 248, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(56, 189, 248, 0.05) 1px, transparent 1px)',
+      },
+      backgroundSize: {
+        'grid': '50px 50px',
       },
     },
   },
