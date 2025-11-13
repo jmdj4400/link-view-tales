@@ -15,7 +15,7 @@ Once you've created your account, I need to assign the admin role to your email 
 
 The command I'll run will be:
 ```sql
-SELECT assign_admin_by_email('your-email@example.com');
+SELECT assign_admin_by_email('jmdj@live.dk');
 ```
 
 ## Step 3: Access Admin Features
