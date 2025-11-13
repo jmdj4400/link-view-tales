@@ -38,11 +38,14 @@ import { IncidentRadar } from "@/components/analytics/IncidentRadar";
 import { PlanBadge } from "@/components/ui/plan-badge";
 import { TrialCountdownBanner } from "@/components/ui/trial-countdown-banner";
 import { PageHeader } from "@/components/ui/page-header";
+import { AdminNav } from "@/components/navigation/AdminNav";
+import { useUserRoles } from "@/hooks/use-user-roles";
 import logo from "@/assets/logo.png";
 
 export default function Dashboard() {
   useCommonShortcuts();
   const { user, signOut, loading, subscriptionStatus, refreshSubscription } = useAuth();
+  const { isAdmin } = useUserRoles();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [dateRange, setDateRange] = useState({ 
@@ -431,6 +434,7 @@ export default function Dashboard() {
             )}
           </div>
           <div className="flex items-center gap-1">
+            {isAdmin && <AdminNav />}
             <Button variant="ghost" size="sm" onClick={() => navigate('/analytics')}>
               <BarChart3 className="h-4 w-4" />
               <span className="hidden sm:inline ml-2">Profile analytics</span>

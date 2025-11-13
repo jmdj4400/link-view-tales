@@ -82,6 +82,68 @@
   }
 }
 
+/* Rich Text Editor Styles */
+.rich-text-editor {
+  @apply rounded-lg border border-border overflow-hidden bg-background;
+}
+
+.rich-text-editor .ql-toolbar {
+  @apply border-b border-border bg-muted/30;
+}
+
+.rich-text-editor .ql-container {
+  @apply bg-background min-h-[400px];
+}
+
+.rich-text-editor .ql-editor {
+  @apply text-foreground min-h-[400px] text-base leading-relaxed;
+}
+
+.rich-text-editor .ql-editor.ql-blank::before {
+  @apply text-muted-foreground italic;
+}
+
+.rich-text-editor .ql-snow .ql-stroke {
+  @apply stroke-foreground;
+}
+
+.rich-text-editor .ql-snow .ql-fill {
+  @apply fill-foreground;
+}
+
+.rich-text-editor .ql-snow .ql-picker-label {
+  @apply text-foreground;
+}
+
+.rich-text-editor .ql-toolbar button:hover,
+.rich-text-editor .ql-toolbar button.ql-active {
+  @apply bg-primary/10;
+}
+
+.rich-text-editor .ql-editor h1 {
+  @apply text-4xl font-bold mt-6 mb-4;
+}
+
+.rich-text-editor .ql-editor h2 {
+  @apply text-3xl font-bold mt-5 mb-3;
+}
+
+.rich-text-editor .ql-editor h3 {
+  @apply text-2xl font-semibold mt-4 mb-2;
+}
+
+.rich-text-editor .ql-editor blockquote {
+  @apply border-l-4 border-primary pl-4 italic my-4;
+}
+
+.rich-text-editor .ql-editor code {
+  @apply bg-muted px-1.5 py-0.5 rounded text-sm font-mono;
+}
+
+.rich-text-editor .ql-editor pre {
+  @apply bg-muted p-4 rounded-lg my-4 overflow-x-auto;
+}
+
 @layer base {
   * {
     @apply border-border;

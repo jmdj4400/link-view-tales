@@ -13,6 +13,8 @@ import { Card } from "@/components/ui/card";
 import { PageLoader } from "@/components/ui/loading-spinner";
 import { toast } from "@/hooks/use-toast";
 import { Save, Eye } from "lucide-react";
+import { RichTextEditor } from "@/components/blog/RichTextEditor";
+import "react-quill/dist/quill.snow.css";
 
 export default function BlogEditor() {
   const { user, loading: authLoading } = useAuth();
@@ -257,15 +259,14 @@ export default function BlogEditor() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="content">Content (Markdown supported) *</Label>
-              <Textarea
-                id="content"
+              <Label htmlFor="content">Content *</Label>
+              <RichTextEditor
                 value={formData.content}
-                onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-                placeholder="Write your article content here... You can use markdown formatting."
-                rows={20}
-                className="font-mono text-sm"
+                onChange={(content) => setFormData({ ...formData, content })}
               />
+              <p className="text-xs text-muted-foreground">
+                Use the toolbar above to format your content like Microsoft Word
+              </p>
             </div>
 
             <div className="flex items-center space-x-2">
