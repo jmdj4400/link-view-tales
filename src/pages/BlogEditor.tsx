@@ -14,6 +14,9 @@ import { PageLoader } from "@/components/ui/loading-spinner";
 import { toast } from "@/hooks/use-toast";
 import { Save, Eye } from "lucide-react";
 import { RichTextEditor } from "@/components/blog/RichTextEditor";
+import { ArticlePreview } from "@/components/blog/ArticlePreview";
+import { AutosaveIndicator } from "@/components/ui/autosave-indicator";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import "react-quill/dist/quill.snow.css";
 
 export default function BlogEditor() {
@@ -22,6 +25,10 @@ export default function BlogEditor() {
   const { id } = useParams();
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [lastSaved, setLastSaved] = useState<Date | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
+  const [autoSaveError, setAutoSaveError] = useState<string | null>(null);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
   const [formData, setFormData] = useState({
     title: "",
@@ -42,6 +49,48 @@ export default function BlogEditor() {
       fetchArticle();
     }
   }, [user, authLoading, navigate, id]);
+
+  // Auto-save effect
+  useEffect(() => {
+    if (!id || !formData.title || !formData.content) return;
+
+    setHasUnsavedChanges(true);
+    const autoSaveTimer = setTimeout(async () => {
+      await handleAutoSave();
+    }, 30000); // 30 seconds
+
+    return () => clearTimeout(autoSaveTimer);
+  }, [id, formData]);
+
+  const handleAutoSave = async () => {
+    if (!id || !user) return;
+
+    setIsSaving(true);
+    setAutoSaveError(null);
+    try {
+      const slug = formData.slug || generateSlug(formData.title);
+      const { error } = await supabase
+        .from("articles")
+        .update({
+          ...formData,
+          slug,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", id);
+
+      if (!error) {
+        setLastSaved(new Date());
+        setHasUnsavedChanges(false);
+      } else {
+        setAutoSaveError(error.message);
+      }
+    } catch (error: any) {
+      console.error("Auto-save error:", error);
+      setAutoSaveError(error.message || "Unknown error");
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   const fetchArticle = async () => {
     try {
@@ -158,16 +207,39 @@ export default function BlogEditor() {
             <h1 className="text-3xl font-bold">
               {id ? "Edit Article" : "New Article"}
             </h1>
-            <div className="flex gap-2">
-              {formData.published && formData.slug && (
-                <Button
-                  variant="outline"
-                  onClick={() => window.open(`/blog/${formData.slug}`, "_blank")}
-                >
-                  <Eye className="h-4 w-4 mr-2" />
-                  Preview
-                </Button>
+            <div className="flex gap-2 items-center">
+              {id && (
+                <AutosaveIndicator 
+                  isSaving={isSaving}
+                  lastSaved={lastSaved}
+                  hasUnsavedChanges={hasUnsavedChanges}
+                  error={autoSaveError}
+                />
               )}
+              
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button variant="outline">
+                    <Eye className="h-4 w-4 mr-2" />
+                    Preview
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto">
+                  <DialogHeader>
+                    <DialogTitle>Article Preview</DialogTitle>
+                  </DialogHeader>
+                  <ArticlePreview
+                    title={formData.title}
+                    description={formData.description}
+                    content={formData.content}
+                    category={formData.category}
+                    tags={formData.tags.join(", ")}
+                    authorName={formData.author_name}
+                    featuredImageUrl={formData.featured_image_url}
+                  />
+                </DialogContent>
+              </Dialog>
+              
               <Button onClick={handleSave} disabled={saving}>
                 <Save className="h-4 w-4 mr-2" />
                 {saving ? "Saving..." : "Save"}
