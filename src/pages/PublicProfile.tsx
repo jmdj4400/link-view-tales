@@ -12,6 +12,9 @@ import { ProfileLayoutBento } from "@/components/profile/layouts/ProfileLayoutBe
 import { ProfileLayoutNeon } from "@/components/profile/layouts/ProfileLayoutNeon";
 import { ProfileLayoutGradient } from "@/components/profile/layouts/ProfileLayoutGradient";
 import { ProfileLayoutMinimal } from "@/components/profile/layouts/ProfileLayoutMinimal";
+import { ParticleEffect } from "@/components/profile/effects/ParticleEffect";
+import { AnimatedText } from "@/components/profile/effects/AnimatedText";
+import { BackgroundEffects } from "@/components/profile/BackgroundEffects";
 
 interface Profile {
   name: string;
@@ -35,6 +38,13 @@ interface Profile {
   animation_enabled?: boolean;
   background_blur?: boolean;
   card_border_width?: number;
+  background_image_url?: string;
+  background_video_url?: string;
+  particle_effect?: string;
+  text_animation?: string;
+  link_animation?: string;
+  enable_parallax?: boolean;
+  enable_glassmorphism?: boolean;
 }
 
 interface Link {
@@ -182,6 +192,13 @@ export default function PublicProfile() {
     animationEnabled: profile.animation_enabled !== false,
     backgroundBlur: profile.background_blur || false,
     cardBorderWidth: profile.card_border_width || 1,
+    backgroundVideoUrl: profile.background_video_url,
+    backgroundImageUrl: profile.background_image_url,
+    particleEffect: profile.particle_effect || "none",
+    textAnimation: profile.text_animation || "none",
+    linkAnimation: profile.link_animation || "fade",
+    enableParallax: profile.enable_parallax || false,
+    enableGlassmorphism: profile.enable_glassmorphism || false,
   };
 
   // Render appropriate layout
@@ -213,41 +230,51 @@ export default function PublicProfile() {
   };
 
   const renderClassicLayout = () => (
-    <main 
-      className="min-h-screen flex items-center justify-center p-6"
-      style={{
-        backgroundColor: theme.backgroundColor,
-        color: theme.textColor,
-        fontFamily: theme.bodyFont,
-      }}
-    >
-      <article className={getContainerClasses()}>
-        <header className="text-center space-y-4">
-          <Avatar 
-            className="h-24 w-24 mx-auto"
-            style={{ border: `3px solid ${theme.primaryColor}` }}
-          >
-            <AvatarImage 
-              src={profile.avatar_url} 
-              alt={`${profile.name}'s profile picture`}
-              loading="lazy"
-            />
-            <AvatarFallback 
-              className="text-xl"
-              style={{ backgroundColor: theme.primaryColor, color: 'white' }}
+    <>
+      <ParticleEffect type={theme.particleEffect} color={theme.primaryColor} />
+      <BackgroundEffects 
+        videoUrl={theme.backgroundVideoUrl}
+        imageUrl={theme.backgroundImageUrl}
+        color={theme.backgroundColor}
+        enableParallax={theme.enableParallax}
+        enableGlassmorphism={theme.enableGlassmorphism}
+      />
+      <main 
+        className="min-h-screen flex items-center justify-center p-6 relative z-10"
+        style={{
+          color: theme.textColor,
+          fontFamily: theme.bodyFont,
+        }}
+      >
+        <article className={getContainerClasses()}>
+          <header className="text-center space-y-4">
+            <Avatar 
+              className="h-24 w-24 mx-auto"
+              style={{ border: `3px solid ${theme.primaryColor}` }}
             >
-              {profile.name.substring(0, 2).toUpperCase()}
-            </AvatarFallback>
-          </Avatar>
-          <div>
-            <h1 
-              className="text-3xl font-bold mb-1"
-              style={{ fontFamily: theme.headingFont, color: theme.textColor }}
-            >
-              {profile.name}
-            </h1>
-            <p style={{ color: theme.textColor, opacity: 0.7 }}>@{profile.handle}</p>
-          </div>
+              <AvatarImage 
+                src={profile.avatar_url} 
+                alt={`${profile.name}'s profile picture`}
+                loading="lazy"
+              />
+              <AvatarFallback 
+                className="text-xl"
+                style={{ backgroundColor: theme.primaryColor, color: 'white' }}
+              >
+                {profile.name.substring(0, 2).toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
+            <div>
+              <AnimatedText animation={theme.textAnimation}>
+                <h1 
+                  className="text-3xl font-bold mb-1"
+                  style={{ fontFamily: theme.headingFont, color: theme.textColor }}
+                >
+                  {profile.name}
+                </h1>
+              </AnimatedText>
+              <p style={{ color: theme.textColor, opacity: 0.7 }}>@{profile.handle}</p>
+            </div>
           {profile.bio && (
             <p 
               className="text-center max-w-sm mx-auto"
@@ -315,6 +342,7 @@ export default function PublicProfile() {
         </footer>
       </article>
     </main>
+    </>
   );
 
   const getButtonClasses = () => {

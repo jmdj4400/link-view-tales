@@ -40,6 +40,7 @@ import Blog from "./pages/Blog";
 import BlogArticle from "./pages/BlogArticle";
 import BlogManagement from "./pages/BlogManagement";
 import BlogEditor from "./pages/BlogEditor";
+import LinkManagement from "./pages/LinkManagement";
 
 function App() {
   useServiceWorkerUpdate();
@@ -63,6 +64,7 @@ function App() {
           <Route path="/analytics" element={<ProfileAnalytics />} />
           <Route path="/settings/profile" element={<ProfileSettings />} />
           <Route path="/settings/links" element={<LinksSettings />} />
+          <Route path="/settings/link-management" element={<LinkManagement />} />
           <Route path="/settings/theme" element={<ThemeSettings />} />
           <Route path="/settings/leads" element={<LeadsManagement />} />
           <Route path="/settings/conversions" element={<ConversionTracking />} />

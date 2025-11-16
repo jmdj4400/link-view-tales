@@ -25,6 +25,12 @@ interface ThemeData {
   card_style: string;
   background_pattern: string | null;
   background_image_url: string | null;
+  background_video_url: string | null;
+  particle_effect: string;
+  text_animation: string;
+  link_animation: string;
+  enable_parallax: boolean;
+  enable_glassmorphism: boolean;
   profile_layout: string;
   gradient_enabled: boolean;
   gradient_from: string;
@@ -65,6 +71,31 @@ const CARD_STYLES = [
   { value: "flat", label: "Flat" },
 ];
 
+const PARTICLE_EFFECTS = [
+  { value: "none", label: "None" },
+  { value: "snow", label: "Snow" },
+  { value: "stars", label: "Stars" },
+  { value: "fireflies", label: "Fireflies" },
+  { value: "bubbles", label: "Bubbles" },
+];
+
+const TEXT_ANIMATIONS = [
+  { value: "none", label: "None" },
+  { value: "gradient", label: "Gradient Flow" },
+  { value: "glow", label: "Glow Pulse" },
+  { value: "wave", label: "Wave" },
+  { value: "glitch", label: "Glitch" },
+  { value: "typewriter", label: "Typewriter" },
+];
+
+const LINK_ANIMATIONS = [
+  { value: "fade", label: "Fade" },
+  { value: "slide", label: "Slide" },
+  { value: "scale", label: "Scale" },
+  { value: "bounce", label: "Bounce" },
+  { value: "flip", label: "Flip" },
+];
+
 export function ThemeCustomizer() {
   const queryClient = useQueryClient();
   const [previewOpen, setPreviewOpen] = useState(false);
@@ -84,6 +115,12 @@ export function ThemeCustomizer() {
     card_style: "elevated",
     background_pattern: null,
     background_image_url: null,
+    background_video_url: null,
+    particle_effect: "none",
+    text_animation: "none",
+    link_animation: "fade",
+    enable_parallax: false,
+    enable_glassmorphism: false,
     profile_layout: "classic",
     gradient_enabled: false,
     gradient_from: "#3b82f6",
@@ -141,6 +178,12 @@ export function ThemeCustomizer() {
         card_style: profile.card_style || "elevated",
         background_pattern: profile.background_pattern,
         background_image_url: profile.background_image_url,
+        background_video_url: profile.background_video_url || null,
+        particle_effect: profile.particle_effect || "none",
+        text_animation: profile.text_animation || "none",
+        link_animation: profile.link_animation || "fade",
+        enable_parallax: profile.enable_parallax || false,
+        enable_glassmorphism: profile.enable_glassmorphism || false,
         profile_layout: profile.profile_layout || "classic",
         gradient_enabled: profile.gradient_enabled || false,
         gradient_from: profile.gradient_from || "#3b82f6",
@@ -231,6 +274,12 @@ export function ThemeCustomizer() {
         card_style: preset.card_style,
         background_pattern: preset.background_pattern,
         background_image_url: preset.background_image_url,
+        background_video_url: preset.background_video_url || null,
+        particle_effect: preset.particle_effect || "none",
+        text_animation: preset.text_animation || "none",
+        link_animation: preset.link_animation || "fade",
+        enable_parallax: preset.enable_parallax || false,
+        enable_glassmorphism: preset.enable_glassmorphism || false,
         profile_layout: preset.profile_layout || "classic",
         gradient_enabled: preset.gradient_enabled || false,
         gradient_from: preset.gradient_from || "#3b82f6",
@@ -294,7 +343,7 @@ export function ThemeCustomizer() {
       </div>
 
       <Tabs defaultValue="colors" className="space-y-4">
-        <TabsList>
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="colors">
             <Palette className="h-4 w-4 mr-2" />
             Colors
@@ -307,9 +356,12 @@ export function ThemeCustomizer() {
             <Layout className="h-4 w-4 mr-2" />
             Layout
           </TabsTrigger>
+          <TabsTrigger value="effects">
+            ✨ Effects
+          </TabsTrigger>
           <TabsTrigger value="presets">
             <Save className="h-4 w-4 mr-2" />
-            Saved Presets
+            Presets
           </TabsTrigger>
         </TabsList>
 
@@ -562,6 +614,119 @@ export function ThemeCustomizer() {
                     {CARD_STYLES.map((style) => (
                       <SelectItem key={style.value} value={style.value}>
                         {style.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="effects" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>Background Effects</CardTitle>
+              <CardDescription>Add stunning visual effects to your profile</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="space-y-2">
+                <Label htmlFor="background-video">Background Video URL (MP4)</Label>
+                <Input
+                  id="background-video"
+                  value={theme.background_video_url || ""}
+                  onChange={(e) => setTheme({ ...theme, background_video_url: e.target.value })}
+                  placeholder="https://example.com/video.mp4"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="particle-effect">Particle Effect</Label>
+                <Select
+                  value={theme.particle_effect}
+                  onValueChange={(value) => setTheme({ ...theme, particle_effect: value })}
+                >
+                  <SelectTrigger id="particle-effect">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {PARTICLE_EFFECTS.map((effect) => (
+                      <SelectItem key={effect.value} value={effect.value}>
+                        {effect.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <div>
+                  <Label htmlFor="parallax">Enable Parallax Scrolling</Label>
+                  <p className="text-sm text-muted-foreground">Creates depth with background movement</p>
+                </div>
+                <input
+                  id="parallax"
+                  type="checkbox"
+                  checked={theme.enable_parallax}
+                  onChange={(e) => setTheme({ ...theme, enable_parallax: e.target.checked })}
+                  className="rounded"
+                />
+              </div>
+
+              <div className="flex items-center justify-between">
+                <div>
+                  <Label htmlFor="glassmorphism">Enable Glassmorphism</Label>
+                  <p className="text-sm text-muted-foreground">Frosted glass effect over backgrounds</p>
+                </div>
+                <input
+                  id="glassmorphism"
+                  type="checkbox"
+                  checked={theme.enable_glassmorphism}
+                  onChange={(e) => setTheme({ ...theme, enable_glassmorphism: e.target.checked })}
+                  className="rounded"
+                />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Animation Effects</CardTitle>
+              <CardDescription>Bring your profile to life with animations</CardDescription>
+            </CardHeader>
+            <CardContent className="grid gap-6 md:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="text-animation">Text Animation</Label>
+                <Select
+                  value={theme.text_animation}
+                  onValueChange={(value) => setTheme({ ...theme, text_animation: value })}
+                >
+                  <SelectTrigger id="text-animation">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {TEXT_ANIMATIONS.map((animation) => (
+                      <SelectItem key={animation.value} value={animation.value}>
+                        {animation.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="link-animation">Link Animation</Label>
+                <Select
+                  value={theme.link_animation}
+                  onValueChange={(value) => setTheme({ ...theme, link_animation: value })}
+                >
+                  <SelectTrigger id="link-animation">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {LINK_ANIMATIONS.map((animation) => (
+                      <SelectItem key={animation.value} value={animation.value}>
+                        {animation.label}
                       </SelectItem>
                     ))}
                   </SelectContent>
