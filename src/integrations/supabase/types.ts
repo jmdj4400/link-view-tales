@@ -448,6 +448,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "events_link_id_fkey"
+            columns: ["link_id"]
+            isOneToOne: false
+            referencedRelation: "public_links_view"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "events_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
@@ -506,6 +513,13 @@ export type Database = {
             columns: ["link_id"]
             isOneToOne: false
             referencedRelation: "links"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "experiments_link_id_fkey"
+            columns: ["link_id"]
+            isOneToOne: false
+            referencedRelation: "public_links_view"
             referencedColumns: ["id"]
           },
           {
@@ -571,6 +585,13 @@ export type Database = {
             columns: ["link_id"]
             isOneToOne: false
             referencedRelation: "links"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "goal_events_link_id_fkey"
+            columns: ["link_id"]
+            isOneToOne: false
+            referencedRelation: "public_links_view"
             referencedColumns: ["id"]
           },
         ]
@@ -752,6 +773,13 @@ export type Database = {
             referencedRelation: "lead_forms"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "leads_form_id_fkey"
+            columns: ["form_id"]
+            isOneToOne: false
+            referencedRelation: "public_lead_forms_view"
+            referencedColumns: ["id"]
+          },
         ]
       }
       link_categories: {
@@ -824,6 +852,13 @@ export type Database = {
             columns: ["link_id"]
             isOneToOne: false
             referencedRelation: "links"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "link_variants_link_id_fkey"
+            columns: ["link_id"]
+            isOneToOne: false
+            referencedRelation: "public_links_view"
             referencedColumns: ["id"]
           },
         ]
@@ -1216,6 +1251,13 @@ export type Database = {
             referencedRelation: "links"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "recovery_attempts_link_id_fkey"
+            columns: ["link_id"]
+            isOneToOne: false
+            referencedRelation: "public_links_view"
+            referencedColumns: ["id"]
+          },
         ]
       }
       redirects: {
@@ -1273,6 +1315,13 @@ export type Database = {
             columns: ["link_id"]
             isOneToOne: false
             referencedRelation: "links"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "redirects_link_id_fkey"
+            columns: ["link_id"]
+            isOneToOne: false
+            referencedRelation: "public_links_view"
             referencedColumns: ["id"]
           },
         ]
@@ -1344,6 +1393,13 @@ export type Database = {
             columns: ["link_id"]
             isOneToOne: false
             referencedRelation: "links"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "rules_link_id_fkey"
+            columns: ["link_id"]
+            isOneToOne: false
+            referencedRelation: "public_links_view"
             referencedColumns: ["id"]
           },
         ]
@@ -1650,7 +1706,99 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      public_lead_forms_view: {
+        Row: {
+          button_text: string | null
+          collect_message: boolean | null
+          collect_name: boolean | null
+          collect_phone: boolean | null
+          custom_fields: Json | null
+          description: string | null
+          id: string | null
+          is_active: boolean | null
+          name: string | null
+          redirect_url: string | null
+          success_message: string | null
+          title: string | null
+          user_id: string | null
+        }
+        Insert: {
+          button_text?: string | null
+          collect_message?: boolean | null
+          collect_name?: boolean | null
+          collect_phone?: boolean | null
+          custom_fields?: Json | null
+          description?: string | null
+          id?: string | null
+          is_active?: boolean | null
+          name?: string | null
+          redirect_url?: string | null
+          success_message?: string | null
+          title?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          button_text?: string | null
+          collect_message?: boolean | null
+          collect_name?: boolean | null
+          collect_phone?: boolean | null
+          custom_fields?: Json | null
+          description?: string | null
+          id?: string | null
+          is_active?: boolean | null
+          name?: string | null
+          redirect_url?: string | null
+          success_message?: string | null
+          title?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      public_links_view: {
+        Row: {
+          category_id: string | null
+          dest_url: string | null
+          id: string | null
+          is_active: boolean | null
+          position: number | null
+          title: string | null
+          user_id: string | null
+        }
+        Insert: {
+          category_id?: string | null
+          dest_url?: string | null
+          id?: string | null
+          is_active?: boolean | null
+          position?: number | null
+          title?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          category_id?: string | null
+          dest_url?: string | null
+          id?: string | null
+          is_active?: boolean | null
+          position?: number | null
+          title?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "links_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "link_categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "links_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       assign_admin_by_email: { Args: { p_email: string }; Returns: undefined }
