@@ -998,13 +998,17 @@ export type Database = {
           background_color: string | null
           background_image_url: string | null
           background_pattern: string | null
+          background_video_url: string | null
           bio: string | null
           body_font: string | null
           button_style: string | null
           card_border_width: number | null
           card_style: string | null
           created_at: string | null
+          custom_css: string | null
           email: string
+          enable_glassmorphism: boolean | null
+          enable_parallax: boolean | null
           firewall_enabled: boolean | null
           gradient_enabled: boolean | null
           gradient_from: string | null
@@ -1014,15 +1018,18 @@ export type Database = {
           id: string
           instagram_bio_setup_completed: boolean | null
           layout_style: string | null
+          link_animation: string | null
           monthly_report_enabled: boolean | null
           name: string | null
           onboarding_completed_at: string | null
+          particle_effect: string | null
           plan: Database["public"]["Enums"]["subscription_plan"] | null
           primary_color: string | null
           profile_layout: string | null
           secondary_color: string | null
           setup_guide_dismissed: boolean | null
           social_icon_style: string | null
+          text_animation: string | null
           text_color: string | null
           theme: string | null
           updated_at: string | null
@@ -1037,13 +1044,17 @@ export type Database = {
           background_color?: string | null
           background_image_url?: string | null
           background_pattern?: string | null
+          background_video_url?: string | null
           bio?: string | null
           body_font?: string | null
           button_style?: string | null
           card_border_width?: number | null
           card_style?: string | null
           created_at?: string | null
+          custom_css?: string | null
           email: string
+          enable_glassmorphism?: boolean | null
+          enable_parallax?: boolean | null
           firewall_enabled?: boolean | null
           gradient_enabled?: boolean | null
           gradient_from?: string | null
@@ -1053,15 +1064,18 @@ export type Database = {
           id: string
           instagram_bio_setup_completed?: boolean | null
           layout_style?: string | null
+          link_animation?: string | null
           monthly_report_enabled?: boolean | null
           name?: string | null
           onboarding_completed_at?: string | null
+          particle_effect?: string | null
           plan?: Database["public"]["Enums"]["subscription_plan"] | null
           primary_color?: string | null
           profile_layout?: string | null
           secondary_color?: string | null
           setup_guide_dismissed?: boolean | null
           social_icon_style?: string | null
+          text_animation?: string | null
           text_color?: string | null
           theme?: string | null
           updated_at?: string | null
@@ -1076,13 +1090,17 @@ export type Database = {
           background_color?: string | null
           background_image_url?: string | null
           background_pattern?: string | null
+          background_video_url?: string | null
           bio?: string | null
           body_font?: string | null
           button_style?: string | null
           card_border_width?: number | null
           card_style?: string | null
           created_at?: string | null
+          custom_css?: string | null
           email?: string
+          enable_glassmorphism?: boolean | null
+          enable_parallax?: boolean | null
           firewall_enabled?: boolean | null
           gradient_enabled?: boolean | null
           gradient_from?: string | null
@@ -1092,15 +1110,18 @@ export type Database = {
           id?: string
           instagram_bio_setup_completed?: boolean | null
           layout_style?: string | null
+          link_animation?: string | null
           monthly_report_enabled?: boolean | null
           name?: string | null
           onboarding_completed_at?: string | null
+          particle_effect?: string | null
           plan?: Database["public"]["Enums"]["subscription_plan"] | null
           primary_color?: string | null
           profile_layout?: string | null
           secondary_color?: string | null
           setup_guide_dismissed?: boolean | null
           social_icon_style?: string | null
+          text_animation?: string | null
           text_color?: string | null
           theme?: string | null
           updated_at?: string | null
@@ -1123,18 +1144,24 @@ export type Database = {
           background_color: string | null
           background_image_url: string | null
           background_pattern: string | null
+          background_video_url: string | null
           bio: string | null
           body_font: string | null
           button_style: string | null
           card_style: string | null
           created_at: string | null
+          enable_glassmorphism: boolean | null
+          enable_parallax: boolean | null
           handle: string
           heading_font: string | null
           id: string
           layout_style: string | null
+          link_animation: string | null
           name: string | null
+          particle_effect: string | null
           primary_color: string | null
           secondary_color: string | null
+          text_animation: string | null
           text_color: string | null
           theme: string | null
         }
@@ -1144,18 +1171,24 @@ export type Database = {
           background_color?: string | null
           background_image_url?: string | null
           background_pattern?: string | null
+          background_video_url?: string | null
           bio?: string | null
           body_font?: string | null
           button_style?: string | null
           card_style?: string | null
           created_at?: string | null
+          enable_glassmorphism?: boolean | null
+          enable_parallax?: boolean | null
           handle: string
           heading_font?: string | null
           id: string
           layout_style?: string | null
+          link_animation?: string | null
           name?: string | null
+          particle_effect?: string | null
           primary_color?: string | null
           secondary_color?: string | null
+          text_animation?: string | null
           text_color?: string | null
           theme?: string | null
         }
@@ -1165,18 +1198,24 @@ export type Database = {
           background_color?: string | null
           background_image_url?: string | null
           background_pattern?: string | null
+          background_video_url?: string | null
           bio?: string | null
           body_font?: string | null
           button_style?: string | null
           card_style?: string | null
           created_at?: string | null
+          enable_glassmorphism?: boolean | null
+          enable_parallax?: boolean | null
           handle?: string
           heading_font?: string | null
           id?: string
           layout_style?: string | null
+          link_animation?: string | null
           name?: string | null
+          particle_effect?: string | null
           primary_color?: string | null
           secondary_color?: string | null
+          text_animation?: string | null
           text_color?: string | null
           theme?: string | null
         }
@@ -1495,11 +1534,14 @@ export type Database = {
           background_color: string | null
           background_image_url: string | null
           background_pattern: string | null
+          background_video_url: string | null
           body_font: string | null
           button_style: string | null
           card_border_width: number | null
           card_style: string | null
           created_at: string | null
+          enable_glassmorphism: boolean | null
+          enable_parallax: boolean | null
           gradient_enabled: boolean | null
           gradient_from: string | null
           gradient_to: string | null
@@ -1507,11 +1549,14 @@ export type Database = {
           id: string
           is_active: boolean | null
           layout_style: string | null
+          link_animation: string | null
           name: string
+          particle_effect: string | null
           primary_color: string | null
           profile_layout: string | null
           secondary_color: string | null
           social_icon_style: string | null
+          text_animation: string | null
           text_color: string | null
           updated_at: string | null
           user_id: string
@@ -1523,11 +1568,14 @@ export type Database = {
           background_color?: string | null
           background_image_url?: string | null
           background_pattern?: string | null
+          background_video_url?: string | null
           body_font?: string | null
           button_style?: string | null
           card_border_width?: number | null
           card_style?: string | null
           created_at?: string | null
+          enable_glassmorphism?: boolean | null
+          enable_parallax?: boolean | null
           gradient_enabled?: boolean | null
           gradient_from?: string | null
           gradient_to?: string | null
@@ -1535,11 +1583,14 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           layout_style?: string | null
+          link_animation?: string | null
           name: string
+          particle_effect?: string | null
           primary_color?: string | null
           profile_layout?: string | null
           secondary_color?: string | null
           social_icon_style?: string | null
+          text_animation?: string | null
           text_color?: string | null
           updated_at?: string | null
           user_id: string
@@ -1551,11 +1602,14 @@ export type Database = {
           background_color?: string | null
           background_image_url?: string | null
           background_pattern?: string | null
+          background_video_url?: string | null
           body_font?: string | null
           button_style?: string | null
           card_border_width?: number | null
           card_style?: string | null
           created_at?: string | null
+          enable_glassmorphism?: boolean | null
+          enable_parallax?: boolean | null
           gradient_enabled?: boolean | null
           gradient_from?: string | null
           gradient_to?: string | null
@@ -1563,11 +1617,14 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           layout_style?: string | null
+          link_animation?: string | null
           name?: string
+          particle_effect?: string | null
           primary_color?: string | null
           profile_layout?: string | null
           secondary_color?: string | null
           social_icon_style?: string | null
+          text_animation?: string | null
           text_color?: string | null
           updated_at?: string | null
           user_id?: string
