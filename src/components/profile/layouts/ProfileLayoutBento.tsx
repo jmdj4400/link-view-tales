@@ -1,5 +1,8 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ExternalLink } from "lucide-react";
+import { ParticleEffect } from "@/components/profile/effects/ParticleEffect";
+import { BackgroundEffects } from "@/components/profile/BackgroundEffects";
+import { AnimatedText } from "@/components/profile/effects/AnimatedText";
 
 interface Link {
   id: string;
@@ -30,8 +33,28 @@ export function ProfileLayoutBento({ profile, links, theme, onLinkClick, animati
     return "col-span-1";
   };
 
+  const getLinkAnimationClass = () => {
+    if (!animationEnabled) return "";
+    switch (theme.linkAnimation) {
+      case "slide": return "hover:translate-x-2";
+      case "scale": return "hover:scale-[1.02]";
+      case "glow": return "hover:shadow-2xl";
+      default: return "hover:scale-[1.02]";
+    }
+  };
+
   return (
-    <div className="min-h-screen p-6" style={{ backgroundColor: theme.backgroundColor }}>
+    <>
+      <ParticleEffect type={theme.particleEffect || 'none'} color={theme.primaryColor} />
+      <BackgroundEffects
+        videoUrl={theme.backgroundVideoUrl}
+        imageUrl={theme.backgroundImageUrl}
+        color={theme.backgroundColor}
+        enableParallax={theme.enableParallax}
+        enableGlassmorphism={theme.enableGlassmorphism}
+      />
+      
+      <div className="min-h-screen p-6 relative z-10">
       <div className="max-w-5xl mx-auto space-y-8">
         {/* Header */}
         <header className="text-center space-y-4">
@@ -46,13 +69,15 @@ export function ProfileLayoutBento({ profile, links, theme, onLinkClick, animati
               </AvatarFallback>
             </Avatar>
           </div>
-          <div className={animationEnabled ? "animate-fade-in" : ""}>
-            <h1 
-              className="text-4xl font-bold mb-2"
-              style={{ fontFamily: theme.headingFont, color: theme.textColor }}
-            >
-              {profile.name}
-            </h1>
+            <div className={animationEnabled ? "animate-fade-in" : ""}>
+              <AnimatedText animation={theme.textAnimation || 'none'}>
+                <h1 
+                  className="text-4xl font-bold mb-2"
+                  style={{ fontFamily: theme.headingFont, color: theme.textColor }}
+                >
+                  {profile.name}
+                </h1>
+              </AnimatedText>
             <p className="text-lg opacity-70" style={{ color: theme.textColor }}>
               @{profile.handle}
             </p>
@@ -76,7 +101,7 @@ export function ProfileLayoutBento({ profile, links, theme, onLinkClick, animati
             <button
               key={link.id}
               onClick={() => onLinkClick(link.id, link.dest_url)}
-              className={`${getLinkGridClass(index)} group relative overflow-hidden rounded-2xl p-6 transition-all duration-300 hover:scale-[1.02] ${animationEnabled ? "card-hover" : ""}`}
+              className={`${getLinkGridClass(index)} group relative overflow-hidden rounded-2xl p-6 transition-all duration-300 ${getLinkAnimationClass()}`}
               style={{
                 backgroundColor: theme.primaryColor,
                 boxShadow: theme.cardStyle === "elevated" ? "0 8px 24px rgba(0,0,0,0.1)" : "none",
@@ -106,5 +131,6 @@ export function ProfileLayoutBento({ profile, links, theme, onLinkClick, animati
         </nav>
       </div>
     </div>
+    </>
   );
 }

@@ -1,5 +1,8 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ExternalLink } from "lucide-react";
+import { ParticleEffect } from "@/components/profile/effects/ParticleEffect";
+import { BackgroundEffects } from "@/components/profile/BackgroundEffects";
+import { AnimatedText } from "@/components/profile/effects/AnimatedText";
 
 interface Link {
   id: string;
@@ -33,16 +36,36 @@ export function ProfileLayoutGradient({
 }: ProfileLayoutGradientProps) {
   const gradient = `linear-gradient(135deg, ${gradientFrom || theme.primaryColor}, ${gradientTo || theme.secondaryColor})`;
 
+  const getLinkAnimationClass = () => {
+    if (!animationEnabled) return "";
+    switch (theme.linkAnimation) {
+      case "slide": return "hover:translate-x-2";
+      case "scale": return "hover:scale-[1.02]";
+      case "glow": return "hover:shadow-2xl";
+      default: return "hover:scale-[1.02]";
+    }
+  };
+
   return (
-    <div 
-      className="min-h-screen p-6"
-      style={{ 
-        background: gradient,
-        position: 'relative'
-      }}
-    >
-      {/* Backdrop blur overlay */}
-      <div className="absolute inset-0 backdrop-blur-3xl opacity-90" style={{ background: theme.backgroundColor }} />
+    <>
+      <ParticleEffect type={theme.particleEffect || 'none'} color={theme.primaryColor} />
+      <BackgroundEffects
+        videoUrl={theme.backgroundVideoUrl}
+        imageUrl={theme.backgroundImageUrl}
+        enableParallax={theme.enableParallax}
+        enableGlassmorphism={theme.enableGlassmorphism}
+      />
+      
+      <div
+        className="min-h-screen p-6 relative z-10"
+        style={{ 
+          background: theme.backgroundImageUrl || theme.backgroundVideoUrl ? 'transparent' : gradient
+        }}
+      >
+        {/* Backdrop blur overlay - only if no video/image background */}
+        {!theme.backgroundImageUrl && !theme.backgroundVideoUrl && (
+          <div className="absolute inset-0 backdrop-blur-3xl opacity-90" style={{ background: theme.backgroundColor }} />
+        )}
       
       <div className="relative max-w-2xl mx-auto space-y-8">
         {/* Header */}
@@ -70,13 +93,15 @@ export function ProfileLayoutGradient({
             </div>
           </div>
 
-          <div className={animationEnabled ? "animate-fade-in" : ""}>
-            <h1 
-              className="text-4xl font-bold mb-2"
-              style={{ fontFamily: theme.headingFont, color: theme.textColor }}
-            >
-              {profile.name}
-            </h1>
+            <div className={animationEnabled ? "animate-fade-in" : ""}>
+              <AnimatedText animation={theme.textAnimation || 'none'}>
+                <h1 
+                  className="text-4xl font-bold mb-2"
+                  style={{ fontFamily: theme.headingFont, color: theme.textColor }}
+                >
+                  {profile.name}
+                </h1>
+              </AnimatedText>
             <p 
               className="text-lg"
               style={{ 
@@ -108,7 +133,7 @@ export function ProfileLayoutGradient({
             <button
               key={link.id}
               onClick={() => onLinkClick(link.id, link.dest_url)}
-              className={`w-full group relative overflow-hidden rounded-2xl p-6 transition-all duration-300 ${animationEnabled ? "hover:scale-[1.02]" : ""}`}
+              className={`w-full group relative overflow-hidden rounded-2xl p-6 transition-all duration-300 ${getLinkAnimationClass()}`}
               style={{
                 background: 'rgba(255, 255, 255, 0.1)',
                 backdropFilter: 'blur(10px)',
@@ -148,5 +173,6 @@ export function ProfileLayoutGradient({
         </nav>
       </div>
     </div>
+    </>
   );
 }
