@@ -1140,7 +1140,9 @@ export type Database = {
       public_profiles: {
         Row: {
           accent_color: string | null
+          animation_enabled: boolean | null
           avatar_url: string | null
+          background_blur: boolean | null
           background_color: string | null
           background_image_url: string | null
           background_pattern: string | null
@@ -1148,10 +1150,14 @@ export type Database = {
           bio: string | null
           body_font: string | null
           button_style: string | null
+          card_border_width: number | null
           card_style: string | null
           created_at: string | null
           enable_glassmorphism: boolean | null
           enable_parallax: boolean | null
+          gradient_enabled: boolean | null
+          gradient_from: string | null
+          gradient_to: string | null
           handle: string
           heading_font: string | null
           id: string
@@ -1160,6 +1166,7 @@ export type Database = {
           name: string | null
           particle_effect: string | null
           primary_color: string | null
+          profile_layout: string | null
           secondary_color: string | null
           text_animation: string | null
           text_color: string | null
@@ -1167,7 +1174,9 @@ export type Database = {
         }
         Insert: {
           accent_color?: string | null
+          animation_enabled?: boolean | null
           avatar_url?: string | null
+          background_blur?: boolean | null
           background_color?: string | null
           background_image_url?: string | null
           background_pattern?: string | null
@@ -1175,10 +1184,14 @@ export type Database = {
           bio?: string | null
           body_font?: string | null
           button_style?: string | null
+          card_border_width?: number | null
           card_style?: string | null
           created_at?: string | null
           enable_glassmorphism?: boolean | null
           enable_parallax?: boolean | null
+          gradient_enabled?: boolean | null
+          gradient_from?: string | null
+          gradient_to?: string | null
           handle: string
           heading_font?: string | null
           id: string
@@ -1187,6 +1200,7 @@ export type Database = {
           name?: string | null
           particle_effect?: string | null
           primary_color?: string | null
+          profile_layout?: string | null
           secondary_color?: string | null
           text_animation?: string | null
           text_color?: string | null
@@ -1194,7 +1208,9 @@ export type Database = {
         }
         Update: {
           accent_color?: string | null
+          animation_enabled?: boolean | null
           avatar_url?: string | null
+          background_blur?: boolean | null
           background_color?: string | null
           background_image_url?: string | null
           background_pattern?: string | null
@@ -1202,10 +1218,14 @@ export type Database = {
           bio?: string | null
           body_font?: string | null
           button_style?: string | null
+          card_border_width?: number | null
           card_style?: string | null
           created_at?: string | null
           enable_glassmorphism?: boolean | null
           enable_parallax?: boolean | null
+          gradient_enabled?: boolean | null
+          gradient_from?: string | null
+          gradient_to?: string | null
           handle?: string
           heading_font?: string | null
           id?: string
@@ -1214,6 +1234,7 @@ export type Database = {
           name?: string | null
           particle_effect?: string | null
           primary_color?: string | null
+          profile_layout?: string | null
           secondary_color?: string | null
           text_animation?: string | null
           text_color?: string | null
