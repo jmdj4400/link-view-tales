@@ -1,5 +1,8 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ExternalLink } from "lucide-react";
+import { ParticleEffect } from "@/components/profile/effects/ParticleEffect";
+import { BackgroundEffects } from "@/components/profile/BackgroundEffects";
+import { AnimatedText } from "@/components/profile/effects/AnimatedText";
 
 interface Link {
   id: string;
@@ -21,16 +24,35 @@ interface ProfileLayoutNeonProps {
 }
 
 export function ProfileLayoutNeon({ profile, links, theme, onLinkClick, animationEnabled = true }: ProfileLayoutNeonProps) {
+  const getLinkAnimationClass = () => {
+    if (!animationEnabled) return "";
+    switch (theme.linkAnimation) {
+      case "slide": return "hover:translate-x-2";
+      case "scale": return "hover:scale-105";
+      case "glow": return "hover:shadow-2xl";
+      default: return "hover:-translate-y-1";
+    }
+  };
+
   return (
-    <div 
-      className="min-h-screen p-6 relative overflow-hidden"
-      style={{ 
-        backgroundColor: '#0a0a0f',
-        backgroundImage: `
-          radial-gradient(circle at 20% 20%, ${theme.primaryColor}15 0%, transparent 50%),
-          radial-gradient(circle at 80% 80%, ${theme.accentColor}15 0%, transparent 50%)
-        `
-      }}
+    <>
+      <ParticleEffect type={theme.particleEffect || 'none'} color={theme.primaryColor} />
+      <BackgroundEffects
+        videoUrl={theme.backgroundVideoUrl}
+        imageUrl={theme.backgroundImageUrl}
+        enableParallax={theme.enableParallax}
+        enableGlassmorphism={theme.enableGlassmorphism}
+      />
+      
+      <div
+        className="min-h-screen p-6 relative overflow-hidden z-10"
+        style={{ 
+          backgroundColor: theme.backgroundImageUrl || theme.backgroundVideoUrl ? 'transparent' : '#0a0a0f',
+          backgroundImage: !theme.backgroundImageUrl && !theme.backgroundVideoUrl ? `
+            radial-gradient(circle at 20% 20%, ${theme.primaryColor}15 0%, transparent 50%),
+            radial-gradient(circle at 80% 80%, ${theme.accentColor}15 0%, transparent 50%)
+          ` : undefined
+        }}
     >
       {/* Grid pattern overlay */}
       <div 
@@ -64,17 +86,19 @@ export function ProfileLayoutNeon({ profile, links, theme, onLinkClick, animatio
             />
           </div>
 
-          <div className={animationEnabled ? "animate-fade-in" : ""}>
-            <h1 
-              className="text-5xl font-bold mb-2 font-mono-data"
-              style={{ 
-                fontFamily: 'JetBrains Mono, monospace',
-                color: '#fff',
-                textShadow: `0 0 20px ${theme.primaryColor}80`
-              }}
-            >
-              {profile.name}
-            </h1>
+            <div className={animationEnabled ? "animate-fade-in" : ""}>
+              <AnimatedText animation={theme.textAnimation || 'none'}>
+                <h1 
+                  className="text-5xl font-bold mb-2 font-mono-data"
+                  style={{ 
+                    fontFamily: 'JetBrains Mono, monospace',
+                    color: '#fff',
+                    textShadow: `0 0 20px ${theme.primaryColor}80`
+                  }}
+                >
+                  {profile.name}
+                </h1>
+              </AnimatedText>
             <p 
               className="text-lg font-mono opacity-70"
               style={{ color: theme.primaryColor }}
@@ -99,7 +123,7 @@ export function ProfileLayoutNeon({ profile, links, theme, onLinkClick, animatio
             <button
               key={link.id}
               onClick={() => onLinkClick(link.id, link.dest_url)}
-              className={`w-full group relative overflow-hidden rounded-lg p-5 transition-all duration-300 ${animationEnabled ? "hover:-translate-y-1" : ""}`}
+              className={`w-full group relative overflow-hidden rounded-lg p-5 transition-all duration-300 ${getLinkAnimationClass()}`}
               style={{
                 backgroundColor: 'rgba(10, 10, 20, 0.8)',
                 border: `2px solid ${theme.primaryColor}`,
@@ -139,5 +163,6 @@ export function ProfileLayoutNeon({ profile, links, theme, onLinkClick, animatio
         </nav>
       </div>
     </div>
+    </>
   );
 }
