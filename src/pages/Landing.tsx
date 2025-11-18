@@ -28,7 +28,17 @@ export default function Landing() {
           throw error;
         }
       } else {
-        toast.success("You're on the list! We'll notify you when we launch 🚀");
+        // Send confirmation email
+        try {
+          await supabase.functions.invoke('send-waitlist-confirmation', {
+            body: { email }
+          });
+        } catch (emailError) {
+          console.error('Failed to send confirmation email:', emailError);
+          // Don't fail the signup if email fails
+        }
+        
+        toast.success("You're on the list! Check your email for confirmation 🚀");
         setEmail("");
       }
     } catch (error) {
