@@ -1,15 +1,51 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Sparkles, Zap, Link as LinkIcon, Instagram, Twitter, Linkedin } from "lucide-react";
+import { Sparkles, Zap, Link as LinkIcon, Instagram, Twitter, Linkedin, Calendar, ArrowRight } from "lucide-react";
 import { SEOHead } from "@/components/SEOHead";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Link } from "react-router-dom";
+import { format } from "date-fns";
 import logo from "@/assets/logo.png";
+
+interface Article {
+  id: string;
+  slug: string;
+  title: string;
+  description: string;
+  category: string;
+  featured_image_url: string | null;
+  published_at: string;
+  reading_time_minutes: number;
+}
 
 export default function Landing() {
   const [email, setEmail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [articles, setArticles] = useState<Article[]>([]);
+
+  useEffect(() => {
+    fetchArticles();
+  }, []);
+
+  const fetchArticles = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("articles")
+        .select("id, slug, title, description, category, featured_image_url, published_at, reading_time_minutes")
+        .eq("published", true)
+        .order("published_at", { ascending: false })
+        .limit(3);
+
+      if (error) throw error;
+      setArticles(data || []);
+    } catch (error) {
+      console.error("Error fetching articles:", error);
+    }
+  };
 
   const handleWaitlistSignup = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -71,7 +107,12 @@ export default function Landing() {
           {/* Simple Header */}
           <header className="container mx-auto px-6 py-8 max-w-7xl">
             <div className="flex items-center justify-center gap-3">
-              <img src={logo} alt="LinkPeek Logo" className="h-10" />
+              <div className="relative group">
+                <div className="absolute inset-0 bg-gradient-to-r from-primary/50 via-accent/50 to-secondary/50 rounded-xl blur-xl opacity-50 group-hover:opacity-75 transition-opacity" />
+                <div className="relative bg-background/80 backdrop-blur-sm border border-primary/20 rounded-xl p-3 shadow-lg">
+                  <img src={logo} alt="LinkPeek Logo" className="h-10 relative z-10" />
+                </div>
+              </div>
             </div>
           </header>
 
@@ -186,6 +227,69 @@ export default function Landing() {
               </div>
             </div>
           </main>
+
+          {/* Articles Section */}
+          {articles.length > 0 && (
+            <section className="container mx-auto px-6 pb-24 max-w-7xl">
+              <div className="space-y-8">
+                <div className="text-center space-y-3">
+                  <h2 className="text-3xl md:text-4xl font-bold">
+                    <span className="bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent">
+                      Latest Updates
+                    </span>
+                  </h2>
+                  <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+                    Stay informed with our launch teasers and feature announcements
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  {articles.map((article) => (
+                    <Link key={article.id} to={`/blog/${article.slug}`}>
+                      <Card className="group hover:shadow-xl hover:border-primary/50 transition-all duration-300 overflow-hidden h-full">
+                        {article.featured_image_url && (
+                          <div className="aspect-video overflow-hidden">
+                            <img
+                              src={article.featured_image_url}
+                              alt={article.title}
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                            />
+                          </div>
+                        )}
+                        <div className="p-6 space-y-3">
+                          <Badge variant="secondary" className="w-fit">
+                            {article.category}
+                          </Badge>
+                          <h3 className="text-xl font-bold group-hover:text-primary transition-colors line-clamp-2">
+                            {article.title}
+                          </h3>
+                          <p className="text-sm text-muted-foreground line-clamp-2">
+                            {article.description}
+                          </p>
+                          <div className="flex items-center justify-between text-xs text-muted-foreground pt-3 border-t">
+                            <div className="flex items-center gap-2">
+                              <Calendar className="h-3 w-3" />
+                              {format(new Date(article.published_at), "MMM dd, yyyy")}
+                            </div>
+                            <span>{article.reading_time_minutes} min read</span>
+                          </div>
+                        </div>
+                      </Card>
+                    </Link>
+                  ))}
+                </div>
+
+                <div className="text-center">
+                  <Link to="/blog">
+                    <Button variant="outline" className="group">
+                      View All Articles
+                      <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+            </section>
+          )}
 
           {/* Footer */}
           <footer className="container mx-auto px-6 py-8 max-w-7xl border-t border-border/50">
