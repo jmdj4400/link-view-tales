@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Sparkles, Zap, Link as LinkIcon, Instagram, Twitter, Linkedin, Calendar, ArrowRight } from "lucide-react";
+import { Sparkles, Zap, Link as LinkIcon, Instagram, Twitter, Calendar, ArrowRight } from "lucide-react";
 import { SEOHead } from "@/components/SEOHead";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -69,12 +69,24 @@ export default function Landing() {
           await supabase.functions.invoke('send-waitlist-confirmation', {
             body: { email }
           });
+          toast.success(
+            "🎉 You're on the waitlist! Check your email for confirmation.",
+            {
+              description: "Didn't receive it? Check your spam folder or contact us.",
+              duration: 6000,
+            }
+          );
         } catch (emailError) {
           console.error('Failed to send confirmation email:', emailError);
-          // Don't fail the signup if email fails
+          toast.success(
+            "✅ You're on the waitlist!",
+            {
+              description: "There was an issue sending the confirmation email, but you're successfully registered.",
+              duration: 6000,
+            }
+          );
         }
         
-        toast.success("You're on the list! Check your email for confirmation 🚀");
         setEmail("");
       }
     } catch (error) {
@@ -200,7 +212,7 @@ export default function Landing() {
                 <p className="text-sm text-muted-foreground mb-4">Follow our journey</p>
                 <div className="flex items-center justify-center gap-4">
                   <a 
-                    href="https://instagram.com" 
+                    href="https://www.instagram.com/linkpeeek?igsh=MTg4aHhpYXRqMjB1bA%3D%3D&utm_source=qr" 
                     target="_blank" 
                     rel="noopener noreferrer"
                     className="p-3 rounded-xl bg-card/50 border border-border/50 backdrop-blur-sm hover:border-primary/50 transition-all duration-300 hover:scale-110"
@@ -208,20 +220,12 @@ export default function Landing() {
                     <Instagram className="h-5 w-5 text-muted-foreground hover:text-primary transition-colors" />
                   </a>
                   <a 
-                    href="https://twitter.com" 
+                    href="https://x.com/link_peek?s=21" 
                     target="_blank" 
                     rel="noopener noreferrer"
                     className="p-3 rounded-xl bg-card/50 border border-border/50 backdrop-blur-sm hover:border-primary/50 transition-all duration-300 hover:scale-110"
                   >
                     <Twitter className="h-5 w-5 text-muted-foreground hover:text-primary transition-colors" />
-                  </a>
-                  <a 
-                    href="https://linkedin.com" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="p-3 rounded-xl bg-card/50 border border-border/50 backdrop-blur-sm hover:border-primary/50 transition-all duration-300 hover:scale-110"
-                  >
-                    <Linkedin className="h-5 w-5 text-muted-foreground hover:text-primary transition-colors" />
                   </a>
                 </div>
               </div>

@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { FileText, PlusCircle, Shield } from "lucide-react";
+import { FileText, PlusCircle, Shield, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -32,6 +32,13 @@ export function AdminNav() {
           <Link to="/admin" className="cursor-pointer">
             <Shield className="h-4 w-4 mr-2" />
             Admin Dashboard
+          </Link>
+        </DropdownMenuItem>
+        
+        <DropdownMenuItem asChild>
+          <Link to="/admin/waitlist" className="cursor-pointer">
+            <Mail className="h-4 w-4 mr-2" />
+            Waitlist
           </Link>
         </DropdownMenuItem>
         

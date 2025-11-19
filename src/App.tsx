@@ -41,6 +41,7 @@ import BlogArticle from "./pages/BlogArticle";
 import BlogManagement from "./pages/BlogManagement";
 import BlogEditor from "./pages/BlogEditor";
 import LinkManagement from "./pages/LinkManagement";
+import WaitlistAdmin from "./pages/WaitlistAdmin";
 
 function App() {
   useServiceWorkerUpdate();
@@ -77,6 +78,7 @@ function App() {
           <Route path="/contact" element={<ContactSupport />} />
           <Route path="/offline" element={<Offline />} />
           <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/admin/waitlist" element={<WaitlistAdmin />} />
           <Route path="/checkout/success" element={<CheckoutSuccess />} />
           <Route path="/team" element={<TeamManagement />} />
           <Route path="/domains" element={<CustomDomains />} />
