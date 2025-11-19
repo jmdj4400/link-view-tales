@@ -41,3 +41,6 @@ verify_jwt = true
 
 [functions.verify-domain]
 verify_jwt = true
+
+[functions.send-waitlist-confirmation]
+verify_jwt = false
