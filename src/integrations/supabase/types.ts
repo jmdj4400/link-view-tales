@@ -867,14 +867,20 @@ export type Database = {
         Row: {
           active_from: string | null
           active_until: string | null
+          avg_redirect_time_ms: number | null
           category_id: string | null
           created_at: string | null
           current_clicks: number | null
           dest_url: string
+          health_checked_at: string | null
+          health_status: string | null
           id: string
           is_active: boolean | null
+          last_failure_reason: string | null
           max_clicks: number | null
           position: number
+          redirect_chain_length: number | null
+          sanitized_dest_url: string | null
           title: string
           updated_at: string | null
           user_id: string
@@ -885,14 +891,20 @@ export type Database = {
         Insert: {
           active_from?: string | null
           active_until?: string | null
+          avg_redirect_time_ms?: number | null
           category_id?: string | null
           created_at?: string | null
           current_clicks?: number | null
           dest_url: string
+          health_checked_at?: string | null
+          health_status?: string | null
           id?: string
           is_active?: boolean | null
+          last_failure_reason?: string | null
           max_clicks?: number | null
           position?: number
+          redirect_chain_length?: number | null
+          sanitized_dest_url?: string | null
           title: string
           updated_at?: string | null
           user_id: string
@@ -903,14 +915,20 @@ export type Database = {
         Update: {
           active_from?: string | null
           active_until?: string | null
+          avg_redirect_time_ms?: number | null
           category_id?: string | null
           created_at?: string | null
           current_clicks?: number | null
           dest_url?: string
+          health_checked_at?: string | null
+          health_status?: string | null
           id?: string
           is_active?: boolean | null
+          last_failure_reason?: string | null
           max_clicks?: number | null
           position?: number
+          redirect_chain_length?: number | null
+          sanitized_dest_url?: string | null
           title?: string
           updated_at?: string | null
           user_id?: string
@@ -1320,17 +1338,74 @@ export type Database = {
           },
         ]
       }
+      redirect_chains: {
+        Row: {
+          analyzed_at: string
+          chain_steps: Json
+          detected_issues: string[] | null
+          final_url: string | null
+          id: string
+          link_id: string | null
+          original_url: string
+          total_hops: number
+          total_time_ms: number | null
+        }
+        Insert: {
+          analyzed_at?: string
+          chain_steps?: Json
+          detected_issues?: string[] | null
+          final_url?: string | null
+          id?: string
+          link_id?: string | null
+          original_url: string
+          total_hops?: number
+          total_time_ms?: number | null
+        }
+        Update: {
+          analyzed_at?: string
+          chain_steps?: Json
+          detected_issues?: string[] | null
+          final_url?: string | null
+          id?: string
+          link_id?: string | null
+          original_url?: string
+          total_hops?: number
+          total_time_ms?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "redirect_chains_link_id_fkey"
+            columns: ["link_id"]
+            isOneToOne: false
+            referencedRelation: "links"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "redirect_chains_link_id_fkey"
+            columns: ["link_id"]
+            isOneToOne: false
+            referencedRelation: "public_links_view"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       redirects: {
         Row: {
           avoided_failure: boolean | null
           browser: string | null
           country: string | null
           device: string | null
+          drop_off_stage: string | null
           fallback_used: boolean | null
+          final_url: string | null
           firewall_strategy: string | null
           id: string
+          in_app_browser_detected: boolean | null
           link_id: string | null
+          load_time_ms: number | null
           platform: string | null
+          recovery_strategy_used: string | null
+          redirect_steps: Json | null
           referrer: string | null
           risk_score: number | null
           success: boolean | null
@@ -1342,11 +1417,17 @@ export type Database = {
           browser?: string | null
           country?: string | null
           device?: string | null
+          drop_off_stage?: string | null
           fallback_used?: boolean | null
+          final_url?: string | null
           firewall_strategy?: string | null
           id?: string
+          in_app_browser_detected?: boolean | null
           link_id?: string | null
+          load_time_ms?: number | null
           platform?: string | null
+          recovery_strategy_used?: string | null
+          redirect_steps?: Json | null
           referrer?: string | null
           risk_score?: number | null
           success?: boolean | null
@@ -1358,11 +1439,17 @@ export type Database = {
           browser?: string | null
           country?: string | null
           device?: string | null
+          drop_off_stage?: string | null
           fallback_used?: boolean | null
+          final_url?: string | null
           firewall_strategy?: string | null
           id?: string
+          in_app_browser_detected?: boolean | null
           link_id?: string | null
+          load_time_ms?: number | null
           platform?: string | null
+          recovery_strategy_used?: string | null
+          redirect_steps?: Json | null
           referrer?: string | null
           risk_score?: number | null
           success?: boolean | null
@@ -1880,6 +1967,7 @@ export type Database = {
     }
     Functions: {
       assign_admin_by_email: { Args: { p_email: string }; Returns: undefined }
+      calculate_link_health: { Args: { p_link_id: string }; Returns: string }
       calculate_redirect_risk: {
         Args: { p_country: string; p_platform: string; p_user_agent: string }
         Returns: number
@@ -1919,6 +2007,26 @@ export type Database = {
         Returns: boolean
       }
       is_email_whitelisted: { Args: { check_email: string }; Returns: boolean }
+      log_redirect_attempt: {
+        Args: {
+          p_browser: string
+          p_country: string
+          p_device: string
+          p_drop_off_stage: string
+          p_final_url: string
+          p_in_app_browser: boolean
+          p_link_id: string
+          p_load_time_ms: number
+          p_platform: string
+          p_recovery_strategy: string
+          p_redirect_steps: Json
+          p_referrer: string
+          p_success: boolean
+          p_user_agent: string
+        }
+        Returns: string
+      }
+      sanitize_url: { Args: { p_url: string }; Returns: string }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
