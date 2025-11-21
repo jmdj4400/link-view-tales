@@ -31,6 +31,7 @@ import EmailConfirmed from "./pages/EmailConfirmed";
 import ResetPassword from "./pages/ResetPassword";
 import Verify from "./pages/Verify";
 import PublicScorecard from "./pages/PublicScorecard";
+import PublicReport from "./pages/PublicReport";
 import AdminDashboard from "./pages/AdminDashboard";
 import CheckoutSuccess from "./pages/CheckoutSuccess";
 import TeamManagement from "./pages/TeamManagement";
@@ -89,6 +90,7 @@ function App() {
           <Route path="/blog/edit/:id" element={<BlogEditor />} />
           <Route path="/blog/:slug" element={<BlogArticle />} />
           <Route path="/r/:linkId" element={<RedirectHandler />} />
+          <Route path="/report/:scorecardId" element={<PublicReport />} />
           <Route path="/:handle/scorecard" element={<PublicScorecard />} />
           <Route path="/:handle" element={<PublicProfile />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
