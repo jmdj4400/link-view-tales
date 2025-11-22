@@ -70,12 +70,16 @@ export function LinkCreationFlow({ onSuccess, onCancel }: LinkCreationFlowProps)
 
     if (error) {
       console.error('Error creating link:', error);
-      toast.error('Failed to create link');
+      toast.error('Failed to create link', {
+        description: 'Please check your input and try again'
+      });
       setStep('preview');
       return;
     }
 
-    toast.success('Link created successfully');
+    toast.success('Link created successfully!', {
+      description: 'Your tracking link is ready to share'
+    });
     if (onSuccess) onSuccess();
   };
 
@@ -96,27 +100,27 @@ export function LinkCreationFlow({ onSuccess, onCancel }: LinkCreationFlowProps)
         {step === 'input' && (
           <>
             <div className="space-y-2">
-              <Label htmlFor="title">Link Title</Label>
+              <Label htmlFor="title" className="text-base">Link Title</Label>
               <Input
                 id="title"
                 placeholder="My Website"
                 value={link.title}
                 onChange={(e) => setLink({ ...link, title: e.target.value })}
               />
-              <p className="text-xs text-muted-foreground">Optional: Give your link a memorable name</p>
+              <p className="text-sm text-muted-foreground">Optional: Give your link a memorable name</p>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="url">Destination URL *</Label>
+              <Label htmlFor="url" className="text-base">Destination URL *</Label>
               <Input
                 id="url"
                 type="url"
-                placeholder="https://example.com"
+                placeholder="https://example.com/your-content"
                 value={link.dest_url}
                 onChange={(e) => setLink({ ...link, dest_url: e.target.value })}
                 required
               />
-              <p className="text-xs text-muted-foreground">Where should this link direct visitors?</p>
+              <p className="text-sm text-muted-foreground">Paste the URL you want to track and share</p>
             </div>
 
             <div className="flex gap-2 justify-end pt-4">
@@ -128,13 +132,14 @@ export function LinkCreationFlow({ onSuccess, onCancel }: LinkCreationFlowProps)
               <Button 
                 onClick={handleValidate} 
                 disabled={!link.dest_url || isValidating}
+                size="lg"
               >
                 {isValidating ? (
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                 ) : (
                   <ArrowRight className="h-4 w-4 mr-2" />
                 )}
-                Next
+                Preview Link
               </Button>
             </div>
           </>
@@ -201,8 +206,9 @@ export function LinkCreationFlow({ onSuccess, onCancel }: LinkCreationFlowProps)
         )}
 
         {step === 'saving' && (
-          <div className="flex items-center justify-center py-8">
-            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <div className="flex flex-col items-center justify-center py-12 space-y-4">
+            <Loader2 className="h-10 w-10 animate-spin text-primary" />
+            <p className="text-base text-muted-foreground">Creating your tracking link...</p>
           </div>
         )}
       </CardContent>
