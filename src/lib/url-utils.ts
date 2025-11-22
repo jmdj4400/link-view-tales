@@ -23,6 +23,73 @@ export interface URLHealthCheck {
 }
 
 /**
+ * Unwraps common social media link wrappers
+ */
+export function unwrapSocialLinks(url: string): string {
+  try {
+    const urlObj = new URL(url);
+    
+    // Instagram l.instagram.com wrapper
+    if (urlObj.hostname === 'l.instagram.com' && urlObj.searchParams.has('u')) {
+      return decodeURIComponent(urlObj.searchParams.get('u') || url);
+    }
+    
+    // Facebook l.facebook.com wrapper
+    if ((urlObj.hostname === 'l.facebook.com' || urlObj.hostname === 'lm.facebook.com') && urlObj.searchParams.has('u')) {
+      return decodeURIComponent(urlObj.searchParams.get('u') || url);
+    }
+    
+    // TikTok vm.tiktok.com wrapper - these redirect, keep as is
+    // LinkedIn lnkd.in wrapper - these redirect, keep as is
+    // Twitter t.co wrapper - these redirect, keep as is
+    
+    return url;
+  } catch {
+    return url;
+  }
+}
+
+/**
+ * Cleans broken or malformed UTM parameters
+ */
+export function cleanUTMParameters(url: string): string {
+  try {
+    const urlObj = new URL(url);
+    const validUTMParams = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content'];
+    
+    // Remove empty UTM parameters
+    validUTMParams.forEach(param => {
+      if (urlObj.searchParams.has(param)) {
+        const value = urlObj.searchParams.get(param);
+        if (!value || value.trim() === '') {
+          urlObj.searchParams.delete(param);
+        }
+      }
+    });
+    
+    // Remove duplicate UTM parameters (keeps first occurrence)
+    const seen = new Set<string>();
+    const params = Array.from(urlObj.searchParams.entries());
+    urlObj.search = '';
+    params.forEach(([key, value]) => {
+      const lowerKey = key.toLowerCase();
+      if (validUTMParams.includes(lowerKey)) {
+        if (!seen.has(lowerKey)) {
+          urlObj.searchParams.set(lowerKey, value);
+          seen.add(lowerKey);
+        }
+      } else {
+        urlObj.searchParams.set(key, value);
+      }
+    });
+    
+    return urlObj.toString();
+  } catch {
+    return url;
+  }
+}
+
+/**
  * Comprehensive URL sanitization
  */
 export function sanitizeURL(url: string): string {
@@ -70,6 +137,12 @@ export function sanitizeURL(url: string): string {
   } catch (e) {
     // If decoding fails, use original
   }
+  
+  // Unwrap social link wrappers
+  sanitized = unwrapSocialLinks(sanitized);
+  
+  // Clean UTM parameters
+  sanitized = cleanUTMParameters(sanitized);
   
   return sanitized;
 }

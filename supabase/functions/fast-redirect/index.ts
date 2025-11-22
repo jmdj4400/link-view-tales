@@ -91,28 +91,44 @@ serve(async (req) => {
     // Use sanitized URL if available, otherwise use dest_url
     let finalUrl = link.sanitized_dest_url || link.dest_url;
 
-    // Add UTM parameters if specified
-    if (link.utm_source || link.utm_medium || link.utm_campaign) {
-      try {
-        const url = new URL(finalUrl);
-        if (link.utm_source) url.searchParams.set('utm_source', link.utm_source);
-        if (link.utm_medium) url.searchParams.set('utm_medium', link.utm_medium);
-        if (link.utm_campaign) url.searchParams.set('utm_campaign', link.utm_campaign);
-        finalUrl = url.toString();
-      } catch (e) {
-        console.error('Error adding UTM params:', e);
+    // Validate and ensure final URL is safe
+    try {
+      const urlObj = new URL(finalUrl);
+      
+      // Add UTM parameters if specified
+      if (link.utm_source || link.utm_medium || link.utm_campaign) {
+        if (link.utm_source) urlObj.searchParams.set('utm_source', link.utm_source);
+        if (link.utm_medium) urlObj.searchParams.set('utm_medium', link.utm_medium);
+        if (link.utm_campaign) urlObj.searchParams.set('utm_campaign', link.utm_campaign);
       }
+      
+      finalUrl = urlObj.toString();
+    } catch (e) {
+      // Fallback: if URL is malformed, redirect to homepage with error
+      console.error('Malformed final URL:', e);
+      return new Response(
+        JSON.stringify({ 
+          error: 'Invalid destination URL', 
+          success: false,
+          fallback: true,
+        }),
+        { 
+          status: 400, 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        }
+      );
     }
 
     // Parse browser info
     const ua = userAgent?.toLowerCase() || '';
     const browserInfo = parseBrowserInfo(ua);
 
-    // Log redirect (non-blocking)
+    // Instant click tracking (non-blocking, minimal payload)
     const loadTime = Date.now() - startTime;
     
     // Fire and forget - don't wait for logging
-    Promise.resolve(
+    Promise.all([
+      // Log redirect attempt with minimal required data
       supabase.rpc('log_redirect_attempt', {
         p_link_id: linkId,
         p_success: true,
@@ -125,20 +141,19 @@ serve(async (req) => {
         p_redirect_steps: JSON.stringify([{ url: finalUrl, timestamp: Date.now(), type: 'server' }]),
         p_final_url: finalUrl,
         p_drop_off_stage: null,
-        p_recovery_strategy: null,
+        p_recovery_strategy: browserInfo.isInAppBrowser ? 'fallback_ui' : null,
         p_referrer: referrer || null,
         p_user_agent: userAgent || null,
-      })
-    ).then(() => {
-      // Track event
-      return supabase.from('events').insert({
+      }),
+      // Track click event (minimal insert)
+      supabase.from('events').insert({
         link_id: linkId,
         user_id: link.user_id,
         event_type: 'click',
         referrer: referrer || null,
         country: country || null,
-      });
-    }).catch((err: Error) => {
+      })
+    ]).catch((err: Error) => {
       console.error('Error logging redirect:', err);
     });
 
@@ -189,24 +204,31 @@ function parseBrowserInfo(ua: string): {
     isInAppBrowser: false,
   };
 
-  // Detect platform
+  // Detect platform with more precision
   if (/iphone|ipad|ipod/.test(ua)) {
     info.platform = 'ios';
     info.device = /ipad/.test(ua) ? 'tablet' : 'mobile';
   } else if (/android/.test(ua)) {
     info.platform = 'android';
     info.device = /mobile/.test(ua) ? 'mobile' : 'tablet';
+  } else if (/windows phone/i.test(ua)) {
+    info.platform = 'windows_phone';
+    info.device = 'mobile';
   } else {
     info.platform = 'desktop';
     info.device = 'desktop';
   }
 
-  // Detect in-app browsers
+  // Enhanced in-app browser detection
   const inAppPatterns = [
     { pattern: /fbav|fb_iab|fbios|fb4a/i, name: 'Facebook' },
     { pattern: /instagram/i, name: 'Instagram' },
     { pattern: /twitter/i, name: 'Twitter' },
     { pattern: /tiktok/i, name: 'TikTok' },
+    { pattern: /snapchat/i, name: 'Snapchat' },
+    { pattern: /linkedin/i, name: 'LinkedIn' },
+    { pattern: /whatsapp/i, name: 'WhatsApp' },
+    { pattern: /messenger/i, name: 'Messenger' },
   ];
 
   for (const { pattern, name } of inAppPatterns) {
@@ -217,10 +239,12 @@ function parseBrowserInfo(ua: string): {
     }
   }
 
-  // Regular browsers
-  if (/chrome/i.test(ua)) info.browser = 'Chrome';
-  else if (/safari/i.test(ua)) info.browser = 'Safari';
+  // Regular browser detection with more coverage
+  if (/edg/i.test(ua)) info.browser = 'Edge';
+  else if (/chrome/i.test(ua) && !/edg/i.test(ua)) info.browser = 'Chrome';
+  else if (/safari/i.test(ua) && !/chrome/i.test(ua)) info.browser = 'Safari';
   else if (/firefox/i.test(ua)) info.browser = 'Firefox';
+  else if (/opera|opr/i.test(ua)) info.browser = 'Opera';
 
   return info;
 }
