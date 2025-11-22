@@ -35,18 +35,18 @@ export default function Insights() {
       />
       <div className="min-h-screen bg-background">
         <PageHeader title="LinkPeek" />
-        <div className="container mx-auto py-8 px-4 space-y-6">
+        <div className="container mx-auto py-8 px-4 space-y-8">
           <BreadcrumbNav />
           <div>
-            <h1 className="text-3xl font-bold mb-2">Social Traffic Intelligence</h1>
-            <p className="text-muted-foreground">
+            <h1 className="text-3xl font-bold mb-3">Social Traffic Intelligence</h1>
+            <p className="text-base text-muted-foreground">
               Deep analytics, benchmarks, and AI-powered optimization
             </p>
           </div>
 
           <ChannelAlerts />
 
-          <Tabs defaultValue="overview" className="space-y-6">
+          <Tabs defaultValue="overview" className="space-y-8">
             <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="overview" className="gap-2">
                 <TrendingUp className="h-4 w-4" />

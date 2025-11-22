@@ -454,13 +454,13 @@ export default function Dashboard() {
       <div className="container mx-auto px-6 py-10 max-w-7xl">
         <BreadcrumbNav />
         {/* Header */}
-        <div className="mb-8 flex items-center justify-between flex-wrap gap-4">
+        <div className="mb-10 flex items-center justify-between flex-wrap gap-4">
           <div className="flex items-center gap-3">
             <div>
-              <h2 className="text-2xl font-heading font-bold mb-1">
+              <h2 className="text-3xl font-heading font-bold mb-2">
                 Dashboard
               </h2>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-base text-muted-foreground">
                 Traffic overview and performance metrics
               </p>
             </div>
@@ -618,18 +618,18 @@ export default function Dashboard() {
                 subtitle: "Engagement efficiency"
               },
             ].map((metric, index) => (
-              <Card key={index} className="border hover:border-primary/30 transition-colors">
+              <Card key={index} className="border-l-4 border-l-primary hover:shadow-md transition-all">
                 <CardHeader className="flex flex-row items-center justify-between pb-3">
-                  <CardTitle className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                  <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
                     {metric.label}
                   </CardTitle>
-                  <metric.icon className="h-4 w-4 text-muted-foreground" />
+                  <metric.icon className="h-5 w-5 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold mb-1">
+                  <div className="text-4xl font-bold mb-2">
                     {typeof metric.value === 'number' ? metric.value.toLocaleString() : metric.value}
                   </div>
-                  <p className="text-xs text-muted-foreground">{metric.subtitle}</p>
+                  <p className="text-sm text-muted-foreground">{metric.subtitle}</p>
                 </CardContent>
               </Card>
             ))
@@ -639,11 +639,11 @@ export default function Dashboard() {
 
         {/* Analytics Chart or Empty State */}
         {metrics.views === 0 && metrics.clicks === 0 ? (
-          <Card className="mb-8 border-2">
+          <Card className="mb-10 border-2">
             <EmptyState
               icon={BarChart3}
-              title="No data yet"
-              description="Share your bio link and come back to see your analytics. Your first insights will appear here once people start visiting."
+              title="No activity yet"
+              description="Once someone visits your profile or clicks your links, you'll see detailed analytics and performance metrics here."
               action={{
                 label: "View your profile",
                 onClick: () => {
@@ -658,22 +658,22 @@ export default function Dashboard() {
           </Card>
         ) : (
           <>
-            <div className="mb-8">
+            <div className="mb-10">
               <AnalyticsChart data={chartData} />
             </div>
 
             {/* Top Links & Traffic Sources */}
-            <div className="grid lg:grid-cols-2 gap-6 mb-8">
+            <div className="grid lg:grid-cols-2 gap-6 mb-10">
               <TopLinksTable links={topLinks} />
               <TrafficSources sources={trafficSources} />
             </div>
 
             {/* Device, Browser & Country Stats */}
-            <div className="mb-8">
+            <div className="mb-10">
               <DeviceBrowserStats deviceStats={deviceStats} browserStats={browserStats} />
             </div>
 
-            <div className="mb-8">
+            <div className="mb-10">
               <CountryStats countryStats={countryStats} />
             </div>
 

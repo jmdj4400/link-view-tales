@@ -3,10 +3,11 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { DraggableLinkEditor } from "@/components/profile/DraggableLinkEditor";
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import { Plus, Link as LinkIcon } from "lucide-react";
 import { PageHeader } from "@/components/ui/page-header";
 import { SEOHead } from "@/components/SEOHead";
 import { useNavigate } from "react-router-dom";
+import { EmptyState } from "@/components/ui/empty-state";
 
 export default function LinkManagement() {
   const navigate = useNavigate();
@@ -53,12 +54,15 @@ export default function LinkManagement() {
           {links.length > 0 ? (
             <DraggableLinkEditor links={links} onReorder={() => refetch()} />
           ) : (
-            <div className="text-center py-12 text-muted-foreground">
-              <p>No links yet. Create your first link!</p>
-              <Button onClick={() => navigate("/settings/links")} className="mt-4">
-                Create Link
-              </Button>
-            </div>
+            <EmptyState
+              icon={LinkIcon}
+              title="No links yet"
+              description="Create your first tracking link to start monitoring clicks and engagement from your social media profiles."
+              action={{
+                label: "Create First Link",
+                onClick: () => navigate("/settings/links")
+              }}
+            />
           )}
         </div>
       </div>
