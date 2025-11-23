@@ -1,13 +1,11 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
-import { Resend } from "https://esm.sh/resend@4.0.0";
+import { getResendClient, sendEmailWithRetry, validateEmail } from "../_shared/email-utils.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
-
-const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
 const logStep = (step: string, details?: any) => {
   const detailsStr = details ? ` - ${JSON.stringify(details)}` : '';
@@ -38,6 +36,15 @@ serve(async (req) => {
     const { workspace_id, email, role } = await req.json();
     
     logStep("Request data", { workspace_id, email, role });
+
+    // Validate email
+    const emailValidation = validateEmail(email);
+    if (!emailValidation.valid) {
+      logStep("Invalid email", emailValidation.error);
+      throw new Error(emailValidation.error);
+    }
+
+    const resend = getResendClient();
 
     // Generate invitation token
     const token_value = crypto.randomUUID();
@@ -78,11 +85,11 @@ serve(async (req) => {
 
     const inviteLink = `${Deno.env.get("APP_URL")}/team/accept-invite?token=${token_value}`;
 
-    // Send invitation email
-    await resend.emails.send({
-      from: "Linkbolt <onboarding@resend.dev>",
+    // Send invitation email with retry
+    const emailResult = await sendEmailWithRetry(resend, {
+      from: "LinkPeek <hello@link-peek.org>",
       to: [email],
-      subject: `You've been invited to join ${workspace?.name || 'a team'} on Linkbolt`,
+      subject: `You've been invited to join ${workspace?.name || 'a team'} on LinkPeek`,
       html: `
         <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 600px; margin: 0 auto;">
           <div style="background: linear-gradient(135deg, #4753FF 0%, #7C3AED 100%); color: white; padding: 40px 32px; text-align: center; border-radius: 16px 16px 0 0;">
@@ -114,6 +121,11 @@ serve(async (req) => {
         </div>
       `,
     });
+
+    if (!emailResult.success) {
+      logStep("Failed to send invitation email", emailResult.error);
+      throw new Error(emailResult.error || "Failed to send invitation email");
+    }
 
     logStep("Invitation sent successfully", { email, workspace_id });
 

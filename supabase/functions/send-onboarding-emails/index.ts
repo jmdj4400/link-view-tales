@@ -1,8 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.38.4';
-import { Resend } from "https://esm.sh/resend@4.0.0";
-
-const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
+import { getResendClient, sendEmailWithRetry, logEmailAttempt } from "../_shared/email-utils.ts";
 const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
 const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 const appUrl = Deno.env.get('APP_URL')!;
@@ -25,7 +23,9 @@ serve(async (req) => {
   const supabase = createClient(supabaseUrl, supabaseKey);
   
   try {
+    console.log("📧 Onboarding email request received");
     const { userId, emailType }: OnboardingEmailRequest = await req.json();
+    const resend = getResendClient();
 
     // Fetch user profile
     const { data: profile, error: profileError } = await supabase
@@ -191,8 +191,8 @@ serve(async (req) => {
       `;
     }
 
-    // Send email
-    const { error: sendError } = await resend.emails.send({
+    // Send email with retry
+    const result = await sendEmailWithRetry(resend, {
       from: 'LinkPeek <hello@link-peek.org>',
       replyTo: 'support@link-peek.org',
       to: [profile.email],
@@ -200,27 +200,11 @@ serve(async (req) => {
       html,
     });
 
-    if (sendError) {
-      // Log failed email attempt
-      await supabase.from('email_log').insert({
-        user_id: userId,
-        email_type: emailType,
-        success: false,
-        error_message: sendError.message || 'Unknown error'
-      });
-      
-      throw sendError;
-    }
+    // Log the attempt
+    await logEmailAttempt(supabase, userId, emailType, result.success, result.error);
 
-    // Log successful email send
-    const { error: logError } = await supabase.from('email_log').insert({
-      user_id: userId,
-      email_type: emailType,
-      success: true
-    });
-
-    if (logError) {
-      console.error('Failed to log email send:', logError);
+    if (!result.success) {
+      throw new Error(result.error || 'Failed to send email');
     }
 
     console.log(`✅ ${emailType} email sent successfully to ${profile.email}`);

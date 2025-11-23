@@ -1,7 +1,5 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { Resend } from "https://esm.sh/resend@4.0.0";
-
-const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
+import { getResendClient, sendEmailWithRetry, validateEmail } from "../_shared/email-utils.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -24,10 +22,12 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
+    console.log("📧 Contact email request received");
     const { name, email, category, subject, message }: ContactEmailRequest = await req.json();
 
     // Validate input
     if (!name || !email || !category || !subject || !message) {
+      console.error("❌ Missing required fields");
       return new Response(
         JSON.stringify({ error: "Missing required fields" }),
         {
@@ -37,8 +37,23 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
+    // Validate email format
+    const emailValidation = validateEmail(email);
+    if (!emailValidation.valid) {
+      console.error(`❌ Invalid email: ${emailValidation.error}`);
+      return new Response(
+        JSON.stringify({ error: emailValidation.error }),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json", ...corsHeaders },
+        }
+      );
+    }
+
+    const resend = getResendClient();
+
     // Send confirmation email to user
-    const confirmationEmail = await resend.emails.send({
+    const confirmationResult = await sendEmailWithRetry(resend, {
       from: "LinkPeek Support <noreply@link-peek.org>",
       to: [email],
       subject: "We received your message - LinkPeek Support",
@@ -96,8 +111,19 @@ const handler = async (req: Request): Promise<Response> => {
       `,
     });
 
+    if (!confirmationResult.success) {
+      console.error("❌ Failed to send confirmation email:", confirmationResult.error);
+      return new Response(
+        JSON.stringify({ error: "Failed to send confirmation email. Please try again." }),
+        {
+          status: 500,
+          headers: { "Content-Type": "application/json", ...corsHeaders },
+        }
+      );
+    }
+
     // Send notification email to support team
-    const supportEmail = await resend.emails.send({
+    const supportResult = await sendEmailWithRetry(resend, {
       from: "LinkPeek Contact Form <noreply@link-peek.org>",
       to: ["support@link-peek.org"],
       replyTo: email,
@@ -137,7 +163,11 @@ const handler = async (req: Request): Promise<Response> => {
       `,
     });
 
-    console.log("Emails sent successfully:", { confirmationEmail, supportEmail });
+    if (!supportResult.success) {
+      console.warn("⚠️ Failed to send support notification, but user confirmation was sent");
+    }
+
+    console.log(`✅ Contact form processed successfully for ${email}`);
 
     return new Response(
       JSON.stringify({ 
