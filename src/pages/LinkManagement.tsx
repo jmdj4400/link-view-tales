@@ -40,12 +40,12 @@ export default function LinkManagement() {
         <PageHeader showBack title="Link Management" />
 
         <div className="container mx-auto px-6 py-10 max-w-2xl">
-          <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center justify-between mb-8">
             <div>
-              <h1 className="text-2xl font-semibold">Manage Your Links</h1>
-              <p className="text-muted-foreground">Drag to reorder, toggle visibility</p>
+              <h1 className="text-3xl font-bold mb-2">Manage Your Links</h1>
+              <p className="text-base text-muted-foreground">Drag to reorder, toggle visibility</p>
             </div>
-            <Button onClick={() => navigate("/settings/links")}>
+            <Button onClick={() => navigate("/settings/links")} size="lg">
               <Plus className="h-4 w-4 mr-2" />
               Add Link
             </Button>

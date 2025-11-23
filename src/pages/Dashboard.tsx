@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
+import { DashboardSkeleton } from "@/components/dashboard/DashboardSkeleton";
 import { LogOut, Settings, Link as LinkIcon, CreditCard, Eye, MousePointerClick, TrendingUp, ArrowRight, Download, Plus, BarChart3, Palette, Users, Target, Zap, Mail, FileDown, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { AnalyticsChart } from "@/components/analytics/AnalyticsChart";
@@ -582,17 +583,17 @@ export default function Dashboard() {
             />
           </div>
         ) : (
-          <div className="grid md:grid-cols-3 gap-5 mb-8">
+          <div className="grid md:grid-cols-3 gap-6 mb-10">
           {isLoadingAnalytics ? (
             <>
               {[1, 2, 3].map((i) => (
                 <Card key={i}>
                   <CardHeader className="pb-3">
-                    <Skeleton className="h-3 w-24" />
+                    <Skeleton className="h-4 w-24" />
                   </CardHeader>
                   <CardContent>
-                    <Skeleton className="h-8 w-20 mb-1" />
-                    <Skeleton className="h-3 w-32" />
+                    <Skeleton className="h-12 w-20 mb-2" />
+                    <Skeleton className="h-4 w-32" />
                   </CardContent>
                 </Card>
               ))}
@@ -618,15 +619,15 @@ export default function Dashboard() {
                 subtitle: "Engagement efficiency"
               },
             ].map((metric, index) => (
-              <Card key={index} className="border-l-4 border-l-primary hover:shadow-md transition-all">
+              <Card key={index} className="border-l-4 border-l-primary">
                 <CardHeader className="flex flex-row items-center justify-between pb-3">
-                  <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
+                  <CardTitle className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
                     {metric.label}
                   </CardTitle>
                   <metric.icon className="h-5 w-5 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-4xl font-bold mb-2">
+                  <div className="text-5xl font-bold mb-1">
                     {typeof metric.value === 'number' ? metric.value.toLocaleString() : metric.value}
                   </div>
                   <p className="text-sm text-muted-foreground">{metric.subtitle}</p>
