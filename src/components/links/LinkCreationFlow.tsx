@@ -120,7 +120,9 @@ export function LinkCreationFlow({ onSuccess, onCancel }: LinkCreationFlowProps)
                 onChange={(e) => setLink({ ...link, dest_url: e.target.value })}
                 required
               />
-              <p className="text-sm text-muted-foreground">Paste the URL you want to track and share</p>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                We automatically <strong>clean UTMs</strong>, <strong>unwrap social wrappers</strong>, and <strong>repair broken redirects</strong> for you.
+              </p>
             </div>
 
             <div className="flex gap-2 justify-end pt-4">
