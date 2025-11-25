@@ -41,6 +41,8 @@ import { TrialCountdownBanner } from "@/components/ui/trial-countdown-banner";
 import { PageHeader } from "@/components/ui/page-header";
 import { AdminNav } from "@/components/navigation/AdminNav";
 import { useUserRoles } from "@/hooks/use-user-roles";
+import { OnboardingModal } from "@/components/onboarding/OnboardingModal";
+import { generateDemoLink } from "@/lib/demo-data-generator";
 import logo from "@/assets/logo.png";
 
 export default function Dashboard() {
@@ -67,6 +69,7 @@ export default function Dashboard() {
   const [profileHandle, setProfileHandle] = useState("");
   const [comparisonMode, setComparisonMode] = useState(false);
   const [previousMetrics, setPreviousMetrics] = useState({ views: 0, clicks: 0, ctr: 0 });
+  const [showOnboarding, setShowOnboarding] = useState(false);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -76,8 +79,30 @@ export default function Dashboard() {
 
     if (user) {
       checkSetupStatus();
+      checkOnboarding();
     }
   }, [user, loading, navigate]);
+
+  const checkOnboarding = async () => {
+    try {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('onboarding_completed_at')
+        .eq('id', user?.id)
+        .single();
+
+      if (!profile?.onboarding_completed_at) {
+        setShowOnboarding(true);
+      }
+    } catch (error) {
+      console.error("Error checking onboarding:", error);
+    }
+  };
+
+  const handleOnboardingComplete = () => {
+    setShowOnboarding(false);
+    fetchAnalytics();
+  };
 
   const checkSetupStatus = async () => {
     if (!user) return;
@@ -897,6 +922,13 @@ export default function Dashboard() {
         )}
       </div>
     </div>
-    </>
+
+    {/* Onboarding Modal */}
+    <OnboardingModal
+      open={showOnboarding}
+      onClose={() => setShowOnboarding(false)}
+      onComplete={handleOnboardingComplete}
+    />
+  </>
   );
 }

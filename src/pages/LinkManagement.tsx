@@ -3,14 +3,17 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { DraggableLinkEditor } from "@/components/profile/DraggableLinkEditor";
 import { Button } from "@/components/ui/button";
-import { Plus, Link as LinkIcon } from "lucide-react";
+import { Plus, Link as LinkIcon, Sparkles } from "lucide-react";
 import { PageHeader } from "@/components/ui/page-header";
 import { SEOHead } from "@/components/SEOHead";
 import { useNavigate } from "react-router-dom";
 import { EmptyState } from "@/components/ui/empty-state";
+import { generateDemoLink } from "@/lib/demo-data-generator";
+import { toast } from "sonner";
 
 export default function LinkManagement() {
   const navigate = useNavigate();
+  const [isCreatingDemo, setIsCreatingDemo] = useState(false);
 
   const { data: links = [], refetch } = useQuery({
     queryKey: ["links-management"],
@@ -28,6 +31,20 @@ export default function LinkManagement() {
       return data;
     },
   });
+
+  const handleCreateDemo = async () => {
+    setIsCreatingDemo(true);
+    try {
+      await generateDemoLink();
+      toast.success("Demo link created! Check your dashboard.");
+      refetch();
+    } catch (error) {
+      console.error("Error creating demo:", error);
+      toast.error("Failed to create demo link");
+    } finally {
+      setIsCreatingDemo(false);
+    }
+  };
 
   return (
     <>
@@ -54,15 +71,33 @@ export default function LinkManagement() {
           {links.length > 0 ? (
             <DraggableLinkEditor links={links} onReorder={() => refetch()} />
           ) : (
-            <EmptyState
-              icon={LinkIcon}
-              title="No links yet"
-              description="Create your first tracking link to start monitoring clicks and engagement from your social media profiles."
-              action={{
-                label: "Create First Link",
-                onClick: () => navigate("/settings/links")
-              }}
-            />
+            <div className="space-y-6">
+              <EmptyState
+                icon={LinkIcon}
+                title="No links yet"
+                description="Create your first tracking link to start monitoring clicks and engagement from your social media profiles."
+                action={{
+                  label: "Create First Link",
+                  onClick: () => navigate("/settings/links")
+                }}
+              />
+              <div className="flex items-center justify-center">
+                <div className="text-center">
+                  <p className="text-sm text-muted-foreground mb-3">
+                    Or try a demo link with realistic data first
+                  </p>
+                  <Button
+                    onClick={handleCreateDemo}
+                    disabled={isCreatingDemo}
+                    variant="outline"
+                    size="lg"
+                  >
+                    <Sparkles className="h-4 w-4 mr-2" />
+                    {isCreatingDemo ? "Creating Demo..." : "Create Demo Link"}
+                  </Button>
+                </div>
+              </div>
+            </div>
           )}
         </div>
       </div>
