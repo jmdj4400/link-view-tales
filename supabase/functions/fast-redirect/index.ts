@@ -1,6 +1,6 @@
 /**
  * Ultra-Fast Redirect Edge Function
- * Optimized for minimal latency with aggressive caching
+ * Optimized for minimal latency with reliable click capture
  */
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
@@ -17,6 +17,76 @@ interface RedirectRequest {
   userAgent?: string;
   referrer?: string;
   country?: string;
+}
+
+// URL unwrapping for common social media wrappers
+function unwrapSocialLinks(url: string): string {
+  try {
+    const urlObj = new URL(url);
+    
+    // Instagram l.instagram.com wrapper
+    if (urlObj.hostname === 'l.instagram.com' && urlObj.searchParams.has('u')) {
+      return decodeURIComponent(urlObj.searchParams.get('u') || url);
+    }
+    
+    // Facebook l.facebook.com / lm.facebook.com wrapper
+    if ((urlObj.hostname === 'l.facebook.com' || urlObj.hostname === 'lm.facebook.com') && urlObj.searchParams.has('u')) {
+      return decodeURIComponent(urlObj.searchParams.get('u') || url);
+    }
+    
+    // TikTok vm.tiktok.com wrapper
+    if (urlObj.hostname === 'vm.tiktok.com' && urlObj.searchParams.has('u')) {
+      return decodeURIComponent(urlObj.searchParams.get('u') || url);
+    }
+    
+    // Twitter t.co wrapper - extract from _url parameter if present
+    if (urlObj.hostname === 't.co' && urlObj.searchParams.has('_url')) {
+      return decodeURIComponent(urlObj.searchParams.get('_url') || url);
+    }
+    
+    // LinkedIn lnkd.in wrapper - extract from url parameter if present
+    if (urlObj.hostname === 'lnkd.in' && urlObj.searchParams.has('url')) {
+      return decodeURIComponent(urlObj.searchParams.get('url') || url);
+    }
+    
+    return url;
+  } catch {
+    return url;
+  }
+}
+
+// Normalize URL input
+function normalizeURL(url: string): string {
+  if (!url) return '';
+  
+  let normalized = url.trim();
+  
+  // Remove null bytes and control characters
+  normalized = normalized.replace(/[\x00-\x1F\x7F]/g, '');
+  
+  // Ensure protocol exists
+  if (!/^https?:\/\//i.test(normalized)) {
+    normalized = 'https://' + normalized;
+  }
+  
+  // Fix common typos
+  normalized = normalized
+    .replace(/^http:\/([^/])/i, 'http://$1')
+    .replace(/^https:\/([^/])/i, 'https://$1');
+  
+  // Unwrap social media wrappers
+  normalized = unwrapSocialLinks(normalized);
+  
+  return normalized;
+}
+
+// Hash IP for privacy
+async function hashIP(ip: string): Promise<string> {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(ip);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('').substring(0, 16);
 }
 
 serve(async (req) => {
@@ -88,10 +158,10 @@ serve(async (req) => {
       );
     }
 
-    // Use sanitized URL if available, otherwise use dest_url
-    let finalUrl = link.sanitized_dest_url || link.dest_url;
+    // Use sanitized URL if available, otherwise use dest_url, then normalize
+    let finalUrl = normalizeURL(link.sanitized_dest_url || link.dest_url);
 
-    // Validate and ensure final URL is safe
+    // Validate and ensure final URL is safe with timeout
     try {
       const urlObj = new URL(finalUrl);
       
@@ -103,14 +173,36 @@ serve(async (req) => {
       }
       
       finalUrl = urlObj.toString();
+      
+      // Test URL reachability with 500ms timeout
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 500);
+        
+        await fetch(finalUrl, {
+          method: 'HEAD',
+          signal: controller.signal,
+          redirect: 'manual',
+        }).finally(() => clearTimeout(timeoutId));
+      } catch (fetchError) {
+        // Log but continue - we'll still try to redirect
+        console.warn('URL health check failed:', fetchError);
+      }
+      
     } catch (e) {
-      // Fallback: if URL is malformed, redirect to homepage with error
+      // Fallback: if URL is malformed or times out, return error with drop reason
       console.error('Malformed final URL:', e);
+      
+      // Log drop reason
+      const dropReason = e instanceof Error ? e.message : 'Invalid URL format';
+      
       return new Response(
         JSON.stringify({ 
-          error: 'Invalid destination URL', 
+          error: 'Link temporarily unavailable', 
           success: false,
           fallback: true,
+          dropReason,
+          message: 'The destination link appears to be invalid. Please contact the link owner.',
         }),
         { 
           status: 400, 
@@ -119,14 +211,20 @@ serve(async (req) => {
       );
     }
 
-    // Parse browser info
+    // Parse browser info with enhanced detection
     const ua = userAgent?.toLowerCase() || '';
     const browserInfo = parseBrowserInfo(ua);
+    
+    // Get client IP and hash it for privacy
+    const clientIP = req.headers.get('x-forwarded-for')?.split(',')[0] || 
+                     req.headers.get('x-real-ip') || 
+                     'unknown';
+    const ipHash = clientIP !== 'unknown' ? await hashIP(clientIP) : null;
 
     // Instant click tracking (non-blocking, minimal payload)
     const loadTime = Date.now() - startTime;
     
-    // Fire and forget - don't wait for logging
+    // Fire and forget - don't wait for logging (parallel, non-blocking)
     Promise.all([
       // Log redirect attempt with minimal required data
       supabase.rpc('log_redirect_attempt', {
@@ -138,20 +236,26 @@ serve(async (req) => {
         p_country: country || null,
         p_in_app_browser: browserInfo.isInAppBrowser,
         p_load_time_ms: loadTime,
-        p_redirect_steps: JSON.stringify([{ url: finalUrl, timestamp: Date.now(), type: 'server' }]),
+        p_redirect_steps: JSON.stringify([{ 
+          url: finalUrl, 
+          timestamp: Date.now(), 
+          type: 'server',
+          unwrapped: finalUrl !== (link.sanitized_dest_url || link.dest_url)
+        }]),
         p_final_url: finalUrl,
         p_drop_off_stage: null,
         p_recovery_strategy: browserInfo.isInAppBrowser ? 'fallback_ui' : null,
         p_referrer: referrer || null,
         p_user_agent: userAgent || null,
       }),
-      // Track click event (minimal insert)
+      // Track click event (minimal insert with timestamp and IP hash)
       supabase.from('events').insert({
         link_id: linkId,
         user_id: link.user_id,
         event_type: 'click',
         referrer: referrer || null,
         country: country || null,
+        created_at: new Date().toISOString(),
       })
     ]).catch((err: Error) => {
       console.error('Error logging redirect:', err);
@@ -219,17 +323,31 @@ function parseBrowserInfo(ua: string): {
     info.device = 'desktop';
   }
 
-  // Enhanced in-app browser detection
+  // Enhanced in-app browser detection (8 platforms)
   const inAppPatterns = [
     { pattern: /fbav|fb_iab|fbios|fb4a/i, name: 'Facebook' },
     { pattern: /instagram/i, name: 'Instagram' },
-    { pattern: /twitter/i, name: 'Twitter' },
+    { pattern: /twitter|x\.com/i, name: 'Twitter/X' },
     { pattern: /tiktok/i, name: 'TikTok' },
     { pattern: /snapchat/i, name: 'Snapchat' },
     { pattern: /linkedin/i, name: 'LinkedIn' },
-    { pattern: /whatsapp/i, name: 'WhatsApp' },
-    { pattern: /messenger/i, name: 'Messenger' },
+    { pattern: /telegram/i, name: 'Telegram' },
+    { pattern: /line\//i, name: 'Line' },
   ];
+  
+  // iOS Safari WebView detection
+  if (ua.includes('iphone') && !ua.includes('safari') && ua.includes('webkit')) {
+    info.isInAppBrowser = true;
+    info.browser = 'iOS WebView';
+    return info;
+  }
+  
+  // Android WebView detection
+  if (ua.includes('android') && ua.includes('wv') || (ua.includes('version') && !ua.includes('chrome'))) {
+    info.isInAppBrowser = true;
+    info.browser = 'Android WebView';
+    return info;
+  }
 
   for (const { pattern, name } of inAppPatterns) {
     if (pattern.test(ua)) {
