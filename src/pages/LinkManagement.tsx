@@ -3,6 +3,8 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { DraggableLinkEditor } from "@/components/profile/DraggableLinkEditor";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Plus, Link as LinkIcon, Sparkles } from "lucide-react";
 import { PageHeader } from "@/components/ui/page-header";
 import { SEOHead } from "@/components/SEOHead";
@@ -15,7 +17,7 @@ export default function LinkManagement() {
   const navigate = useNavigate();
   const [isCreatingDemo, setIsCreatingDemo] = useState(false);
 
-  const { data: links = [], refetch } = useQuery({
+  const { data: links = [], refetch, isLoading } = useQuery({
     queryKey: ["links-management"],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -68,14 +70,29 @@ export default function LinkManagement() {
             </Button>
           </div>
 
-          {links.length > 0 ? (
+          {isLoading ? (
+            <div className="space-y-4">
+              {[1, 2, 3].map((i) => (
+                <Card key={i} className="p-4">
+                  <div className="flex items-center gap-4">
+                    <Skeleton className="h-12 w-12 rounded-lg" />
+                    <div className="flex-1 space-y-2">
+                      <Skeleton className="h-5 w-48" />
+                      <Skeleton className="h-4 w-64" />
+                    </div>
+                    <Skeleton className="h-8 w-20" />
+                  </div>
+                </Card>
+              ))}
+            </div>
+          ) : links.length > 0 ? (
             <DraggableLinkEditor links={links} onReorder={() => refetch()} />
           ) : (
             <div className="space-y-6">
               <EmptyState
                 icon={LinkIcon}
-                title="No links yet"
-                description="Create your first tracking link to start monitoring clicks and engagement from your social media profiles."
+                title="Create your first link"
+                description="Create your first link to measure real traffic performance and track where clicks succeed or fail."
                 action={{
                   label: "Create First Link",
                   onClick: () => navigate("/settings/links")
