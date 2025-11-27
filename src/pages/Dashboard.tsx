@@ -635,7 +635,8 @@ export default function Dashboard() {
                 icon: MousePointerClick,
                 label: "Link clicks",
                 value: metrics.clicks,
-                subtitle: "Outbound engagements"
+                subtitle: "Outbound engagements",
+                tooltip: "Measured from real delivered visits — not platform-reported taps."
               },
               {
                 icon: TrendingUp,
@@ -646,9 +647,12 @@ export default function Dashboard() {
             ].map((metric, index) => (
               <Card key={index} className="border-l-4 border-l-primary">
                 <CardHeader className="flex flex-row items-center justify-between pb-3">
-                  <CardTitle className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                    {metric.label}
-                  </CardTitle>
+                  <div className="flex items-center gap-2">
+                    <CardTitle className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                      {metric.label}
+                    </CardTitle>
+                    {metric.tooltip && <InfoTooltip content={metric.tooltip} />}
+                  </div>
                   <metric.icon className="h-5 w-5 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
@@ -665,11 +669,11 @@ export default function Dashboard() {
 
         {/* Analytics Chart or Empty State */}
         {metrics.views === 0 && metrics.clicks === 0 ? (
-          <Card className="mb-10 border-2">
+          <Card className="mb-10 border-2 p-4">
             <EmptyState
               icon={BarChart3}
-              title="No activity yet"
-              description="Once someone visits your profile or clicks your links, you'll see detailed analytics and performance metrics here."
+              title="No clicks yet"
+              description="Share your link and we'll show where redirect failures happen, track integrity scores, and measure real traffic performance."
               action={{
                 label: "View your profile",
                 onClick: () => {
