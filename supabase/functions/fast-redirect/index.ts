@@ -211,7 +211,7 @@ serve(async (req) => {
       );
     }
 
-    // Parse browser info with enhanced detection
+    // Parse browser info with enhanced detection (handle empty/missing user agent)
     const ua = userAgent?.toLowerCase() || '';
     const browserInfo = parseBrowserInfo(ua);
     
@@ -221,19 +221,24 @@ serve(async (req) => {
                      'unknown';
     const ipHash = clientIP !== 'unknown' ? await hashIP(clientIP) : null;
 
+    // Handle edge cases for missing data
+    const safeReferrer = referrer || 'direct';
+    const safeUserAgent = userAgent || 'unknown';
+    const safeCountry = country || 'unknown';
+
     // Instant click tracking (non-blocking, minimal payload)
     const loadTime = Date.now() - startTime;
     
     // Fire and forget - don't wait for logging (parallel, non-blocking)
     Promise.all([
-      // Log redirect attempt with minimal required data
+      // Log redirect attempt with minimal required data (use safe defaults for missing data)
       supabase.rpc('log_redirect_attempt', {
         p_link_id: linkId,
         p_success: true,
-        p_platform: browserInfo.platform,
-        p_browser: browserInfo.browser,
-        p_device: browserInfo.device,
-        p_country: country || null,
+        p_platform: browserInfo.platform || 'unknown',
+        p_browser: browserInfo.browser || 'unknown',
+        p_device: browserInfo.device || 'unknown',
+        p_country: safeCountry,
         p_in_app_browser: browserInfo.isInAppBrowser,
         p_load_time_ms: loadTime,
         p_redirect_steps: JSON.stringify([{ 
@@ -245,16 +250,17 @@ serve(async (req) => {
         p_final_url: finalUrl,
         p_drop_off_stage: null,
         p_recovery_strategy: browserInfo.isInAppBrowser ? 'fallback_ui' : null,
-        p_referrer: referrer || null,
-        p_user_agent: userAgent || null,
+        p_referrer: safeReferrer,
+        p_user_agent: safeUserAgent,
       }),
-      // Track click event (minimal insert with timestamp and IP hash)
+      // Track click event (minimal insert with safe defaults for missing data)
       supabase.from('events').insert({
         link_id: linkId,
         user_id: link.user_id,
         event_type: 'click',
-        referrer: referrer || null,
-        country: country || null,
+        referrer: safeReferrer === 'direct' ? null : safeReferrer,
+        country: safeCountry === 'unknown' ? null : safeCountry,
+        user_agent_hash: safeUserAgent === 'unknown' ? null : btoa(safeUserAgent).substring(0, 32),
         created_at: new Date().toISOString(),
       })
     ]).catch((err: Error) => {
