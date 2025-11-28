@@ -55,7 +55,14 @@ export default function Dashboard() {
     from: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), 
     to: new Date() 
   });
-  const [metrics, setMetrics] = useState({ views: 0, clicks: 0, ctr: 0 });
+  const [metrics, setMetrics] = useState({ 
+    views: 0, 
+    clicks: 0, 
+    ctr: 0, 
+    integrityScore: 0, 
+    recoveredClicks: 0, 
+    inAppBrowserPercent: 0 
+  });
   const [chartData, setChartData] = useState<Array<{ date: string; clicks: number; views: number }>>([]);
   const [topLinks, setTopLinks] = useState<Array<any>>([]);
   const [trafficSources, setTrafficSources] = useState<Array<any>>([]);
@@ -68,7 +75,14 @@ export default function Dashboard() {
   const [showSetupBanner, setShowSetupBanner] = useState(false);
   const [profileHandle, setProfileHandle] = useState("");
   const [comparisonMode, setComparisonMode] = useState(false);
-  const [previousMetrics, setPreviousMetrics] = useState({ views: 0, clicks: 0, ctr: 0 });
+  const [previousMetrics, setPreviousMetrics] = useState({ 
+    views: 0, 
+    clicks: 0, 
+    ctr: 0, 
+    integrityScore: 0, 
+    recoveredClicks: 0, 
+    inAppBrowserPercent: 0 
+  });
   const [showOnboarding, setShowOnboarding] = useState(false);
 
   useEffect(() => {
@@ -185,6 +199,14 @@ export default function Dashboard() {
       return;
     }
 
+    // Fetch redirects for integrity and recovery metrics
+    const { data: redirects } = await supabase
+      .from('redirects')
+      .select('*')
+      .eq('link_id', user.id)
+      .gte('ts', dateRange.from.toISOString())
+      .lte('ts', dateRange.to.toISOString());
+
     // Calculate metrics
     const viewEvents = events?.filter(e => e.event_type === 'view') || [];
     const clickEvents = events?.filter(e => e.event_type === 'click') || [];
@@ -192,10 +214,29 @@ export default function Dashboard() {
     const totalClicks = clickEvents.length;
     const ctr = totalViews > 0 ? (totalClicks / totalViews) * 100 : 0;
     
+    // Calculate integrity score
+    const successfulRedirects = redirects?.filter(r => r.success).length || 0;
+    const totalRedirects = redirects?.length || 0;
+    const integrityScore = totalRedirects > 0 
+      ? Math.round((successfulRedirects / totalRedirects) * 100) 
+      : 100;
+    
+    // Calculate recovered clicks
+    const recoveredClicks = redirects?.filter(r => r.recovery_strategy_used && r.success).length || 0;
+    
+    // Calculate in-app browser percentage
+    const inAppBrowserClicks = redirects?.filter(r => r.in_app_browser_detected).length || 0;
+    const inAppBrowserPercent = totalRedirects > 0 
+      ? Math.round((inAppBrowserClicks / totalRedirects) * 100) 
+      : 0;
+    
     setMetrics({ 
       views: totalViews, 
       clicks: totalClicks, 
-      ctr: Math.round(ctr * 10) / 10 
+      ctr: Math.round(ctr * 10) / 10,
+      integrityScore,
+      recoveredClicks,
+      inAppBrowserPercent
     });
 
     // Prepare chart data (group by date)
@@ -395,7 +436,10 @@ export default function Dashboard() {
     setPreviousMetrics({ 
       views: totalViews, 
       clicks: totalClicks, 
-      ctr: Math.round(ctr * 10) / 10 
+      ctr: Math.round(ctr * 10) / 10,
+      integrityScore: 0,
+      recoveredClicks: 0,
+      inAppBrowserPercent: 0
     });
   };
 
@@ -450,81 +494,87 @@ export default function Dashboard() {
         <KeyboardShortcutsDialog />
         {/* Navigation */}
         <nav className="border-b bg-background sticky top-0 z-50" role="navigation" aria-label="Dashboard navigation">
-        <div className="container mx-auto px-6 py-4 flex justify-between items-center">
-          <div className="flex items-center gap-3">
-            <img src={logo} alt="LinkPeek Logo" className="h-7" />
+        <div className="container mx-auto px-4 sm:px-6 py-3 sm:py-4 flex justify-between items-center">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <img src={logo} alt="LinkPeek Logo" className="h-6 sm:h-7" />
             {subscriptionStatus?.subscribed ? (
               <PlanBadge plan={getPlanName()} className="hidden sm:inline-flex" />
             ) : (
               <PlanBadge plan="free" className="hidden sm:inline-flex" />
             )}
           </div>
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-0.5 sm:gap-1">
             {isAdmin && <AdminNav />}
-            <Button variant="ghost" size="sm" onClick={() => navigate('/analytics')}>
+            <Button variant="ghost" size="sm" onClick={() => navigate('/analytics')} className="px-2 sm:px-3">
               <BarChart3 className="h-4 w-4" />
-              <span className="hidden sm:inline ml-2">Profile analytics</span>
+              <span className="hidden md:inline ml-2">Profile analytics</span>
             </Button>
-            <Button variant="ghost" size="sm" onClick={() => navigate('/settings/profile')}>
+            <Button variant="ghost" size="sm" onClick={() => navigate('/settings/profile')} className="px-2 sm:px-3">
               <Settings className="h-4 w-4" />
-              <span className="hidden sm:inline ml-2">Settings</span>
+              <span className="hidden md:inline ml-2">Settings</span>
             </Button>
-            <Button variant="ghost" size="sm" onClick={signOut}>
+            <Button variant="ghost" size="sm" onClick={signOut} className="px-2 sm:px-3">
               <LogOut className="h-4 w-4" />
-              <span className="hidden sm:inline ml-2">Sign out</span>
+              <span className="hidden md:inline ml-2">Sign out</span>
             </Button>
           </div>
         </div>
       </nav>
 
-      <div className="container mx-auto px-6 py-10 max-w-7xl">
+      <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-10 max-w-7xl">
         <BreadcrumbNav />
         {/* Header */}
         <div className="mb-10 flex items-center justify-between flex-wrap gap-4">
-          <div className="flex items-center gap-3">
-            <div>
-              <h2 className="text-3xl font-heading font-bold mb-2">
-                Dashboard
-              </h2>
-              <p className="text-base text-muted-foreground">
-                Traffic overview and performance metrics
-              </p>
-            </div>
-            {subscriptionStatus?.subscribed && (
-              <div className="hidden md:block">
-                <PlanBadge plan={getPlanName()} showIcon={true} />
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div>
+                <h2 className="text-2xl sm:text-3xl font-heading font-bold mb-1">
+                  Dashboard
+                </h2>
+                <p className="text-sm sm:text-base text-muted-foreground">
+                  Traffic overview and performance metrics
+                </p>
               </div>
-            )}
-          </div>
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-2">
-              <Switch
-                id="comparison-mode"
-                checked={comparisonMode}
-                onCheckedChange={setComparisonMode}
-              />
-              <Label htmlFor="comparison-mode" className="text-sm cursor-pointer">
-                Compare periods
-              </Label>
+              {subscriptionStatus?.subscribed && (
+                <div className="hidden md:block">
+                  <PlanBadge plan={getPlanName()} showIcon={true} />
+                </div>
+              )}
             </div>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleExportPDF}
-              disabled={isLoadingAnalytics || chartData.length === 0}
-            >
-              <FileDown className="h-4 w-4 mr-2" />
-              Export PDF
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleExportCSV}
-              disabled={isLoadingAnalytics || chartData.length === 0}
-            >
-              <Download className="h-4 w-4 mr-2" />
-              Export CSV
-            </Button>
+            <div className="flex flex-wrap items-center gap-2">
+              <div className="flex items-center gap-2">
+                <Switch
+                  id="comparison-mode"
+                  checked={comparisonMode}
+                  onCheckedChange={setComparisonMode}
+                />
+                <Label htmlFor="comparison-mode" className="text-xs sm:text-sm cursor-pointer whitespace-nowrap">
+                  Compare
+                </Label>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleExportPDF}
+                disabled={isLoadingAnalytics || chartData.length === 0}
+                className="text-xs sm:text-sm"
+              >
+                <FileDown className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                <span className="hidden sm:inline">Export PDF</span>
+                <span className="sm:hidden">PDF</span>
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleExportCSV}
+                disabled={isLoadingAnalytics || chartData.length === 0}
+                className="text-xs sm:text-sm"
+              >
+                <Download className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                <span className="hidden sm:inline">Export CSV</span>
+                <span className="sm:hidden">CSV</span>
+              </Button>
+            </div>
           </div>
         </div>
 
@@ -608,17 +658,17 @@ export default function Dashboard() {
             />
           </div>
         ) : (
-          <div className="grid md:grid-cols-3 gap-6 mb-10">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-10">
           {isLoadingAnalytics ? (
             <>
-              {[1, 2, 3].map((i) => (
+              {[1, 2, 3, 4].map((i) => (
                 <Card key={i}>
                   <CardHeader className="pb-3">
                     <Skeleton className="h-4 w-24" />
                   </CardHeader>
                   <CardContent>
-                    <Skeleton className="h-12 w-20 mb-2" />
-                    <Skeleton className="h-4 w-32" />
+                    <Skeleton className="h-10 w-16 mb-2" />
+                    <Skeleton className="h-4 w-28" />
                   </CardContent>
                 </Card>
               ))}
@@ -626,40 +676,53 @@ export default function Dashboard() {
           ) : (
             [
               {
-                icon: Eye,
-                label: "Page views",
-                value: metrics.views,
-                subtitle: "Profile impressions"
-              },
-              {
                 icon: MousePointerClick,
                 label: "Link clicks",
                 value: metrics.clicks,
-                subtitle: "Outbound engagements",
-                tooltip: "Measured from real delivered visits — not platform-reported taps."
+                subtitle: "Real arrivals",
+                tooltip: "Measured from real delivered visits — not platform-reported taps.",
+                color: "primary"
               },
               {
-                icon: TrendingUp,
-                label: "Click-through rate",
-                value: `${metrics.ctr}%`,
-                subtitle: "Engagement efficiency"
+                icon: Target,
+                label: "Integrity Score",
+                value: `${metrics.integrityScore}%`,
+                subtitle: "Success rate",
+                tooltip: "Percentage of successful redirects without failures",
+                color: metrics.integrityScore >= 95 ? "success" : metrics.integrityScore >= 80 ? "primary" : "warning"
+              },
+              {
+                icon: Zap,
+                label: "Recovered Clicks",
+                value: metrics.recoveredClicks,
+                subtitle: "Auto-fixed",
+                tooltip: "Failed redirects that were automatically recovered",
+                color: "accent"
+              },
+              {
+                icon: Eye,
+                label: "In-App Browser",
+                value: `${metrics.inAppBrowserPercent}%`,
+                subtitle: "Social traffic",
+                tooltip: "Percentage of clicks from Instagram, Facebook, TikTok browsers",
+                color: "secondary"
               },
             ].map((metric, index) => (
-              <Card key={index} className="border-l-4 border-l-primary">
-                <CardHeader className="flex flex-row items-center justify-between pb-3">
-                  <div className="flex items-center gap-2">
-                    <CardTitle className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+              <Card key={index} className={`border-l-4 border-l-${metric.color} hover:shadow-md transition-shadow`}>
+                <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+                  <div className="flex items-center gap-1.5">
+                    <CardTitle className="text-[10px] sm:text-xs font-medium text-muted-foreground uppercase tracking-wide">
                       {metric.label}
                     </CardTitle>
                     {metric.tooltip && <InfoTooltip content={metric.tooltip} />}
                   </div>
-                  <metric.icon className="h-5 w-5 text-muted-foreground" />
+                  <metric.icon className="h-4 w-4 text-muted-foreground shrink-0" />
                 </CardHeader>
-                <CardContent>
-                  <div className="text-5xl font-bold mb-1">
+                <CardContent className="pb-4">
+                  <div className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-0.5 font-mono-data">
                     {typeof metric.value === 'number' ? metric.value.toLocaleString() : metric.value}
                   </div>
-                  <p className="text-sm text-muted-foreground">{metric.subtitle}</p>
+                  <p className="text-xs sm:text-sm text-muted-foreground">{metric.subtitle}</p>
                 </CardContent>
               </Card>
             ))

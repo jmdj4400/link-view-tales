@@ -25,62 +25,96 @@ export function LinkCreationFlow({ onSuccess, onCancel }: LinkCreationFlowProps)
 
   const handleValidate = async () => {
     if (!link.dest_url) {
-      toast.error('Please enter a destination URL');
+      toast.error('URL required', {
+        description: 'Please enter a destination URL to continue'
+      });
       return;
     }
 
     setIsValidating(true);
     
-    // Validate URL
-    const result = validateURL(link.dest_url);
-    setValidation(result);
+    try {
+      // Validate URL
+      const result = validateURL(link.dest_url);
+      setValidation(result);
 
-    if (result.isValid) {
-      // Check if URL is safe
-      const safetyCheck = isURLSafe(result.sanitized || link.dest_url);
-      if (!safetyCheck.safe) {
-        setValidation({
-          ...result,
-          warnings: [...result.warnings, `Security Warning: ${safetyCheck.reason}`]
+      if (result.isValid) {
+        // Check if URL is safe
+        const safetyCheck = isURLSafe(result.sanitized || link.dest_url);
+        if (!safetyCheck.safe) {
+          setValidation({
+            ...result,
+            warnings: [...result.warnings, `Security Warning: ${safetyCheck.reason}`]
+          });
+        }
+        
+        setStep('preview');
+      } else {
+        const mainIssue = result.issues[0] || 'Invalid URL format';
+        toast.error('URL validation failed', {
+          description: mainIssue
         });
       }
-      
-      setStep('preview');
-    } else {
-      toast.error(result.issues[0] || 'Invalid URL');
+    } catch (err) {
+      console.error('Validation error:', err);
+      toast.error('Validation failed', {
+        description: 'Unable to validate URL. Please check the format.'
+      });
+    } finally {
+      setIsValidating(false);
     }
-
-    setIsValidating(false);
   };
 
   const handleSave = async () => {
     setStep('saving');
 
-    const sanitizedUrl = sanitizeURL(link.dest_url);
-    
-    const { error } = await supabase
-      .from('links')
-      .insert({
-        user_id: user?.id,
-        title: link.title || 'Untitled Link',
-        dest_url: link.dest_url,
-        sanitized_dest_url: sanitizedUrl,
-        position: 0,
-      });
+    try {
+      const sanitizedUrl = sanitizeURL(link.dest_url);
+      
+      const { error } = await supabase
+        .from('links')
+        .insert({
+          user_id: user?.id,
+          title: link.title || 'Untitled Link',
+          dest_url: link.dest_url,
+          sanitized_dest_url: sanitizedUrl,
+          position: 0,
+        });
 
-    if (error) {
-      console.error('Error creating link:', error);
-      toast.error('Failed to create link', {
-        description: 'Please check your input and try again'
+      if (error) {
+        console.error('Error creating link:', error);
+        
+        // Provide specific error messages
+        let errorMessage = 'Failed to create link';
+        let errorDescription = 'Please try again';
+        
+        if (error.code === '23505') {
+          errorMessage = 'Duplicate link detected';
+          errorDescription = 'This URL is already in your links';
+        } else if (error.code === '42501') {
+          errorMessage = 'Permission denied';
+          errorDescription = 'Please check your account permissions';
+        } else if (error.message?.includes('network')) {
+          errorMessage = 'Network error';
+          errorDescription = 'Check your connection and retry';
+        }
+        
+        toast.error(errorMessage, { description: errorDescription });
+        setStep('preview');
+        return;
+      }
+
+      toast.success('Link created successfully!', {
+        description: 'Your tracking link is ready to share'
+      });
+      if (onSuccess) onSuccess();
+    } catch (err) {
+      console.error('Unexpected error:', err);
+      toast.error('Unexpected error', {
+        description: 'Something went wrong. Please try again.'
       });
       setStep('preview');
-      return;
     }
-
-    toast.success('Link created successfully!', {
-      description: 'Your tracking link is ready to share'
-    });
-    if (onSuccess) onSuccess();
   };
 
   return (

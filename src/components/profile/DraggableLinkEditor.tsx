@@ -56,43 +56,43 @@ function SortableLink({ link, onToggleActive }: { link: LinkWithStats; onToggleA
     <Card
       ref={setNodeRef}
       style={style}
-      className="p-3 md:p-4 flex items-start gap-3 bg-card hover:bg-accent/5 transition-all duration-200 card-hover"
+      className="p-2.5 sm:p-3 md:p-4 flex items-start gap-2 sm:gap-3 bg-card hover:bg-accent/5 transition-all duration-200 card-hover overflow-hidden"
     >
-      <div {...attributes} {...listeners} className="cursor-grab active:cursor-grabbing pt-1">
-        <GripVertical className="h-5 w-5 text-muted-foreground" />
+      <div {...attributes} {...listeners} className="cursor-grab active:cursor-grabbing pt-1 shrink-0">
+        <GripVertical className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
       </div>
       
-      <LinkFavicon url={link.dest_url} size="md" className="mt-1 shrink-0" />
+      <LinkFavicon url={link.dest_url} size="sm" className="mt-1 shrink-0 hidden sm:block" />
       
-      <div className="flex-1 min-w-0 space-y-2">
+      <div className="flex-1 min-w-0 space-y-1.5 sm:space-y-2">
         <div className="flex items-start justify-between gap-2">
           <div className="flex-1 min-w-0">
-            <p className="font-medium truncate text-sm md:text-base">{link.title}</p>
-            <p className="text-xs md:text-sm text-muted-foreground truncate">{link.dest_url}</p>
+            <p className="font-medium truncate text-xs sm:text-sm md:text-base">{link.title}</p>
+            <p className="text-[10px] sm:text-xs md:text-sm text-muted-foreground truncate">{link.dest_url}</p>
           </div>
         </div>
         
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
           <LinkStatusBadge status={getStatus()} />
           {link.integrityScore !== undefined && (
             <LinkIntegrityScore score={link.integrityScore} size="sm" showLabel={false} />
           )}
           
           {link.lastClick && (
-            <div className="flex items-center gap-1 text-xs text-muted-foreground">
-              <Clock className="h-3 w-3" />
-              <span className="hidden sm:inline">{formatDistanceToNow(link.lastClick, { addSuffix: true })}</span>
+            <div className="flex items-center gap-0.5 sm:gap-1 text-[10px] sm:text-xs text-muted-foreground">
+              <Clock className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
+              <span className="hidden md:inline">{formatDistanceToNow(link.lastClick, { addSuffix: true })}</span>
             </div>
           )}
           
           {link.clicks24h !== undefined && (
-            <div className="flex items-center gap-1 text-xs font-mono-data">
-              <TrendIcon className={`h-3 w-3 ${
+            <div className="flex items-center gap-0.5 sm:gap-1 text-[10px] sm:text-xs font-mono-data">
+              <TrendIcon className={`h-2.5 w-2.5 sm:h-3 sm:w-3 ${
                 link.trend === 'up' ? 'text-success' : 
                 link.trend === 'down' ? 'text-destructive' : 
                 'text-muted-foreground'
               }`} />
-              <span>{link.clicks24h} today</span>
+              <span>{link.clicks24h} <span className="hidden sm:inline">today</span></span>
             </div>
           )}
         </div>
@@ -102,9 +102,9 @@ function SortableLink({ link, onToggleActive }: { link: LinkWithStats; onToggleA
         variant="ghost"
         size="icon"
         onClick={() => onToggleActive(link.id, !link.is_active)}
-        className="shrink-0"
+        className="shrink-0 h-8 w-8 sm:h-9 sm:w-9"
       >
-        {link.is_active ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
+        {link.is_active ? <Eye className="h-3.5 w-3.5 sm:h-4 sm:w-4" /> : <EyeOff className="h-3.5 w-3.5 sm:h-4 sm:w-4" />}
       </Button>
     </Card>
   );
