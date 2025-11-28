@@ -155,7 +155,7 @@ export function LinkCreationFlow({ onSuccess, onCancel }: LinkCreationFlowProps)
                 required
               />
               <p className="text-sm text-muted-foreground leading-relaxed">
-                We automatically <strong>clean UTMs</strong>, <strong>unwrap social wrappers</strong>, and <strong>repair broken redirects</strong> for you.
+                Paste the URL you want to track — we fix redirects and show real arrivals.
               </p>
             </div>
 
