@@ -658,75 +658,13 @@ export default function Dashboard() {
             />
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-10">
-          {isLoadingAnalytics ? (
-            <>
-              {[1, 2, 3, 4].map((i) => (
-                <Card key={i}>
-                  <CardHeader className="pb-3">
-                    <Skeleton className="h-4 w-24" />
-                  </CardHeader>
-                  <CardContent>
-                    <Skeleton className="h-10 w-16 mb-2" />
-                    <Skeleton className="h-4 w-28" />
-                  </CardContent>
-                </Card>
-              ))}
-            </>
-          ) : (
-            [
-              {
-                icon: MousePointerClick,
-                label: "Link clicks",
-                value: metrics.clicks,
-                subtitle: "Real arrivals",
-                tooltip: "Measured from real delivered visits — not platform-reported taps.",
-                color: "primary"
-              },
-              {
-                icon: Target,
-                label: "Integrity Score",
-                value: `${metrics.integrityScore}%`,
-                subtitle: "Success rate",
-                tooltip: "Percentage of successful redirects without failures",
-                color: metrics.integrityScore >= 95 ? "success" : metrics.integrityScore >= 80 ? "primary" : "warning"
-              },
-              {
-                icon: Zap,
-                label: "Recovered Clicks",
-                value: metrics.recoveredClicks,
-                subtitle: "Auto-fixed",
-                tooltip: "Failed redirects that were automatically recovered",
-                color: "accent"
-              },
-              {
-                icon: Eye,
-                label: "In-App Browser",
-                value: `${metrics.inAppBrowserPercent}%`,
-                subtitle: "Social traffic",
-                tooltip: "Percentage of clicks from Instagram, Facebook, TikTok browsers",
-                color: "secondary"
-              },
-            ].map((metric, index) => (
-              <Card key={index} className={`border-l-4 border-l-${metric.color} hover:shadow-md transition-shadow`}>
-                <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-                  <div className="flex items-center gap-1.5">
-                    <CardTitle className="text-[10px] sm:text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                      {metric.label}
-                    </CardTitle>
-                    {metric.tooltip && <InfoTooltip content={metric.tooltip} />}
-                  </div>
-                  <metric.icon className="h-4 w-4 text-muted-foreground shrink-0" />
-                </CardHeader>
-                <CardContent className="pb-4">
-                  <div className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-0.5 font-mono-data">
-                    {typeof metric.value === 'number' ? metric.value.toLocaleString() : metric.value}
-                  </div>
-                  <p className="text-xs sm:text-sm text-muted-foreground">{metric.subtitle}</p>
-                </CardContent>
-              </Card>
-            ))
-          )}
+          <div className="space-y-2 mb-10">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
+...
+            </div>
+            <p className="text-xs text-muted-foreground text-center pt-1">
+              Measured from real delivered visits — not platform-reported taps.
+            </p>
           </div>
         )}
 
@@ -736,7 +674,7 @@ export default function Dashboard() {
             <EmptyState
               icon={BarChart3}
               title="No clicks yet"
-              description="Share your link and we'll show where redirect failures happen, track integrity scores, and measure real traffic performance."
+              description="No clicks yet — share your link to see redirect health and delivered traffic."
               action={{
                 label: "View your profile",
                 onClick: () => {
