@@ -49,6 +49,14 @@ export function LinkAnalyticsCard({ linkId, dateRange }: LinkAnalyticsCardProps)
   const failedClicks = analytics.clicks - Math.round((analytics.clicks * healthScore) / 100);
   const recoveredClicks = Math.round(failedClicks * 0.65); // Assume 65% recovery rate
   
+  const getHealthStatus = () => {
+    if (healthScore >= 80) return { label: 'Healthy', variant: 'default' as const, color: 'text-green-600' };
+    if (healthScore >= 50) return { label: 'Needs Attention', variant: 'secondary' as const, color: 'text-yellow-600' };
+    return { label: 'Issues Detected', variant: 'destructive' as const, color: 'text-red-600' };
+  };
+
+  const healthStatus = getHealthStatus();
+  
   // Generate mock sparkline data for last 24h (24 data points)
   const sparklineData = Array.from({ length: 24 }, (_, i) => 
     Math.floor(Math.random() * (analytics.clicks / 10)) + 1
@@ -59,14 +67,14 @@ export function LinkAnalyticsCard({ linkId, dateRange }: LinkAnalyticsCardProps)
       <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle className="text-base">Link Performance</CardTitle>
-          <Badge variant={isHealthy ? "default" : "destructive"} className="gap-1">
-            {isHealthy ? (
-              <CheckCircle2 className="h-3 w-3" />
-            ) : (
-              <AlertTriangle className="h-3 w-3" />
-            )}
-            {healthScore.toFixed(1)}% Integrity
-          </Badge>
+          <div className="flex items-center gap-2">
+            <Badge variant={healthStatus.variant} className="gap-1">
+              {healthStatus.label}
+            </Badge>
+            <Badge variant="outline" className="gap-1 font-mono">
+              {healthScore.toFixed(1)}% Integrity
+            </Badge>
+          </div>
         </div>
       </CardHeader>
       <CardContent className="space-y-5">
