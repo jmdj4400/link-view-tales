@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
 import { DashboardSkeleton } from "@/components/dashboard/DashboardSkeleton";
-import { LogOut, Settings, Link as LinkIcon, CreditCard, Eye, MousePointerClick, TrendingUp, ArrowRight, Download, Plus, BarChart3, Palette, Users, Target, Zap, Mail, FileDown, Sparkles } from "lucide-react";
+import { LogOut, Settings, Link as LinkIcon, CreditCard, Eye, MousePointerClick, TrendingUp, ArrowRight, Download, Plus, BarChart3, Palette, Users, Target, Zap, Mail, FileDown, Sparkles, HelpCircle } from "lucide-react";
 import { toast } from "sonner";
 import { AnalyticsChart } from "@/components/analytics/AnalyticsChart";
 import { TopLinksTable } from "@/components/analytics/TopLinksTable";
@@ -42,6 +42,7 @@ import { PageHeader } from "@/components/ui/page-header";
 import { AdminNav } from "@/components/navigation/AdminNav";
 import { useUserRoles } from "@/hooks/use-user-roles";
 import { OnboardingModal } from "@/components/onboarding/OnboardingModal";
+import { TrustModal } from "@/components/ui/trust-modal";
 import { generateDemoLink } from "@/lib/demo-data-generator";
 import logo from "@/assets/logo.png";
 
@@ -84,6 +85,7 @@ export default function Dashboard() {
     inAppBrowserPercent: 0 
   });
   const [showOnboarding, setShowOnboarding] = useState(false);
+  const [showTrustModal, setShowTrustModal] = useState(false);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -574,6 +576,16 @@ export default function Dashboard() {
                 <span className="hidden sm:inline">Export CSV</span>
                 <span className="sm:hidden">CSV</span>
               </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowTrustModal(true)}
+                className="text-xs sm:text-sm"
+              >
+                <HelpCircle className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                <span className="hidden sm:inline">How we measure</span>
+                <span className="sm:hidden">Help</span>
+              </Button>
             </div>
           </div>
         </div>
@@ -933,6 +945,12 @@ export default function Dashboard() {
       open={showOnboarding}
       onClose={() => setShowOnboarding(false)}
       onComplete={handleOnboardingComplete}
+    />
+
+    {/* Trust Modal */}
+    <TrustModal
+      open={showTrustModal}
+      onClose={() => setShowTrustModal(false)}
     />
   </>
   );

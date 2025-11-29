@@ -90,16 +90,25 @@ export function LinkCreationFlow({ onSuccess, onCancel }: LinkCreationFlowProps)
         
         if (error.code === '23505') {
           errorMessage = 'Duplicate link detected';
-          errorDescription = 'This URL is already in your links';
+          errorDescription = 'This URL is already in your links. Try editing the existing one instead.';
         } else if (error.code === '42501') {
           errorMessage = 'Permission denied';
-          errorDescription = 'Please check your account permissions';
+          errorDescription = 'You don\'t have permission to create links. Please check your account status.';
         } else if (error.message?.includes('network')) {
           errorMessage = 'Network error';
-          errorDescription = 'Check your connection and retry';
+          errorDescription = 'Check your internet connection and try again.';
+        } else if (error.message?.includes('timeout')) {
+          errorMessage = 'Request timeout';
+          errorDescription = 'The request took too long. Please retry.';
         }
         
-        toast.error(errorMessage, { description: errorDescription });
+        toast.error(errorMessage, { 
+          description: errorDescription,
+          action: {
+            label: 'Retry',
+            onClick: () => handleSave()
+          }
+        });
         setStep('preview');
         return;
       }
