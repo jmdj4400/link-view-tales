@@ -11,6 +11,7 @@ import { LinkFavicon } from "@/components/links/LinkFavicon";
 import { LinkStatusBadge } from "@/components/links/LinkStatusBadge";
 import { LinkIntegrityScore } from "@/components/links/LinkIntegrityScore";
 import { formatDistanceToNow } from "date-fns";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface Link {
   id: string;
@@ -52,6 +53,18 @@ function SortableLink({ link, onToggleActive }: { link: LinkWithStats; onToggleA
 
   const TrendIcon = link.trend === 'up' ? TrendingUp : link.trend === 'down' ? TrendingDown : Minus;
 
+  const getHealthColor = () => {
+    if (!link.integrityScore) return 'bg-muted-foreground/40';
+    if (link.integrityScore >= 80) return 'bg-green-500';
+    if (link.integrityScore >= 50) return 'bg-yellow-500';
+    return 'bg-red-500';
+  };
+
+  const getHealthTooltip = () => {
+    if (!link.integrityScore) return 'No recent data';
+    return `${link.integrityScore}% success rate - Based on recent redirect success inside social in-app browsers.`;
+  };
+
   return (
     <Card
       ref={setNodeRef}
@@ -67,8 +80,25 @@ function SortableLink({ link, onToggleActive }: { link: LinkWithStats; onToggleA
       <div className="flex-1 min-w-0 space-y-1.5 sm:space-y-2">
         <div className="flex items-start justify-between gap-2">
           <div className="flex-1 min-w-0">
-            <p className="font-medium truncate text-xs sm:text-sm md:text-base">{link.title}</p>
+            <div className="flex items-center gap-1.5">
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div className={`w-2 h-2 rounded-full shrink-0 ${getHealthColor()}`} />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p className="text-xs">{getHealthTooltip()}</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+              <p className="font-medium truncate text-xs sm:text-sm md:text-base">{link.title}</p>
+            </div>
             <p className="text-[10px] sm:text-xs md:text-sm text-muted-foreground truncate">{link.dest_url}</p>
+            {link.lastClick && (
+              <p className="text-[9px] sm:text-[10px] text-muted-foreground/70 mt-0.5">
+                Last arrival: {formatDistanceToNow(link.lastClick, { addSuffix: true })}
+              </p>
+            )}
           </div>
         </div>
         
