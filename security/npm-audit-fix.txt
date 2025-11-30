@@ -1,0 +1,211 @@
+# LinkPeek Security Audit Report
+
+## npm audit (Run Date: 2025-01-XX)
+
+### Command Run
+```bash
+npm audit --production
+```
+
+### Summary
+This document summarizes security findings and remediation steps for LinkPeek dependencies.
+
+---
+
+## Critical Vulnerabilities (Priority: Immediate)
+
+**Status: [To be filled after running npm audit]**
+
+Example format:
+```
+Package: lodash
+Severity: High
+Issue: Prototype Pollution
+Affected Versions: < 4.17.21
+Fixed In: 4.17.21
+Action: Run `npm update lodash`
+Status: FIXED / PENDING
+```
+
+---
+
+## High Vulnerabilities (Priority: Within 7 days)
+
+**Status: [To be filled after running npm audit]**
+
+---
+
+## Medium Vulnerabilities (Priority: Within 30 days)
+
+**Status: [To be filled after running npm audit]**
+
+---
+
+## Low Vulnerabilities (Priority: Monitor)
+
+**Status: [To be filled after running npm audit]**
+
+---
+
+## Actions Taken
+
+### Automated Fixes Applied
+```bash
+# Run this to auto-fix compatible updates
+npm audit fix
+
+# Results:
+# [Paste results here after running]
+```
+
+### Manual Updates Required
+```bash
+# For breaking changes, update manually:
+# npm install package@latest
+
+# List of manual updates performed:
+# [Document each manual update]
+```
+
+### Known Issues (Cannot Fix)
+Some vulnerabilities may exist in dependencies that:
+1. Have no available fix yet
+2. Are dev dependencies (not in production)
+3. Have breaking changes requiring code refactoring
+
+**Document these here:**
+```
+Package: [name]
+Reason: [why cannot fix]
+Mitigation: [what we're doing instead]
+Risk Assessment: [low/medium/high]
+```
+
+---
+
+## Production Dependencies Only
+
+**Important:** Only production dependencies affect deployed code.
+
+To check production-only vulnerabilities:
+```bash
+npm audit --production --json > security/audit-production.json
+```
+
+Development dependencies (testing, build tools) are not deployed and have lower priority.
+
+---
+
+## Security Best Practices Implemented
+
+✅ **Input Validation**
+- URL validation on all redirect endpoints
+- Email validation before sending
+- Sanitization of user inputs
+
+✅ **Rate Limiting**
+- Per-IP rate limits
+- Per-link rate limits
+- Prevents DDoS and abuse
+
+✅ **CORS Configuration**
+- Restricted to known origins where applicable
+- Proper preflight handling
+
+✅ **Environment Variables**
+- All secrets in env vars, never committed
+- Service role keys restricted to backend only
+
+✅ **SQL Injection Prevention**
+- Using Supabase client (parameterized queries)
+- No raw SQL with user input
+
+✅ **XSS Prevention**
+- Dangerous URL schemes blocked (javascript:, data:)
+- Input sanitization on frontend
+
+---
+
+## Monitoring for New Vulnerabilities
+
+**Automated Scanning:**
+- GitHub Dependabot: [Enabled/Disabled]
+- npm audit in CI/CD: [Enabled/Disabled]
+- Snyk: [Optional - Enabled/Disabled]
+
+**Manual Review Schedule:**
+- Weekly: Review critical/high vulnerabilities
+- Monthly: Review all vulnerabilities
+- Quarterly: Full security audit
+
+---
+
+## Excluded Vulnerabilities
+
+Some vulnerabilities are intentionally excluded if:
+1. **Dev-only dependency**: Not in production bundle
+2. **False positive**: Issue doesn't apply to our usage
+3. **Accepted risk**: Risk is low and fix has breaking changes
+
+**Documented exclusions:**
+```
+Package: [name]
+Reason: [why excluded]
+Review Date: [when to reconsider]
+```
+
+---
+
+## Security Contact
+
+**Report security issues to:**
+- Email: security@your-domain.com
+- Security Policy: SECURITY.md (create this file)
+
+**Response SLA:**
+- Critical: 24 hours
+- High: 7 days
+- Medium: 30 days
+- Low: Next quarterly review
+
+---
+
+## References
+
+- [npm audit documentation](https://docs.npmjs.com/cli/v8/commands/npm-audit)
+- [Snyk vulnerability database](https://snyk.io/vuln/)
+- [OWASP Top 10](https://owasp.org/www-project-top-ten/)
+- [Supabase security best practices](https://supabase.com/docs/guides/platform/security)
+
+---
+
+## Instructions for Team
+
+1. **Before each deployment:**
+   ```bash
+   npm audit --production
+   ```
+
+2. **If critical/high vulnerabilities found:**
+   - Assess impact (is it in production code?)
+   - Apply fixes if available
+   - Document if cannot fix
+   - Proceed with deployment only if risk is acceptable
+
+3. **Regular maintenance:**
+   ```bash
+   # Weekly check
+   npm audit --production
+
+   # Monthly update of all packages
+   npm update
+   npm audit fix
+   ```
+
+4. **Document all decisions** in this file for audit trail
+
+---
+
+**Last Updated:** [Date]
+**Last Audit Run:** [Date]
+**Next Scheduled Audit:** [Date + 7 days]
