@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
 import { format } from "date-fns";
 import logo from "@/assets/logo.png";
+import { LaunchCountdown } from "@/components/landing/LaunchCountdown";
 
 interface Article {
   id: string;
@@ -231,6 +232,9 @@ export default function Landing() {
               </div>
             </div>
           </main>
+
+          {/* Launch Countdown */}
+          <LaunchCountdown />
 
           {/* Articles Section */}
           {articles.length > 0 && (
