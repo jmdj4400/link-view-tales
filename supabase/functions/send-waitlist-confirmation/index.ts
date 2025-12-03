@@ -24,7 +24,8 @@ const handler = async (req: Request): Promise<Response> => {
     console.log("Sending waitlist confirmation to:", email);
 
     const emailResponse = await resend.emails.send({
-      from: "LinkPeek <onboarding@resend.dev>",
+      from: "LinkPeek <hello@link-peek.org>",
+      replyTo: "support@link-peek.org",
       to: [email],
       subject: "You're on the list! 🚀",
       html: `

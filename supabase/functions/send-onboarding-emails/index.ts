@@ -78,13 +78,13 @@ serve(async (req) => {
                   <h3 style="margin: 0 0 8px; color: #111827; font-size: 16px;">💡 Quick Tips to Get Started:</h3>
                   <ul style="margin: 8px 0; padding-left: 20px; color: #6B7280;">
                     <li style="margin: 8px 0;">Add 3+ links to get the most out of analytics</li>
-                    <li style="margin: 8px 0;">Share your profile link: linkpeek.app/${profile.handle}</li>
+                    <li style="margin: 8px 0;">Share your profile link: link-peek.org/${profile.handle}</li>
                     <li style="margin: 8px 0;">Check your dashboard daily to track growth</li>
                   </ul>
                 </div>
 
                 <p style="font-size: 16px; color: #374151; line-height: 1.6;">
-                  Your unique profile: <strong>linkpeek.app/${profile.handle}</strong>
+                  Your unique profile: <strong>link-peek.org/${profile.handle}</strong>
                 </p>
 
                 <div style="text-align: center;">

@@ -20,7 +20,8 @@ const logStep = (step: string, details?: any) => {
 async function sendEmail(to: string, subject: string, html: string) {
   try {
     const { error } = await resend.emails.send({
-      from: "Linkbolt <onboarding@resend.dev>",
+      from: "LinkPeek <hello@link-peek.org>",
+      replyTo: "support@link-peek.org",
       to: [to],
       subject,
       html,
@@ -272,7 +273,7 @@ async function handleSubscriptionCreatedOrUpdated(
       `
         <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 600px; margin: 0 auto;">
           <div style="background: linear-gradient(135deg, #4753FF 0%, #7C3AED 100%); color: white; padding: 40px 32px; text-align: center; border-radius: 16px 16px 0 0;">
-            <h1 style="margin: 0; font-size: 28px;">🎉 Welcome to Linkbolt ${planName}!</h1>
+            <h1 style="margin: 0; font-size: 28px;">🎉 Welcome to LinkPeek ${planName}!</h1>
             <p style="margin: 12px 0 0; opacity: 0.9; font-size: 16px;">Your ${trialDays}-day trial has started</p>
           </div>
           
@@ -282,7 +283,7 @@ async function handleSubscriptionCreatedOrUpdated(
             </p>
             
             <p style="font-size: 16px; color: #374151; line-height: 1.6;">
-              Welcome to Linkbolt ${planName}! You now have access to all premium features for the next ${trialDays} days.
+              Welcome to LinkPeek ${planName}! You now have access to all premium features for the next ${trialDays} days.
             </p>
 
             <div style="background: #f8f9fa; border-left: 4px solid #4753FF; padding: 20px; margin: 24px 0; border-radius: 8px;">
@@ -404,10 +405,30 @@ async function handleSubscriptionDeleted(
     email,
     "Your subscription has been canceled",
     `
-      <h1>Subscription Canceled</h1>
-      <p>Your subscription has been canceled. You will continue to have access until the end of your billing period.</p>
-      <p>If you'd like to reactivate your subscription, simply visit your billing page and subscribe again.</p>
-      <p>Thank you for using Linkbolt!</p>
+      <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 600px; margin: 0 auto;">
+        <div style="background: linear-gradient(135deg, #4753FF 0%, #7C3AED 100%); color: white; padding: 40px 32px; text-align: center; border-radius: 16px 16px 0 0;">
+          <h1 style="margin: 0; font-size: 28px;">Subscription Canceled</h1>
+        </div>
+        
+        <div style="background: white; padding: 32px; border-radius: 0 0 16px 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.08);">
+          <p style="font-size: 16px; color: #374151; line-height: 1.6;">
+            Your subscription has been canceled. You will continue to have access until the end of your billing period.
+          </p>
+          <p style="font-size: 16px; color: #374151; line-height: 1.6;">
+            If you'd like to reactivate your subscription, simply visit your billing page and subscribe again.
+          </p>
+          <p style="font-size: 16px; color: #374151; line-height: 1.6;">
+            Thank you for using LinkPeek!
+          </p>
+          
+          <div style="text-align: center; margin: 32px 0;">
+            <a href="${Deno.env.get("APP_URL")}/billing" 
+               style="display: inline-block; background: #4753FF; color: white; padding: 14px 32px; border-radius: 12px; text-decoration: none; font-weight: 600; font-size: 16px;">
+              Resubscribe →
+            </a>
+          </div>
+        </div>
+      </div>
     `
   );
 }
@@ -477,10 +498,30 @@ async function handlePaymentSucceeded(
               email,
               "Your trial has ended - Welcome to paid subscription!",
               `
-                <h1>Welcome to Your Paid Subscription!</h1>
-                <p>Your trial period has ended and your subscription is now active.</p>
-                <p>Your payment method has been charged and you now have full access to all features.</p>
-                <p>Thank you for choosing Linkbolt!</p>
+                <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 600px; margin: 0 auto;">
+                  <div style="background: linear-gradient(135deg, #4753FF 0%, #7C3AED 100%); color: white; padding: 40px 32px; text-align: center; border-radius: 16px 16px 0 0;">
+                    <h1 style="margin: 0; font-size: 28px;">Welcome to Your Paid Subscription!</h1>
+                  </div>
+                  
+                  <div style="background: white; padding: 32px; border-radius: 0 0 16px 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.08);">
+                    <p style="font-size: 16px; color: #374151; line-height: 1.6;">
+                      Your trial period has ended and your subscription is now active.
+                    </p>
+                    <p style="font-size: 16px; color: #374151; line-height: 1.6;">
+                      Your payment method has been charged and you now have full access to all features.
+                    </p>
+                    <p style="font-size: 16px; color: #374151; line-height: 1.6;">
+                      Thank you for choosing LinkPeek!
+                    </p>
+                    
+                    <div style="text-align: center; margin: 32px 0;">
+                      <a href="${Deno.env.get("APP_URL")}/dashboard" 
+                         style="display: inline-block; background: #4753FF; color: white; padding: 14px 32px; border-radius: 12px; text-decoration: none; font-weight: 600; font-size: 16px;">
+                        Go to Dashboard →
+                      </a>
+                    </div>
+                  </div>
+                </div>
               `
             );
           }
@@ -488,6 +529,8 @@ async function handlePaymentSucceeded(
       }
     }
   }
+
+  logStep("Payment succeeded event processed", { invoiceId: invoice.id });
 }
 
 async function handlePaymentFailed(
@@ -526,22 +569,44 @@ async function handlePaymentFailed(
             })
             .eq('user_id', profile.id);
 
-          logStep("Payment failed - subscription marked past_due", { userId: profile.id });
+          logStep("Payment failed - subscription marked as past_due", { userId: profile.id });
 
           // Send payment failed email
           await sendEmail(
             email,
-            "Payment Failed - Action Required",
+            "⚠️ Payment failed - Action required",
             `
-              <h1>Payment Failed</h1>
-              <p>We were unable to process your payment for your Linkbolt subscription.</p>
-              <p>Please update your payment method to avoid service interruption.</p>
-              <p>You can manage your subscription and payment methods in your billing settings.</p>
-              <p>If you need assistance, please contact our support team.</p>
+              <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 600px; margin: 0 auto;">
+                <div style="background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%); color: white; padding: 40px 32px; text-align: center; border-radius: 16px 16px 0 0;">
+                  <h1 style="margin: 0; font-size: 28px;">⚠️ Payment Failed</h1>
+                </div>
+                
+                <div style="background: white; padding: 32px; border-radius: 0 0 16px 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.08);">
+                  <p style="font-size: 16px; color: #374151; line-height: 1.6;">
+                    We were unable to process your payment for your LinkPeek subscription.
+                  </p>
+                  <p style="font-size: 16px; color: #374151; line-height: 1.6;">
+                    Please update your payment method to avoid any interruption to your service.
+                  </p>
+                  
+                  <div style="text-align: center; margin: 32px 0;">
+                    <a href="${Deno.env.get("APP_URL")}/billing" 
+                       style="display: inline-block; background: #EF4444; color: white; padding: 14px 32px; border-radius: 12px; text-decoration: none; font-weight: 600; font-size: 16px;">
+                      Update Payment Method →
+                    </a>
+                  </div>
+                  
+                  <p style="font-size: 14px; color: #6B7280; margin-top: 24px;">
+                    If you believe this is an error, please contact your bank or reply to this email for assistance.
+                  </p>
+                </div>
+              </div>
             `
           );
         }
       }
     }
   }
+
+  logStep("Payment failed event processed", { invoiceId: invoice.id });
 }
