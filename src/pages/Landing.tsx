@@ -19,6 +19,8 @@ import { HowItWorks } from "@/components/landing/HowItWorks";
 import { DemoVideo } from "@/components/landing/DemoVideo";
 import { FeaturedIn } from "@/components/landing/FeaturedIn";
 import { ExitIntentPopup } from "@/components/landing/ExitIntentPopup";
+import { MobileNav } from "@/components/landing/MobileNav";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { motion } from "framer-motion";
 
 interface Article {
@@ -179,19 +181,28 @@ export default function Landing() {
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.5, delay: 0.2 }}
-                className="flex items-center gap-3"
+                className="hidden md:flex items-center gap-3"
               >
                 <Link to="/pricing">
                   <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
                     Pricing
                   </Button>
                 </Link>
+                <Link to="/blog">
+                  <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
+                    Blog
+                  </Button>
+                </Link>
+                <ThemeToggle />
                 <Link to="/auth">
                   <Button variant="outline" size="sm" className="border-primary/30 hover:border-primary hover:bg-primary/5">
                     Sign In
                   </Button>
                 </Link>
               </motion.div>
+              
+              {/* Mobile Navigation */}
+              <MobileNav />
             </div>
           </header>
 
