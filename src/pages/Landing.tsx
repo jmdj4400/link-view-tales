@@ -100,9 +100,9 @@ export default function Landing() {
   return (
     <>
       <SEOHead
-        title="LinkPeek - Launching Soon"
-        description="Something amazing is coming. Be the first to know when LinkPeek launches."
-        canonicalUrl={`${window.location.origin}/`}
+        title="LinkPeek - Link in Bio Tool with Real Traffic Analytics | Launching December 2025"
+        description="Create your link in bio page and see real delivered visits. Track in-app browser failures and recover lost clicks. Join the waitlist for early access."
+        canonicalUrl="https://link-peek.org/"
       />
       
       <div className="min-h-screen bg-background relative overflow-hidden">

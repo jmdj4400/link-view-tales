@@ -100,6 +100,7 @@ export default function Blog() {
       <SEOHead
         title="Blog & Analysis - LinkPeek | Link Management Insights & Best Practices"
         description="Expert analysis, guides, and insights on link management, bio link optimization, social media strategies, and digital marketing analytics. Stay updated with LinkPeek's latest articles."
+        canonicalUrl="https://link-peek.org/blog"
       />
 
       <div className="min-h-screen bg-background">

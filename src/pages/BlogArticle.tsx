@@ -110,13 +110,14 @@ export default function BlogArticle() {
     return null;
   }
 
-  const articleUrl = `https://linkpeek.app/blog/${article.slug}`;
+  const articleUrl = `https://link-peek.org/blog/${article.slug}`;
 
   return (
     <>
       <SEOHead
         title={`${article.title} - LinkPeek Blog`}
         description={article.description}
+        canonicalUrl={`https://link-peek.org/blog/${article.slug}`}
         ogImage={article.featured_image_url || undefined}
       />
 
@@ -138,7 +139,7 @@ export default function BlogArticle() {
             name: "LinkPeek",
             logo: {
               "@type": "ImageObject",
-              url: "https://linkpeek.app/logo.png",
+              url: "https://link-peek.org/logo.png",
             },
           },
           mainEntityOfPage: {

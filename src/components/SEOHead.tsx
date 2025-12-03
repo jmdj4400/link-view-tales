@@ -12,7 +12,7 @@ export function SEOHead({
   title, 
   description, 
   canonicalUrl, 
-  ogImage = "https://lovable.dev/opengraph-image-p98pqg.png",
+  ogImage = "https://link-peek.org/logo.png",
   noindex = false 
 }: SEOHeadProps) {
   useEffect(() => {

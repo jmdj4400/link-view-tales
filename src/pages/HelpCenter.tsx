@@ -1,4 +1,5 @@
 import { SEOHead } from "@/components/SEOHead";
+import { StructuredData } from "@/components/StructuredData";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -241,9 +242,19 @@ const HelpCenter = () => {
   return (
     <>
       <SEOHead
-        title="Help Center - LinkPeek Support & Documentation"
-        description="Find answers to your LinkPeek questions. Browse FAQs, guides, and tutorials for link management, analytics, account settings, and billing."
+        title="Help Center - LinkPeek Support & FAQs"
+        description="Get answers to common questions about LinkPeek. Learn how to create links, track analytics, and optimize your profile. Browse FAQs and guides."
         canonicalUrl="https://link-peek.org/help"
+      />
+      <StructuredData
+        type="FAQPage"
+        faqs={[
+          { question: "How do I create my first link?", answer: "After signing up, go to your Dashboard and click 'Add Link' button. Enter your destination URL, customize the title and description, then click 'Create Link'." },
+          { question: "What analytics data does LinkPeek track?", answer: "We track click counts, page views, referral sources, geographic location, device types, browsers, and engagement over time. All data is privacy-first with no cookies." },
+          { question: "How many links can I create?", answer: "Free plan: 5 active links. Pro plan: Unlimited links. Business plan: Unlimited links with team collaboration." },
+          { question: "Can I connect a custom domain?", answer: "Yes! Pro and Business users can connect custom domains. Go to Settings → Domain and follow the DNS configuration instructions." },
+          { question: "Can I cancel my subscription anytime?", answer: "Yes! Cancel anytime from Billing settings. You'll retain Pro features until the end of your billing period, then automatically switch to the Free plan." },
+        ]}
       />
 
       <div className="min-h-screen bg-background">

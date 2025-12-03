@@ -1,8 +1,27 @@
 User-agent: *
 Allow: /
+Allow: /blog
+Allow: /blog/*
+Allow: /help
+Allow: /contact
+Allow: /terms
+Allow: /privacy
+Allow: /cookies
+
 Disallow: /dashboard
+Disallow: /dashboard/*
 Disallow: /settings
+Disallow: /settings/*
 Disallow: /billing
+Disallow: /billing/*
 Disallow: /onboarding
+Disallow: /admin
+Disallow: /admin/*
+Disallow: /checkout
+Disallow: /verify
+Disallow: /api/
+
+# Crawl-delay for respectful crawling
+Crawl-delay: 1
 
 Sitemap: https://link-peek.org/sitemap.xml
