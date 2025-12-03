@@ -43,6 +43,7 @@ import BlogManagement from "./pages/BlogManagement";
 import BlogEditor from "./pages/BlogEditor";
 import LinkManagement from "./pages/LinkManagement";
 import WaitlistAdmin from "./pages/WaitlistAdmin";
+import Pricing from "./pages/Pricing";
 
 function App() {
   useServiceWorkerUpdate();
@@ -56,6 +57,7 @@ function App() {
       <Routes>
           <Route path="/beta" element={<Beta />} />
           <Route path="/" element={<Landing />} />
+          <Route path="/pricing" element={<Pricing />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/verify-email" element={<VerifyEmail />} />
           <Route path="/verify" element={<Verify />} />

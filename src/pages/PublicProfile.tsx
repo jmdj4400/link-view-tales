@@ -382,6 +382,28 @@ export default function PublicProfile() {
     "sameAs": links.map(link => link.dest_url)
   };
 
+  // Inject structured data via useEffect
+  useEffect(() => {
+    const scriptId = 'public-profile-jsonld';
+    let script = document.getElementById(scriptId) as HTMLScriptElement;
+    
+    if (!script) {
+      script = document.createElement('script');
+      script.id = scriptId;
+      script.type = 'application/ld+json';
+      document.head.appendChild(script);
+    }
+    
+    script.textContent = JSON.stringify(structuredData);
+    
+    return () => {
+      const existingScript = document.getElementById(scriptId);
+      if (existingScript) {
+        existingScript.remove();
+      }
+    };
+  }, [profile, links, canonicalUrl]);
+
   return (
     <>
       <SEOHead
@@ -390,10 +412,6 @@ export default function PublicProfile() {
         canonicalUrl={canonicalUrl}
         ogImage={profile.avatar_url || undefined}
       />
-      {/* JSON-LD Structured Data */}
-      <script type="application/ld+json">
-        {JSON.stringify(structuredData)}
-      </script>
       
       {renderProfileLayout()}
       
