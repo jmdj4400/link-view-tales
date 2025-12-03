@@ -43,7 +43,25 @@ export function WaitlistCounter() {
     return () => clearInterval(timer);
   }, [count]);
 
-  if (count === null || count < 10) return null;
+  // Loading skeleton
+  if (count === null) {
+    return (
+      <div className="inline-flex items-center gap-2 px-4 py-2 bg-accent/10 border border-accent/20 rounded-full animate-pulse">
+        <div className="flex -space-x-2">
+          {[...Array(3)].map((_, i) => (
+            <div
+              key={i}
+              className="w-6 h-6 rounded-full bg-muted border-2 border-background"
+              style={{ zIndex: 3 - i }}
+            />
+          ))}
+        </div>
+        <div className="h-4 w-32 bg-muted rounded" />
+      </div>
+    );
+  }
+
+  if (count < 10) return null;
 
   return (
     <motion.div

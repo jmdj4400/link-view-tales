@@ -15,6 +15,7 @@ import { Testimonials } from "@/components/landing/Testimonials";
 import { TrustBadges } from "@/components/landing/TrustBadges";
 import { WaitlistCounter } from "@/components/landing/WaitlistCounter";
 import { ValueProps } from "@/components/landing/ValueProps";
+import { HowItWorks } from "@/components/landing/HowItWorks";
 import { motion } from "framer-motion";
 
 interface Article {
@@ -127,9 +128,9 @@ export default function Landing() {
         <div className="absolute inset-0 bg-[linear-gradient(rgba(56,189,248,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(56,189,248,0.03)_1px,transparent_1px)] bg-[size:50px_50px] pointer-events-none" />
 
         <div className="relative z-10">
-          {/* Simple Header */}
+          {/* Header with Sign In */}
           <header className="container mx-auto px-6 py-8 max-w-7xl">
-            <div className="flex items-center justify-center gap-3">
+            <div className="flex items-center justify-between">
               <motion.div 
                 className="relative group"
                 initial={{ opacity: 0, scale: 0.9 }}
@@ -146,6 +147,24 @@ export default function Landing() {
                     height={40}
                   />
                 </div>
+              </motion.div>
+              
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+                className="flex items-center gap-3"
+              >
+                <Link to="/pricing">
+                  <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
+                    Pricing
+                  </Button>
+                </Link>
+                <Link to="/auth">
+                  <Button variant="outline" size="sm" className="border-primary/30 hover:border-primary hover:bg-primary/5">
+                    Sign In
+                  </Button>
+                </Link>
               </motion.div>
             </div>
           </header>
@@ -260,8 +279,11 @@ export default function Landing() {
             </motion.div>
           </main>
 
-          {/* Launch Countdown */}
+          {/* Launch Countdown - Moved higher */}
           <LaunchCountdown />
+
+          {/* How It Works */}
+          <HowItWorks />
 
           {/* Value Propositions */}
           <ValueProps />

@@ -167,7 +167,7 @@ export default function Auth() {
                     onChange={(value) => setSignUpData({ ...signUpData, handle: value })}
                     validation={handleValidation}
                     placeholder="yourhandle"
-                    hint={`Your profile: linkpeek.app/${signUpData.handle || 'yourhandle'}`}
+                    hint={`Your profile: link-peek.org/${signUpData.handle || 'yourhandle'}`}
                     required
                   />
                   
@@ -310,7 +310,10 @@ export default function Auth() {
         </Card>
 
         <p className="text-center text-sm text-muted-foreground mt-6">
-          By continuing, you agree to our Terms of Service
+          By continuing, you agree to our{" "}
+          <a href="/terms" className="underline hover:text-foreground transition-colors">Terms of Service</a>
+          {" "}and{" "}
+          <a href="/privacy" className="underline hover:text-foreground transition-colors">Privacy Policy</a>
         </p>
       </div>
     </div>
