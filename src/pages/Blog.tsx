@@ -32,6 +32,8 @@ export default function Blog() {
   const [searchQuery, setSearchQuery] = useState(searchParams.get("q") || "");
   const [selectedCategory, setSelectedCategory] = useState(searchParams.get("category") || "all");
   const [categories, setCategories] = useState<string[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const articlesPerPage = 9;
 
   useEffect(() => {
     fetchArticles();
@@ -164,59 +166,80 @@ export default function Blog() {
               </p>
             </div>
           ) : (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredArticles.map((article) => (
-                <Link key={article.id} to={`/blog/${article.slug}`}>
-                  <Card className="h-full overflow-hidden hover:shadow-lg transition-shadow group">
-                    {article.featured_image_url && (
-                      <div className="aspect-video overflow-hidden">
-                        <img
-                          src={article.featured_image_url}
-                          alt={article.title}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                        />
-                      </div>
-                    )}
-                    <div className="p-6">
-                      <div className="flex items-center gap-2 mb-3">
-                        <Badge variant="secondary">{article.category}</Badge>
-                        <div className="flex items-center text-xs text-muted-foreground">
-                          <Clock className="h-3 w-3 mr-1" />
-                          {article.reading_time_minutes} min read
-                        </div>
-                      </div>
-
-                      <h2 className="text-xl font-bold mb-2 group-hover:text-primary transition-colors line-clamp-2">
-                        {article.title}
-                      </h2>
-
-                      <p className="text-muted-foreground mb-4 line-clamp-3">
-                        {article.description}
-                      </p>
-
-                      <div className="flex items-center justify-between text-sm text-muted-foreground">
-                        <span className="flex items-center">
-                          <Calendar className="h-4 w-4 mr-1" />
-                          {format(new Date(article.published_at), "MMM d, yyyy")}
-                        </span>
-                        <span>{article.author_name}</span>
-                      </div>
-
-                      {article.tags.length > 0 && (
-                        <div className="flex gap-1 mt-3 flex-wrap">
-                          {article.tags.slice(0, 3).map((tag) => (
-                            <Badge key={tag} variant="outline" className="text-xs">
-                              <Tag className="h-3 w-3 mr-1" />
-                              {tag}
-                            </Badge>
-                          ))}
+            <>
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {filteredArticles.slice(0, articlesPerPage * currentPage).map((article) => (
+                  <Link key={article.id} to={`/blog/${article.slug}`}>
+                    <Card className="h-full overflow-hidden hover:shadow-lg transition-shadow group">
+                      {article.featured_image_url && (
+                        <div className="aspect-video overflow-hidden">
+                          <img
+                            src={article.featured_image_url}
+                            alt={article.title}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                            loading="lazy"
+                          />
                         </div>
                       )}
-                    </div>
-                  </Card>
-                </Link>
-              ))}
-            </div>
+                      <div className="p-6">
+                        <div className="flex items-center gap-2 mb-3">
+                          <Badge variant="secondary">{article.category}</Badge>
+                          <div className="flex items-center text-xs text-muted-foreground">
+                            <Clock className="h-3 w-3 mr-1" />
+                            {article.reading_time_minutes} min read
+                          </div>
+                        </div>
+
+                        <h2 className="text-xl font-bold mb-2 group-hover:text-primary transition-colors line-clamp-2">
+                          {article.title}
+                        </h2>
+
+                        <p className="text-muted-foreground mb-4 line-clamp-3">
+                          {article.description}
+                        </p>
+
+                        <div className="flex items-center justify-between text-sm text-muted-foreground">
+                          <span className="flex items-center">
+                            <Calendar className="h-4 w-4 mr-1" />
+                            {format(new Date(article.published_at), "MMM d, yyyy")}
+                          </span>
+                          <span>{article.author_name}</span>
+                        </div>
+
+                        {article.tags.length > 0 && (
+                          <div className="flex gap-1 mt-3 flex-wrap">
+                            {article.tags.slice(0, 3).map((tag) => (
+                              <Badge key={tag} variant="outline" className="text-xs">
+                                <Tag className="h-3 w-3 mr-1" />
+                                {tag}
+                              </Badge>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </Card>
+                  </Link>
+                ))}
+              </div>
+
+              {/* Load More / Pagination */}
+              {filteredArticles.length > articlesPerPage * currentPage && (
+                <div className="text-center mt-12">
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    onClick={() => setCurrentPage((p) => p + 1)}
+                  >
+                    Load More Articles
+                  </Button>
+                </div>
+              )}
+
+              {/* Article Count */}
+              <div className="text-center mt-6 text-sm text-muted-foreground">
+                Showing {Math.min(articlesPerPage * currentPage, filteredArticles.length)} of {filteredArticles.length} articles
+              </div>
+            </>
           )}
         </section>
       </div>

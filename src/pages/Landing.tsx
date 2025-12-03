@@ -16,6 +16,9 @@ import { TrustBadges } from "@/components/landing/TrustBadges";
 import { WaitlistCounter } from "@/components/landing/WaitlistCounter";
 import { ValueProps } from "@/components/landing/ValueProps";
 import { HowItWorks } from "@/components/landing/HowItWorks";
+import { DemoVideo } from "@/components/landing/DemoVideo";
+import { FeaturedIn } from "@/components/landing/FeaturedIn";
+import { ExitIntentPopup } from "@/components/landing/ExitIntentPopup";
 import { motion } from "framer-motion";
 
 interface Article {
@@ -31,6 +34,7 @@ interface Article {
 
 export default function Landing() {
   const [email, setEmail] = useState("");
+  const [honeypot, setHoneypot] = useState(""); // Spam protection
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [articles, setArticles] = useState<Article[]>([]);
 
@@ -58,11 +62,33 @@ export default function Landing() {
     e.preventDefault();
     if (!email) return;
 
+    // Honeypot spam check - bots will fill this hidden field
+    if (honeypot) {
+      toast.success("Thanks for signing up! 🎉"); // Fake success for bots
+      return;
+    }
+
+    // Capture UTM parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const utmData = {
+      utm_source: urlParams.get('utm_source'),
+      utm_medium: urlParams.get('utm_medium'),
+      utm_campaign: urlParams.get('utm_campaign'),
+      utm_term: urlParams.get('utm_term'),
+      utm_content: urlParams.get('utm_content'),
+      referrer: document.referrer || null,
+    };
+
     setIsSubmitting(true);
     try {
       const { error } = await supabase
         .from('beta_whitelist')
-        .insert([{ email, status: 'pending' }]);
+        .insert([{ 
+          email, 
+          status: 'pending',
+          // Store UTM data in invited_by field as JSON for tracking
+          invited_by: Object.values(utmData).some(v => v) ? JSON.stringify(utmData) : null
+        }]);
 
       if (error) {
         if (error.code === '23505') {
@@ -224,6 +250,17 @@ export default function Landing() {
                   Get early access + 30% lifetime discount
                 </p>
                 <form onSubmit={handleWaitlistSignup} className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+                  {/* Honeypot field - hidden from humans, bots will fill it */}
+                  <input
+                    type="text"
+                    name="website"
+                    value={honeypot}
+                    onChange={(e) => setHoneypot(e.target.value)}
+                    className="absolute -left-[9999px] opacity-0"
+                    tabIndex={-1}
+                    autoComplete="off"
+                    aria-hidden="true"
+                  />
                   <Input
                     type="email"
                     placeholder="Enter your email"
@@ -282,8 +319,14 @@ export default function Landing() {
           {/* Launch Countdown - Moved higher */}
           <LaunchCountdown />
 
+          {/* Featured In */}
+          <FeaturedIn />
+
           {/* How It Works */}
           <HowItWorks />
+
+          {/* Demo Video/Preview */}
+          <DemoVideo />
 
           {/* Value Propositions */}
           <ValueProps />
@@ -379,6 +422,17 @@ export default function Landing() {
                   Early access members get a 30% lifetime discount.
                 </p>
                 <form onSubmit={handleWaitlistSignup} className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+                  {/* Honeypot field */}
+                  <input
+                    type="text"
+                    name="company"
+                    value={honeypot}
+                    onChange={(e) => setHoneypot(e.target.value)}
+                    className="absolute -left-[9999px] opacity-0"
+                    tabIndex={-1}
+                    autoComplete="off"
+                    aria-hidden="true"
+                  />
                   <Input
                     type="email"
                     placeholder="your@email.com"
@@ -416,6 +470,9 @@ export default function Landing() {
             </div>
           </footer>
         </div>
+
+        {/* Exit Intent Popup */}
+        <ExitIntentPopup />
       </div>
     </>
   );
