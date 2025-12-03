@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Sparkles, Zap, Link as LinkIcon, Instagram, Twitter, Calendar, ArrowRight } from "lucide-react";
+import { Sparkles, Zap, Link as LinkIcon, Instagram, Twitter, Calendar, ArrowRight, CheckCircle2 } from "lucide-react";
 import { SEOHead } from "@/components/SEOHead";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -11,6 +11,11 @@ import { Link } from "react-router-dom";
 import { format } from "date-fns";
 import logo from "@/assets/logo.png";
 import { LaunchCountdown } from "@/components/landing/LaunchCountdown";
+import { Testimonials } from "@/components/landing/Testimonials";
+import { TrustBadges } from "@/components/landing/TrustBadges";
+import { WaitlistCounter } from "@/components/landing/WaitlistCounter";
+import { ValueProps } from "@/components/landing/ValueProps";
+import { motion } from "framer-motion";
 
 interface Article {
   id: string;
@@ -65,7 +70,6 @@ export default function Landing() {
           throw error;
         }
       } else {
-        // Send confirmation email
         try {
           await supabase.functions.invoke('send-waitlist-confirmation', {
             body: { email }
@@ -97,6 +101,12 @@ export default function Landing() {
     }
   };
 
+  const benefits = [
+    "See real delivered visits, not vanity metrics",
+    "Recover clicks lost to in-app browsers",
+    "Compare performance across all channels",
+  ];
+
   return (
     <>
       <SEOHead
@@ -120,70 +130,79 @@ export default function Landing() {
           {/* Simple Header */}
           <header className="container mx-auto px-6 py-8 max-w-7xl">
             <div className="flex items-center justify-center gap-3">
-              <div className="relative group">
+              <motion.div 
+                className="relative group"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.5 }}
+              >
                 <div className="absolute inset-0 bg-gradient-to-r from-primary/50 via-accent/50 to-secondary/50 rounded-xl blur-xl opacity-50 group-hover:opacity-75 transition-opacity" />
                 <div className="relative bg-background/80 backdrop-blur-sm border border-primary/20 rounded-xl p-3 shadow-lg">
-                  <img src={logo} alt="LinkPeek Logo" className="h-10 relative z-10" />
+                  <img 
+                    src={logo} 
+                    alt="LinkPeek - Link in Bio Analytics Tool" 
+                    className="h-10 relative z-10" 
+                    width={40}
+                    height={40}
+                  />
                 </div>
-              </div>
+              </motion.div>
             </div>
           </header>
 
           {/* Hero Content */}
-          <main className="container mx-auto px-6 pt-20 pb-32 max-w-4xl text-center">
-            <div className="space-y-8 animate-fade-in">
+          <main className="container mx-auto px-6 pt-12 pb-24 max-w-4xl text-center">
+            <motion.div 
+              className="space-y-8"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+            >
               {/* Badge */}
               <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 border border-primary/20 rounded-full backdrop-blur-sm">
                 <Sparkles className="h-4 w-4 text-primary animate-pulse" />
-                <span className="text-sm font-medium text-primary">Coming Soon</span>
+                <span className="text-sm font-medium text-primary">Launching December 10, 2025</span>
               </div>
 
               {/* Main Heading */}
               <h1 className="text-5xl md:text-7xl font-bold tracking-tight">
                 <span className="bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent animate-gradient bg-[length:200%_auto]">
-                  The Future of
+                  Stop Losing
                 </span>
                 <br />
-                <span className="text-foreground">Link Management</span>
+                <span className="text-foreground">Social Traffic</span>
               </h1>
 
               {/* Subheading */}
               <p className="text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-                Transform how you share and track your digital presence. 
-                <span className="text-foreground font-medium"> LinkPeek</span> is redefining the game.
+                The link in bio tool that shows you{" "}
+                <span className="text-foreground font-semibold">real delivered visits</span>
+                —not platform-reported taps. Recover clicks lost to in-app browsers.
               </p>
 
-              {/* Features Preview */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-3xl mx-auto pt-8">
-                <div className="flex flex-col items-center gap-3 p-6 rounded-2xl bg-card/50 border border-border/50 backdrop-blur-sm hover:border-primary/30 transition-all duration-300 hover:scale-105">
-                  <div className="p-3 rounded-xl bg-primary/10 border border-primary/20">
-                    <LinkIcon className="h-6 w-6 text-primary" />
-                  </div>
-                  <h3 className="font-semibold text-foreground">Smart Links</h3>
-                  <p className="text-sm text-muted-foreground">Intelligent routing & tracking</p>
-                </div>
-
-                <div className="flex flex-col items-center gap-3 p-6 rounded-2xl bg-card/50 border border-border/50 backdrop-blur-sm hover:border-accent/30 transition-all duration-300 hover:scale-105">
-                  <div className="p-3 rounded-xl bg-accent/10 border border-accent/20">
-                    <Zap className="h-6 w-6 text-accent" />
-                  </div>
-                  <h3 className="font-semibold text-foreground">Real-time Analytics</h3>
-                  <p className="text-sm text-muted-foreground">Instant performance insights</p>
-                </div>
-
-                <div className="flex flex-col items-center gap-3 p-6 rounded-2xl bg-card/50 border border-border/50 backdrop-blur-sm hover:border-secondary/30 transition-all duration-300 hover:scale-105">
-                  <div className="p-3 rounded-xl bg-secondary/10 border border-secondary/20">
-                    <Sparkles className="h-6 w-6 text-secondary" />
-                  </div>
-                  <h3 className="font-semibold text-foreground">Beautiful Design</h3>
-                  <p className="text-sm text-muted-foreground">Stunning customization</p>
-                </div>
+              {/* Benefits List */}
+              <div className="flex flex-col items-center gap-3 py-4">
+                {benefits.map((benefit, index) => (
+                  <motion.div
+                    key={benefit}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.4 + index * 0.1 }}
+                    className="flex items-center gap-2 text-muted-foreground"
+                  >
+                    <CheckCircle2 className="h-5 w-5 text-primary shrink-0" />
+                    <span>{benefit}</span>
+                  </motion.div>
+                ))}
               </div>
 
+              {/* Waitlist Counter */}
+              <WaitlistCounter />
+
               {/* Waitlist Form */}
-              <div className="pt-12">
+              <div className="pt-8">
                 <p className="text-sm font-medium text-foreground mb-4">
-                  Be the first to know when we launch
+                  Get early access + 30% lifetime discount
                 </p>
                 <form onSubmit={handleWaitlistSignup} className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
                   <Input
@@ -193,6 +212,7 @@ export default function Landing() {
                     onChange={(e) => setEmail(e.target.value)}
                     required
                     className="flex-1 h-12 bg-card/50 border-border/50 backdrop-blur-sm focus:border-primary transition-colors"
+                    aria-label="Email address"
                   />
                   <Button 
                     type="submit" 
@@ -200,16 +220,21 @@ export default function Landing() {
                     disabled={isSubmitting}
                     className="h-12 px-8 bg-gradient-to-r from-primary to-accent hover:opacity-90 transition-opacity shadow-lg shadow-primary/25"
                   >
-                    {isSubmitting ? "Joining..." : "Join Waitlist"}
+                    {isSubmitting ? "Joining..." : "Join Waitlist →"}
                   </Button>
                 </form>
                 <p className="text-xs text-muted-foreground mt-3">
-                  Join hundreds of creators waiting for early access
+                  Free to join. No credit card required.
                 </p>
               </div>
 
+              {/* Trust Badges */}
+              <div className="pt-8">
+                <TrustBadges />
+              </div>
+
               {/* Social Links */}
-              <div className="pt-16">
+              <div className="pt-12">
                 <p className="text-sm text-muted-foreground mb-4">Follow our journey</p>
                 <div className="flex items-center justify-center gap-4">
                   <a 
@@ -217,6 +242,7 @@ export default function Landing() {
                     target="_blank" 
                     rel="noopener noreferrer"
                     className="p-3 rounded-xl bg-card/50 border border-border/50 backdrop-blur-sm hover:border-primary/50 transition-all duration-300 hover:scale-110"
+                    aria-label="Follow LinkPeek on Instagram"
                   >
                     <Instagram className="h-5 w-5 text-muted-foreground hover:text-primary transition-colors" />
                   </a>
@@ -225,16 +251,23 @@ export default function Landing() {
                     target="_blank" 
                     rel="noopener noreferrer"
                     className="p-3 rounded-xl bg-card/50 border border-border/50 backdrop-blur-sm hover:border-primary/50 transition-all duration-300 hover:scale-110"
+                    aria-label="Follow LinkPeek on X (Twitter)"
                   >
                     <Twitter className="h-5 w-5 text-muted-foreground hover:text-primary transition-colors" />
                   </a>
                 </div>
               </div>
-            </div>
+            </motion.div>
           </main>
 
           {/* Launch Countdown */}
           <LaunchCountdown />
+
+          {/* Value Propositions */}
+          <ValueProps />
+
+          {/* Testimonials */}
+          <Testimonials />
 
           {/* Articles Section */}
           {articles.length > 0 && (
@@ -261,6 +294,7 @@ export default function Landing() {
                               src={article.featured_image_url}
                               alt={article.title}
                               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                              loading="lazy"
                             />
                           </div>
                         )}
@@ -277,7 +311,9 @@ export default function Landing() {
                           <div className="flex items-center justify-between text-xs text-muted-foreground pt-3 border-t">
                             <div className="flex items-center gap-2">
                               <Calendar className="h-3 w-3" />
-                              {format(new Date(article.published_at), "MMM dd, yyyy")}
+                              <time dateTime={article.published_at}>
+                                {format(new Date(article.published_at), "MMM dd, yyyy")}
+                              </time>
                             </div>
                             <span>{article.reading_time_minutes} min read</span>
                           </div>
@@ -299,11 +335,63 @@ export default function Landing() {
             </section>
           )}
 
+          {/* Final CTA Section */}
+          <section className="container mx-auto px-6 py-24 max-w-4xl">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="relative"
+            >
+              <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-accent/20 to-secondary/20 rounded-3xl blur-3xl" />
+              <div className="relative bg-card/50 backdrop-blur-xl border border-border/50 rounded-3xl p-12 text-center space-y-6">
+                <h2 className="text-3xl md:text-4xl font-bold">
+                  Ready to see your{" "}
+                  <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+                    real traffic
+                  </span>
+                  ?
+                </h2>
+                <p className="text-muted-foreground max-w-xl mx-auto">
+                  Join thousands of creators who are tired of losing clicks to broken in-app browsers.
+                  Early access members get a 30% lifetime discount.
+                </p>
+                <form onSubmit={handleWaitlistSignup} className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+                  <Input
+                    type="email"
+                    placeholder="your@email.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    className="flex-1 h-12"
+                    aria-label="Email address for waitlist"
+                  />
+                  <Button 
+                    type="submit" 
+                    size="lg"
+                    disabled={isSubmitting}
+                    className="h-12 px-8"
+                  >
+                    {isSubmitting ? "Joining..." : "Get Early Access"}
+                  </Button>
+                </form>
+              </div>
+            </motion.div>
+          </section>
+
           {/* Footer */}
           <footer className="container mx-auto px-6 py-8 max-w-7xl border-t border-border/50">
-            <p className="text-center text-sm text-muted-foreground">
-              © 2025 LinkPeek. Something amazing is on the way.
-            </p>
+            <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+              <p className="text-sm text-muted-foreground">
+                © 2025 LinkPeek. All rights reserved.
+              </p>
+              <nav className="flex items-center gap-6 text-sm text-muted-foreground">
+                <Link to="/privacy" className="hover:text-foreground transition-colors">Privacy</Link>
+                <Link to="/terms" className="hover:text-foreground transition-colors">Terms</Link>
+                <Link to="/contact" className="hover:text-foreground transition-colors">Contact</Link>
+                <Link to="/blog" className="hover:text-foreground transition-colors">Blog</Link>
+              </nav>
+            </div>
           </footer>
         </div>
       </div>
