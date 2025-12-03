@@ -112,38 +112,54 @@ serve(async (req) => {
 
         // Send reminder email
         const { error: emailError } = await resend.emails.send({
-          from: "Linkbolt <onboarding@resend.dev>",
+          from: "LinkPeek <hello@link-peek.org>",
+          replyTo: "support@link-peek.org",
           to: [profile.email],
           subject: "Your trial ends in 3 days ⏰",
           html: `
-            <h1>Your ${planName} Trial Ends Soon</h1>
-            <p>Hi ${profile.name || 'there'},</p>
-            
-            <p>Just a friendly reminder that your Linkbolt ${planName} trial will end on <strong>${formattedDate}</strong> (in 3 days).</p>
-            
-            <div style="background: #f8f9fa; border-left: 4px solid #4753FF; padding: 16px; margin: 24px 0; border-radius: 8px;">
-              <h3 style="margin: 0 0 8px; color: #111827;">What happens next?</h3>
-              <ul style="margin: 8px 0; padding-left: 20px; color: #6B7280;">
-                <li>Your payment method will be charged automatically</li>
-                <li>You'll continue to have full access to all ${planName} features</li>
-                <li>No action needed - everything continues seamlessly</li>
-              </ul>
+            <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 600px; margin: 0 auto;">
+              <div style="background: linear-gradient(135deg, #4753FF 0%, #7C3AED 100%); color: white; padding: 40px 32px; text-align: center; border-radius: 16px 16px 0 0;">
+                <h1 style="margin: 0; font-size: 28px;">⏰ Your ${planName} Trial Ends Soon</h1>
+              </div>
+              
+              <div style="background: white; padding: 32px; border-radius: 0 0 16px 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.08);">
+                <p style="margin: 0 0 24px; font-size: 16px; color: #374151; line-height: 1.6;">
+                  Hi ${profile.name || 'there'},
+                </p>
+                
+                <p style="font-size: 16px; color: #374151; line-height: 1.6;">
+                  Just a friendly reminder that your LinkPeek ${planName} trial will end on <strong>${formattedDate}</strong> (in 3 days).
+                </p>
+                
+                <div style="background: #f8f9fa; border-left: 4px solid #4753FF; padding: 16px; margin: 24px 0; border-radius: 8px;">
+                  <h3 style="margin: 0 0 8px; color: #111827;">What happens next?</h3>
+                  <ul style="margin: 8px 0; padding-left: 20px; color: #6B7280;">
+                    <li>Your payment method will be charged automatically</li>
+                    <li>You'll continue to have full access to all ${planName} features</li>
+                    <li>No action needed - everything continues seamlessly</li>
+                  </ul>
+                </div>
+
+                <p style="font-size: 16px; color: #374151; line-height: 1.6;">
+                  If you want to make any changes to your subscription, you can do so in your billing settings.
+                </p>
+
+                <div style="text-align: center; margin: 32px 0;">
+                  <a href="${Deno.env.get("APP_URL")}/billing" 
+                     style="display: inline-block; background: #4753FF; color: white; padding: 14px 32px; border-radius: 12px; text-decoration: none; font-weight: 600;">
+                    Manage Subscription
+                  </a>
+                </div>
+
+                <p style="font-size: 16px; color: #374151; line-height: 1.6;">
+                  Thank you for choosing LinkPeek! We're excited to continue helping you grow your audience.
+                </p>
+                
+                <p style="font-size: 14px; color: #6B7280; margin-top: 32px; padding-top: 24px; border-top: 1px solid #e5e7eb;">
+                  Questions? Just reply to this email - we're here to help!
+                </p>
+              </div>
             </div>
-
-            <p>If you want to make any changes to your subscription, you can do so in your billing settings.</p>
-
-            <div style="text-align: center; margin: 32px 0;">
-              <a href="${Deno.env.get("APP_URL")}/billing" 
-                 style="display: inline-block; background: #4753FF; color: white; padding: 14px 32px; border-radius: 12px; text-decoration: none; font-weight: 600;">
-                Manage Subscription
-              </a>
-            </div>
-
-            <p>Thank you for choosing Linkbolt! We're excited to continue helping you grow your audience.</p>
-            
-            <p style="font-size: 14px; color: #6B7280; margin-top: 32px;">
-              Questions? Just reply to this email - we're here to help!
-            </p>
           `,
         });
 

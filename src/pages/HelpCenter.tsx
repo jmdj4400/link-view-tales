@@ -58,7 +58,7 @@ const HelpCenter = () => {
       },
       {
         question: "How do I share my LinkPeek profile?",
-        answer: "Your public profile URL is linkpeek.app/yourhandle. You can share this link on your social media bios, email signatures, or anywhere you want to consolidate your links. Find it in your Dashboard or Profile Settings."
+        answer: "Your public profile URL is link-peek.org/yourhandle. You can share this link on your social media bios, email signatures, or anywhere you want to consolidate your links. Find it in your Dashboard or Profile Settings."
       },
       {
         question: "Can I customize my profile appearance?",

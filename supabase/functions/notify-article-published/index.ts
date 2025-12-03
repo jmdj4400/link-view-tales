@@ -56,7 +56,8 @@ const handler = async (req: Request): Promise<Response> => {
     const emailPromises = profiles.map(async (profile) => {
       try {
         await resend.emails.send({
-          from: "LinkPeek <onboarding@resend.dev>",
+          from: "LinkPeek <hello@link-peek.org>",
+          replyTo: "support@link-peek.org",
           to: [profile.email],
           subject: `📝 New Article Published: ${article_title}`,
           html: `
