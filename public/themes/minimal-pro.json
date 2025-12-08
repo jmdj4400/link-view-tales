@@ -1,0 +1,63 @@
+{
+  "id": "minimal-pro",
+  "name": "Minimal Pro",
+  "description": "Clean white/black with sharp edges",
+  "preview": "linear-gradient(180deg, #ffffff 0%, #f8f9fa 100%)",
+  "background": {
+    "type": "solid",
+    "color": "#ffffff",
+    "noise": false
+  },
+  "colors": {
+    "primary": "#000000",
+    "secondary": "#374151",
+    "accent": "#3b82f6",
+    "text": "#111827",
+    "textMuted": "#6b7280",
+    "cardBackground": "#ffffff",
+    "cardBorder": "#e5e7eb"
+  },
+  "typography": {
+    "headingFont": "Inter",
+    "bodyFont": "Inter",
+    "headingWeight": 600,
+    "bodyWeight": 400
+  },
+  "cards": {
+    "style": "minimal",
+    "borderRadius": 8,
+    "borderWidth": 1,
+    "shadow": "none"
+  },
+  "buttons": {
+    "shape": "sharp",
+    "style": "outline",
+    "hoverEffect": "none"
+  },
+  "layout": {
+    "style": "left",
+    "maxWidth": "sm",
+    "spacing": "compact",
+    "avatarSize": "md",
+    "avatarStyle": "square"
+  },
+  "effects": {
+    "particles": "none",
+    "textAnimation": "none",
+    "linkAnimation": "fade",
+    "parallax": false,
+    "glassmorphism": false,
+    "aurora": false,
+    "tilt3D": false,
+    "glowPulse": false
+  },
+  "icons": {
+    "style": "minimal",
+    "position": "right"
+  },
+  "sections": [
+    { "type": "hero", "visible": true },
+    { "type": "links", "visible": true },
+    { "type": "socials", "visible": true }
+  ]
+}

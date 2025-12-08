@@ -1,0 +1,69 @@
+{
+  "id": "cyber-neon",
+  "name": "Cyber Neon",
+  "description": "Dark gradient with neon glow and hologram cards",
+  "preview": "linear-gradient(135deg, #0f0f23 0%, #1a1a3e 50%, #0d0d1a 100%)",
+  "background": {
+    "type": "gradient",
+    "gradientFrom": "#0f0f23",
+    "gradientTo": "#1a1a3e",
+    "gradientAngle": 135,
+    "noise": true,
+    "noiseOpacity": 0.03
+  },
+  "colors": {
+    "primary": "#00ffff",
+    "secondary": "#ff00ff",
+    "accent": "#39ff14",
+    "text": "#ffffff",
+    "textMuted": "rgba(255,255,255,0.7)",
+    "cardBackground": "rgba(255,255,255,0.05)",
+    "cardBorder": "rgba(0,255,255,0.3)"
+  },
+  "typography": {
+    "headingFont": "Space Grotesk",
+    "bodyFont": "Inter",
+    "headingWeight": 700,
+    "bodyWeight": 400
+  },
+  "cards": {
+    "style": "hologram",
+    "borderRadius": 16,
+    "borderWidth": 1,
+    "shadow": "glow",
+    "glowColor": "#00ffff",
+    "glowIntensity": 0.4
+  },
+  "buttons": {
+    "shape": "rounded",
+    "style": "outline",
+    "hoverEffect": "glow"
+  },
+  "layout": {
+    "style": "centered",
+    "maxWidth": "md",
+    "spacing": "normal",
+    "avatarSize": "lg",
+    "avatarStyle": "circle"
+  },
+  "effects": {
+    "particles": "matrix",
+    "textAnimation": "glow",
+    "linkAnimation": "glow",
+    "parallax": false,
+    "glassmorphism": true,
+    "aurora": false,
+    "tilt3D": true,
+    "glowPulse": true
+  },
+  "icons": {
+    "style": "outlined",
+    "position": "right"
+  },
+  "sections": [
+    { "type": "hero", "visible": true },
+    { "type": "socials", "visible": true },
+    { "type": "divider", "visible": true },
+    { "type": "links", "visible": true }
+  ]
+}

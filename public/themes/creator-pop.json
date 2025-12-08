@@ -1,0 +1,66 @@
+{
+  "id": "creator-pop",
+  "name": "Creator Pop",
+  "description": "Colorful and playful design",
+  "preview": "linear-gradient(135deg, #ff6b6b 0%, #feca57 50%, #48dbfb 100%)",
+  "background": {
+    "type": "gradient",
+    "gradientFrom": "#fff5f5",
+    "gradientTo": "#fef3c7",
+    "gradientAngle": 180,
+    "noise": false
+  },
+  "colors": {
+    "primary": "#ff6b6b",
+    "secondary": "#feca57",
+    "accent": "#48dbfb",
+    "text": "#2d3436",
+    "textMuted": "#636e72",
+    "cardBackground": "#ffffff",
+    "cardBorder": "#ff6b6b"
+  },
+  "typography": {
+    "headingFont": "Space Grotesk",
+    "bodyFont": "Inter",
+    "headingWeight": 800,
+    "bodyWeight": 500
+  },
+  "cards": {
+    "style": "bold",
+    "borderRadius": 20,
+    "borderWidth": 3,
+    "shadow": "lg"
+  },
+  "buttons": {
+    "shape": "pill",
+    "style": "solid",
+    "hoverEffect": "scale"
+  },
+  "layout": {
+    "style": "centered",
+    "maxWidth": "md",
+    "spacing": "relaxed",
+    "avatarSize": "xl",
+    "avatarStyle": "circle"
+  },
+  "effects": {
+    "particles": "confetti",
+    "textAnimation": "wave",
+    "linkAnimation": "bounce",
+    "parallax": false,
+    "glassmorphism": false,
+    "aurora": false,
+    "tilt3D": false,
+    "glowPulse": false
+  },
+  "icons": {
+    "style": "filled",
+    "position": "left"
+  },
+  "sections": [
+    { "type": "hero", "visible": true },
+    { "type": "socials", "visible": true },
+    { "type": "links", "visible": true },
+    { "type": "note", "visible": true, "config": { "content": "Thanks for visiting! ✨" } }
+  ]
+}

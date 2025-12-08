@@ -1,0 +1,65 @@
+{
+  "id": "liquid-gradient",
+  "name": "Liquid Gradient",
+  "description": "Soft flowing gradients with round cards",
+  "preview": "linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%)",
+  "background": {
+    "type": "gradient",
+    "gradientFrom": "#667eea",
+    "gradientTo": "#764ba2",
+    "gradientAngle": 135,
+    "noise": false
+  },
+  "colors": {
+    "primary": "#ffffff",
+    "secondary": "#f8f0fc",
+    "accent": "#ffd43b",
+    "text": "#ffffff",
+    "textMuted": "rgba(255,255,255,0.85)",
+    "cardBackground": "rgba(255,255,255,0.15)",
+    "cardBorder": "rgba(255,255,255,0.25)"
+  },
+  "typography": {
+    "headingFont": "Sora",
+    "bodyFont": "Inter",
+    "headingWeight": 600,
+    "bodyWeight": 400
+  },
+  "cards": {
+    "style": "liquid",
+    "borderRadius": 24,
+    "borderWidth": 1,
+    "shadow": "lg"
+  },
+  "buttons": {
+    "shape": "pill",
+    "style": "solid",
+    "hoverEffect": "scale"
+  },
+  "layout": {
+    "style": "centered",
+    "maxWidth": "sm",
+    "spacing": "relaxed",
+    "avatarSize": "xl",
+    "avatarStyle": "circle"
+  },
+  "effects": {
+    "particles": "bubbles",
+    "textAnimation": "gradient",
+    "linkAnimation": "scale",
+    "parallax": true,
+    "glassmorphism": true,
+    "aurora": false,
+    "tilt3D": false,
+    "glowPulse": false
+  },
+  "icons": {
+    "style": "minimal",
+    "position": "left"
+  },
+  "sections": [
+    { "type": "hero", "visible": true },
+    { "type": "socials", "visible": true },
+    { "type": "links", "visible": true }
+  ]
+}

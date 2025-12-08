@@ -1,0 +1,67 @@
+{
+  "id": "glass-aurora",
+  "name": "Glass Aurora",
+  "description": "Glassmorphism panels with aurora animation",
+  "preview": "linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)",
+  "background": {
+    "type": "gradient",
+    "gradientFrom": "#1a1a2e",
+    "gradientTo": "#0f3460",
+    "gradientAngle": 135,
+    "noise": true,
+    "noiseOpacity": 0.02
+  },
+  "colors": {
+    "primary": "#4ecca3",
+    "secondary": "#7c3aed",
+    "accent": "#f59e0b",
+    "text": "#ffffff",
+    "textMuted": "rgba(255,255,255,0.75)",
+    "cardBackground": "rgba(255,255,255,0.08)",
+    "cardBorder": "rgba(78,204,163,0.3)"
+  },
+  "typography": {
+    "headingFont": "Outfit",
+    "bodyFont": "Inter",
+    "headingWeight": 700,
+    "bodyWeight": 400
+  },
+  "cards": {
+    "style": "glass",
+    "borderRadius": 20,
+    "borderWidth": 1,
+    "shadow": "md"
+  },
+  "buttons": {
+    "shape": "rounded",
+    "style": "ghost",
+    "hoverEffect": "tilt"
+  },
+  "layout": {
+    "style": "centered",
+    "maxWidth": "md",
+    "spacing": "normal",
+    "avatarSize": "lg",
+    "avatarStyle": "rounded"
+  },
+  "effects": {
+    "particles": "stars",
+    "textAnimation": "wave",
+    "linkAnimation": "slide",
+    "parallax": true,
+    "glassmorphism": true,
+    "aurora": true,
+    "tilt3D": true,
+    "glowPulse": false
+  },
+  "icons": {
+    "style": "filled",
+    "position": "left"
+  },
+  "sections": [
+    { "type": "hero", "visible": true },
+    { "type": "socials", "visible": true },
+    { "type": "divider", "visible": true },
+    { "type": "links", "visible": true }
+  ]
+}
