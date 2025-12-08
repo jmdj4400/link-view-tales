@@ -2,6 +2,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, User } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
+import DOMPurify from "dompurify";
 
 interface ArticlePreviewProps {
   title: string;
@@ -80,10 +81,15 @@ export function ArticlePreview({
           </div>
         )}
 
-        {/* Content */}
+        {/* Content - Sanitized for XSS protection */}
         <div 
           className="prose prose-lg dark:prose-invert max-w-none ql-editor"
-          dangerouslySetInnerHTML={{ __html: content || "<p>No content yet...</p>" }}
+          dangerouslySetInnerHTML={{ 
+            __html: DOMPurify.sanitize(content || "<p>No content yet...</p>", {
+              ALLOWED_TAGS: ['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'strong', 'em', 'u', 's', 'ul', 'ol', 'li', 'a', 'img', 'blockquote', 'pre', 'code', 'br', 'hr', 'span', 'div'],
+              ALLOWED_ATTR: ['href', 'src', 'alt', 'class', 'target', 'rel', 'style']
+            })
+          }}
         />
       </Card>
     </div>
