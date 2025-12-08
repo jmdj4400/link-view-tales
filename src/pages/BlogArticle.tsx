@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { SEOHead } from "@/components/SEOHead";
@@ -9,6 +9,7 @@ import { PageLoader } from "@/components/ui/loading-spinner";
 import { Calendar, Clock, Eye, Tag, ArrowLeft, Share2 } from "lucide-react";
 import { format } from "date-fns";
 import { toast } from "@/hooks/use-toast";
+import DOMPurify from "dompurify";
 
 interface Article {
   id: string;
@@ -211,10 +212,15 @@ export default function BlogArticle() {
             </Button>
           </div>
 
-          {/* Content */}
+          {/* Content - Sanitized for XSS protection */}
           <div
             className="prose prose-lg dark:prose-invert max-w-none mb-12"
-            dangerouslySetInnerHTML={{ __html: article.content }}
+            dangerouslySetInnerHTML={{ 
+              __html: DOMPurify.sanitize(article.content, {
+                ALLOWED_TAGS: ['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'strong', 'em', 'u', 's', 'ul', 'ol', 'li', 'a', 'img', 'blockquote', 'pre', 'code', 'br', 'hr', 'span', 'div'],
+                ALLOWED_ATTR: ['href', 'src', 'alt', 'class', 'target', 'rel', 'style']
+              })
+            }}
           />
 
           {/* Tags */}
