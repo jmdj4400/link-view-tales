@@ -2,14 +2,14 @@ import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { ThemePreset, THEME_PRESETS, getDefaultPreset } from "@/lib/theme-presets";
-import { ThemeRenderer } from "./ThemeRenderer";
+import { ThemeRendererV3 } from "./ThemeRendererV3";
 import { ThemeCustomizationPanel } from "./ThemeCustomizationPanel";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Save, Eye, EyeOff, Smartphone, Monitor, RotateCcw } from "lucide-react";
+import { Save, Eye, EyeOff, Smartphone, Monitor, RotateCcw, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-
+import { Badge } from "@/components/ui/badge";
 // Sample links for preview
 const SAMPLE_LINKS = [
   { id: '1', title: 'My Website', description: 'Check out my portfolio', dest_url: '#', isFeatured: true },
@@ -168,9 +168,17 @@ export function ThemeEngineEditor() {
     <div className="flex flex-col h-[calc(100vh-200px)] min-h-[600px]">
       {/* Header */}
       <div className="flex items-center justify-between mb-4 shrink-0">
-        <div>
-          <h2 className="text-2xl font-bold">Theme Engine</h2>
-          <p className="text-muted-foreground text-sm">Customize your public profile appearance</p>
+        <div className="flex items-center gap-3">
+          <div>
+            <div className="flex items-center gap-2">
+              <h2 className="text-2xl font-bold">Theme Engine</h2>
+              <Badge variant="secondary" className="text-xs">
+                <Sparkles className="h-3 w-3 mr-1" />
+                V3
+              </Badge>
+            </div>
+            <p className="text-muted-foreground text-sm">Advanced profile customization with 3D effects & AI backgrounds</p>
+          </div>
         </div>
         <div className="flex items-center gap-2">
           <Button variant="outline" size="sm" onClick={handleReset}>
@@ -240,12 +248,13 @@ export function ThemeEngineEditor() {
                 }}
               >
                 <div className="w-full h-full overflow-auto">
-                  <ThemeRenderer
+                  <ThemeRendererV3
                     profile={previewProfile}
                     links={previewLinks}
                     theme={theme}
                     onLinkClick={() => {}}
                     showFooter={false}
+                    enable3DTilt={theme.effects.parallax}
                   />
                 </div>
               </div>
