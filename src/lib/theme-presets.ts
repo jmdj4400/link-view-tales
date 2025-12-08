@@ -463,3 +463,9 @@ export const getPresetById = (id: string): ThemePreset | undefined => {
 export const getDefaultPreset = (): ThemePreset => {
   return THEME_PRESETS[0];
 };
+
+// Export presets as object for easy lookup by id
+export const themePresets: Record<string, ThemePreset> = THEME_PRESETS.reduce((acc, preset) => {
+  acc[preset.id] = preset;
+  return acc;
+}, {} as Record<string, ThemePreset>);
