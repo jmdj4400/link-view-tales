@@ -15,6 +15,8 @@ import { ProfileLayoutMinimal } from "@/components/profile/layouts/ProfileLayout
 import { ParticleEffect } from "@/components/profile/effects/ParticleEffect";
 import { AnimatedText } from "@/components/profile/effects/AnimatedText";
 import { BackgroundEffects } from "@/components/profile/BackgroundEffects";
+import { ThemeRenderer } from "@/components/profile/theme-engine/ThemeRenderer";
+import { themePresets, ThemePreset } from "@/lib/theme-presets";
 
 interface Profile {
   name: string;
@@ -45,6 +47,7 @@ interface Profile {
   link_animation?: string;
   enable_parallax?: boolean;
   enable_glassmorphism?: boolean;
+  theme?: string; // Theme preset ID for new theme engine
 }
 
 interface Link {
@@ -201,8 +204,40 @@ export default function PublicProfile() {
     enableGlassmorphism: profile.enable_glassmorphism || false,
   };
 
+  // Check if using new theme engine preset
+  const getThemePreset = (): ThemePreset | null => {
+    const presetName = profile.theme;
+    if (presetName && themePresets[presetName as keyof typeof themePresets]) {
+      return themePresets[presetName as keyof typeof themePresets];
+    }
+    return null;
+  };
+
   // Render appropriate layout
   const renderProfileLayout = () => {
+    // Check for new theme engine presets first
+    const themePreset = getThemePreset();
+    if (themePreset) {
+      return (
+        <ThemeRenderer
+          profile={{
+            name: profile.name,
+            handle: profile.handle,
+            bio: profile.bio,
+            avatar_url: profile.avatar_url,
+          }}
+          links={links.map(l => ({
+            id: l.id,
+            title: l.title,
+            dest_url: l.dest_url,
+          }))}
+          theme={themePreset}
+          onLinkClick={handleLinkClick}
+          showFooter={true}
+        />
+      );
+    }
+
     const commonProps = {
       profile,
       links,

@@ -31,7 +31,7 @@ export default function ThemeSettings() {
         <PageHeader showBack title="LinkPeek" />
 
         <div className="container mx-auto px-6 py-10 max-w-6xl">
-          <ThemeCustomizer />
+          <ThemeEngineEditor />
         </div>
       </div>
     </>
