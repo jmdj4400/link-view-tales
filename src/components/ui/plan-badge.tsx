@@ -1,5 +1,5 @@
 import { Badge } from "@/components/ui/badge";
-import { Crown, Zap, Sparkles } from "lucide-react";
+import { Crown, Zap, Sparkles, Gift } from "lucide-react";
 
 interface PlanBadgeProps {
   plan: string;
@@ -24,6 +24,13 @@ export function PlanBadge({ plan, className = "", showIcon = true }: PlanBadgePr
         variant: 'default' as const,
         icon: Zap,
         gradient: 'from-blue-500 to-cyan-500'
+      };
+    } else if (lowerPlan === 'early access' || lowerPlan === 'earlyaccess') {
+      return {
+        label: 'Early Access',
+        variant: 'default' as const,
+        icon: Gift,
+        gradient: 'from-green-500 to-emerald-500'
       };
     } else {
       return {

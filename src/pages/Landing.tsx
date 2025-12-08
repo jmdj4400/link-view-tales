@@ -215,9 +215,9 @@ export default function Landing() {
               transition={{ duration: 0.6, delay: 0.2 }}
             >
               {/* Badge */}
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 border border-primary/20 rounded-full backdrop-blur-sm">
-                <Sparkles className="h-4 w-4 text-primary animate-pulse" />
-                <span className="text-sm font-medium text-primary">Launching December 10, 2025</span>
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-green-500/10 border border-green-500/20 rounded-full backdrop-blur-sm">
+                <Sparkles className="h-4 w-4 text-green-500 animate-pulse" />
+                <span className="text-sm font-medium text-green-600 dark:text-green-400">First 200 users get full access FREE</span>
               </div>
 
               {/* Main Heading */}
@@ -255,45 +255,30 @@ export default function Landing() {
               {/* Waitlist Counter */}
               <WaitlistCounter />
 
-              {/* Waitlist Form */}
-              <div className="pt-8">
-                <p className="text-sm font-medium text-foreground mb-4">
-                  Get early access + 30% lifetime discount
-                </p>
-                <form onSubmit={handleWaitlistSignup} className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
-                  {/* Honeypot field - hidden from humans, bots will fill it */}
-                  <input
-                    type="text"
-                    name="website"
-                    value={honeypot}
-                    onChange={(e) => setHoneypot(e.target.value)}
-                    className="absolute -left-[9999px] opacity-0"
-                    tabIndex={-1}
-                    autoComplete="off"
-                    aria-hidden="true"
-                  />
-                  <Input
-                    type="email"
-                    placeholder="Enter your email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                    className="flex-1 h-12 bg-card/50 border-border/50 backdrop-blur-sm focus:border-primary transition-colors"
-                    aria-label="Email address"
-                  />
+              {/* CTA Buttons */}
+              <div className="pt-8 flex flex-col sm:flex-row gap-4 justify-center items-center">
+                <Link to="/auth">
                   <Button 
-                    type="submit" 
                     size="lg"
-                    disabled={isSubmitting}
-                    className="h-12 px-8 bg-gradient-to-r from-primary to-accent hover:opacity-90 transition-opacity shadow-lg shadow-primary/25"
+                    className="h-14 px-10 text-lg bg-gradient-to-r from-primary to-accent hover:opacity-90 transition-opacity shadow-lg shadow-primary/25"
                   >
-                    {isSubmitting ? "Joining..." : "Join Waitlist →"}
+                    <Zap className="h-5 w-5 mr-2" />
+                    Get Started Free
                   </Button>
-                </form>
-                <p className="text-xs text-muted-foreground mt-3">
-                  Free to join. No credit card required.
-                </p>
+                </Link>
+                <Link to="/pricing">
+                  <Button 
+                    variant="outline"
+                    size="lg"
+                    className="h-14 px-8 text-lg"
+                  >
+                    View Pricing
+                  </Button>
+                </Link>
               </div>
+              <p className="text-sm text-muted-foreground">
+                No credit card required • Full access for early adopters
+              </p>
 
               {/* Trust Badges */}
               <div className="pt-8">

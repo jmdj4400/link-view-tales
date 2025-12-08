@@ -2,70 +2,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { SEOHead } from "@/components/SEOHead";
-import { Check, Sparkles, Zap, Building2, ArrowLeft } from "lucide-react";
+import { Check, Sparkles, Zap, ArrowLeft, Gift, Users } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import logo from "@/assets/logo.png";
-
-const plans = [
-  {
-    name: "Free",
-    description: "Perfect for getting started",
-    price: "$0",
-    period: "forever",
-    features: [
-      "1 link in bio page",
-      "Basic analytics",
-      "Up to 1,000 clicks/month",
-      "LinkPeek branding",
-      "Email support",
-    ],
-    cta: "Get Started",
-    popular: false,
-    icon: Zap,
-  },
-  {
-    name: "Pro",
-    description: "For serious creators",
-    price: "$9",
-    period: "/month",
-    originalPrice: "$12",
-    features: [
-      "Unlimited link pages",
-      "Advanced analytics",
-      "Unlimited clicks",
-      "Remove LinkPeek branding",
-      "Custom domains",
-      "In-app browser recovery",
-      "Priority support",
-      "A/B testing",
-      "UTM tracking",
-    ],
-    cta: "Start Free Trial",
-    popular: true,
-    icon: Sparkles,
-  },
-  {
-    name: "Business",
-    description: "For teams and agencies",
-    price: "$29",
-    period: "/month",
-    originalPrice: "$39",
-    features: [
-      "Everything in Pro",
-      "Team collaboration",
-      "API access",
-      "Multiple workspaces",
-      "Advanced permissions",
-      "Dedicated support",
-      "Custom integrations",
-      "SSO (coming soon)",
-    ],
-    cta: "Contact Sales",
-    popular: false,
-    icon: Building2,
-  },
-];
 
 export default function Pricing() {
   const navigate = useNavigate();
@@ -73,8 +13,8 @@ export default function Pricing() {
   return (
     <>
       <SEOHead
-        title="Pricing - LinkPeek | Affordable Link in Bio Analytics"
-        description="Simple, transparent pricing for LinkPeek. Start free, upgrade when you need more. Track real delivered visits and recover lost clicks from social traffic."
+        title="Pricing - LinkPeek | Free for First 200 Users"
+        description="LinkPeek is free for the first 200 users! Track real delivered visits and recover lost clicks from social traffic."
         canonicalUrl="https://link-peek.org/pricing"
       />
 
@@ -110,92 +50,84 @@ export default function Pricing() {
             animate={{ opacity: 1, y: 0 }}
             className="space-y-6"
           >
-            <Badge variant="secondary" className="px-4 py-1">
-              <Sparkles className="h-3 w-3 mr-2" />
-              Launch Special: 30% off for early adopters
+            <Badge className="px-6 py-2 text-lg bg-gradient-to-r from-primary to-accent text-white border-0">
+              <Gift className="h-4 w-4 mr-2" />
+              First 200 Users Get Full Access FREE
             </Badge>
-            <h1 className="text-4xl md:text-5xl font-bold">
-              Simple,{" "}
+            <h1 className="text-4xl md:text-6xl font-bold">
               <span className="bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent">
-                Transparent
+                Free
               </span>{" "}
-              Pricing
+              for Early Adopters
             </h1>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Start free, upgrade when you need more. No hidden fees, cancel anytime.
+              We're launching! The first 200 users get full Pro access completely free. 
+              No credit card required. No strings attached.
             </p>
           </motion.div>
         </section>
 
-        {/* Pricing Cards */}
-        <section className="container mx-auto px-6 pb-24 max-w-6xl">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {plans.map((plan, index) => (
-              <motion.div
-                key={plan.name}
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-              >
-                <Card
-                  className={`relative h-full flex flex-col ${
-                    plan.popular
-                      ? "border-primary shadow-lg shadow-primary/10 scale-105"
-                      : "border-border/50"
-                  }`}
+        {/* Single Card - Free Access */}
+        <section className="container mx-auto px-6 pb-16 max-w-xl">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+          >
+            <Card className="border-primary shadow-xl shadow-primary/20 relative overflow-hidden">
+              <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary via-accent to-secondary" />
+              <CardHeader className="text-center pt-10">
+                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center mx-auto mb-4">
+                  <Sparkles className="h-8 w-8 text-primary" />
+                </div>
+                <Badge className="mx-auto mb-4 bg-green-500/10 text-green-600 border-green-500/20">
+                  <Users className="h-3 w-3 mr-1" />
+                  Limited Spots
+                </Badge>
+                <CardTitle className="text-3xl">Early Access</CardTitle>
+                <CardDescription className="text-lg">
+                  Full Pro features, completely free
+                </CardDescription>
+                <div className="pt-6">
+                  <span className="text-5xl font-bold text-primary">$0</span>
+                  <span className="text-muted-foreground text-lg ml-2">forever*</span>
+                </div>
+                <p className="text-sm text-muted-foreground mt-2">
+                  *For the first 200 users
+                </p>
+              </CardHeader>
+              <CardContent className="pb-10">
+                <ul className="space-y-4 mb-8">
+                  {[
+                    "Unlimited link pages",
+                    "Advanced analytics dashboard",
+                    "Unlimited clicks tracking",
+                    "In-app browser recovery",
+                    "Custom themes & layouts",
+                    "UTM tracking",
+                    "Priority support",
+                    "All future features included",
+                  ].map((feature) => (
+                    <li key={feature} className="flex items-start gap-3">
+                      <Check className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+                      <span className="text-muted-foreground">{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+                <Button
+                  size="lg"
+                  className="w-full bg-gradient-to-r from-primary to-accent hover:opacity-90 text-lg py-6"
+                  onClick={() => navigate("/auth")}
                 >
-                  {plan.popular && (
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                      <Badge className="bg-primary text-primary-foreground px-4">
-                        Most Popular
-                      </Badge>
-                    </div>
-                  )}
-                  <CardHeader className="text-center pt-8">
-                    <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
-                      <plan.icon className="h-6 w-6 text-primary" />
-                    </div>
-                    <CardTitle className="text-2xl">{plan.name}</CardTitle>
-                    <CardDescription>{plan.description}</CardDescription>
-                    <div className="pt-4">
-                      {plan.originalPrice && (
-                        <span className="text-muted-foreground line-through text-lg mr-2">
-                          {plan.originalPrice}
-                        </span>
-                      )}
-                      <span className="text-4xl font-bold">{plan.price}</span>
-                      <span className="text-muted-foreground">{plan.period}</span>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="flex-1 flex flex-col">
-                    <ul className="space-y-3 flex-1">
-                      {plan.features.map((feature) => (
-                        <li key={feature} className="flex items-start gap-3">
-                          <Check className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                          <span className="text-sm text-muted-foreground">
-                            {feature}
-                          </span>
-                        </li>
-                      ))}
-                    </ul>
-                    <div className="pt-6">
-                      <Button
-                        className={`w-full ${
-                          plan.popular
-                            ? "bg-gradient-to-r from-primary to-accent hover:opacity-90"
-                            : ""
-                        }`}
-                        variant={plan.popular ? "default" : "outline"}
-                        onClick={() => navigate("/auth")}
-                      >
-                        {plan.cta}
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
-          </div>
+                  <Zap className="h-5 w-5 mr-2" />
+                  Claim Your Free Spot
+                </Button>
+                <p className="text-center text-sm text-muted-foreground mt-4">
+                  No credit card required
+                </p>
+              </CardContent>
+            </Card>
+          </motion.div>
         </section>
 
         {/* FAQ Section */}
@@ -205,21 +137,21 @@ export default function Pricing() {
           </h2>
           <div className="space-y-6">
             <div className="space-y-2">
-              <h3 className="font-semibold">Can I change plans later?</h3>
+              <h3 className="font-semibold">Is this really free?</h3>
               <p className="text-muted-foreground text-sm">
-                Yes! You can upgrade or downgrade your plan at any time. Changes take effect immediately and we'll prorate your billing.
+                Yes! The first 200 users get full access completely free, forever. We're building in public and want early users to help shape the product.
               </p>
             </div>
             <div className="space-y-2">
-              <h3 className="font-semibold">What happens after my trial?</h3>
+              <h3 className="font-semibold">What happens after 200 users?</h3>
               <p className="text-muted-foreground text-sm">
-                Your 30-day Pro trial gives you full access. After it ends, you can choose to subscribe or continue with the free plan.
+                After we reach 200 users, we'll introduce paid plans for new users. But early adopters keep their free access as a thank you for being early supporters.
               </p>
             </div>
             <div className="space-y-2">
-              <h3 className="font-semibold">Do you offer refunds?</h3>
+              <h3 className="font-semibold">Will I lose my free access later?</h3>
               <p className="text-muted-foreground text-sm">
-                Yes, we offer a 14-day money-back guarantee. If you're not satisfied, contact us for a full refund.
+                No! Once you're in, you're in. Your early access is permanent as long as you remain an active user.
               </p>
             </div>
             <div className="space-y-2">

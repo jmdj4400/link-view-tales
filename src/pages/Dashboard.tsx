@@ -4,10 +4,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Skeleton } from "@/components/ui/skeleton";
-import { DashboardSkeleton } from "@/components/dashboard/DashboardSkeleton";
-import { LogOut, Settings, Link as LinkIcon, CreditCard, Eye, MousePointerClick, TrendingUp, ArrowRight, Download, Plus, BarChart3, Palette, Users, Target, Zap, Mail, FileDown, Sparkles, HelpCircle } from "lucide-react";
+import { LogOut, Settings, Link as LinkIcon, Eye, MousePointerClick, TrendingUp, ArrowRight, Download, Plus, BarChart3, Palette, Target, Zap, Mail, FileDown, Sparkles, HelpCircle } from "lucide-react";
 import { toast } from "sonner";
 import { AnalyticsChart } from "@/components/analytics/AnalyticsChart";
 import { TopLinksTable } from "@/components/analytics/TopLinksTable";
@@ -32,18 +29,13 @@ import { useCommonShortcuts } from "@/hooks/use-keyboard-shortcuts";
 import { KeyboardShortcutsDialog } from "@/components/ui/keyboard-shortcuts-dialog";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { UsageIndicator } from "@/components/ui/usage-indicator";
-import { UpgradePrompt } from "@/components/ui/upgrade-prompt";
 import { FirewallStats } from "@/components/analytics/FirewallStats";
 import { IncidentRadar } from "@/components/analytics/IncidentRadar";
 import { PlanBadge } from "@/components/ui/plan-badge";
-import { TrialCountdownBanner } from "@/components/ui/trial-countdown-banner";
-import { PageHeader } from "@/components/ui/page-header";
 import { AdminNav } from "@/components/navigation/AdminNav";
 import { useUserRoles } from "@/hooks/use-user-roles";
 import { OnboardingModal } from "@/components/onboarding/OnboardingModal";
 import { TrustModal } from "@/components/ui/trust-modal";
-import { generateDemoLink } from "@/lib/demo-data-generator";
 import logo from "@/assets/logo.png";
 
 export default function Dashboard() {
@@ -499,11 +491,7 @@ export default function Dashboard() {
         <div className="container mx-auto px-4 sm:px-6 py-3 sm:py-4 flex justify-between items-center">
           <div className="flex items-center gap-2 sm:gap-3">
             <img src={logo} alt="LinkPeek Logo" className="h-6 sm:h-7" />
-            {subscriptionStatus?.subscribed ? (
-              <PlanBadge plan={getPlanName()} className="hidden sm:inline-flex" />
-            ) : (
-              <PlanBadge plan="free" className="hidden sm:inline-flex" />
-            )}
+            <PlanBadge plan="Early Access" className="hidden sm:inline-flex" />
           </div>
           <div className="flex items-center gap-0.5 sm:gap-1">
             {isAdmin && <AdminNav />}
@@ -537,11 +525,7 @@ export default function Dashboard() {
                   Traffic overview and performance metrics
                 </p>
               </div>
-              {subscriptionStatus?.subscribed && (
-                <div className="hidden md:block">
-                  <PlanBadge plan={getPlanName()} showIcon={true} />
-                </div>
-              )}
+              {/* Removed subscription badge - all users have early access */}
             </div>
             <div className="flex flex-wrap items-center gap-2">
               <div className="flex items-center gap-2">
@@ -601,60 +585,8 @@ export default function Dashboard() {
           </div>
         )}
 
-        {/* Trial Countdown Banner */}
-        {subscriptionStatus?.subscribed && 
-         subscriptionStatus?.status === 'trialing' && 
-         subscriptionStatus?.trial_days_remaining !== undefined &&
-         subscriptionStatus?.trial_end_date && (
-          <div className="mb-8">
-            <TrialCountdownBanner 
-              trialDaysRemaining={subscriptionStatus.trial_days_remaining}
-              planName={getPlanName()}
-              trialEndDate={subscriptionStatus.trial_end_date}
-            />
-          </div>
-        )}
-
-        {/* Usage & Upgrade Section for Free Users */}
-        {!isPaidUser() && (
-          <div className="mb-8">
-            <Card className="border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-accent/5">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <CardTitle className="text-lg">You're on the Free Plan</CardTitle>
-                    <CardDescription>Upgrade to unlock premium features</CardDescription>
-                  </div>
-                  <PlanBadge plan="free" />
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <UsageIndicator
-                  current={links.length}
-                  limit={5}
-                  label="Active links"
-                />
-                {links.length >= 4 && (
-                  <div className="bg-warning/10 border border-warning/20 rounded-lg p-4">
-                    <p className="text-sm text-warning-foreground font-medium mb-2">
-                      ⚠️ You're almost at your link limit!
-                    </p>
-                    <p className="text-xs text-muted-foreground mb-3">
-                      Upgrade to Pro for unlimited links, advanced analytics, A/B testing, and more.
-                    </p>
-                    <Button 
-                      size="sm" 
-                      onClick={() => navigate('/billing')}
-                      className="w-full"
-                    >
-                      View Plans & Pricing
-                    </Button>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </div>
-        )}
+        {/* DISABLED: Trial and payment prompts - first 200 users free */}
+        {/* Trial countdown and upgrade prompts removed for launch */}
 
         {/* Date Range Picker */}
         <div className="mb-8">
@@ -720,31 +652,27 @@ export default function Dashboard() {
               <CountryStats countryStats={countryStats} />
             </div>
 
-            {/* Pro Features - Traffic Firewall & Incident Monitoring */}
-            {isPaidUser() && (
-              <>
-                <div className="mb-6">
-                  <Card className="border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-accent/5">
-                    <CardHeader>
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <Sparkles className="h-5 w-5 text-primary" />
-                          <CardTitle className="text-lg">Premium Features</CardTitle>
-                        </div>
-                        <PlanBadge plan={getPlanName()} />
-                      </div>
-                      <CardDescription>
-                        Advanced monitoring and protection for your links
-                      </CardDescription>
-                    </CardHeader>
-                  </Card>
-                </div>
-                <div className="grid lg:grid-cols-2 gap-6 mb-8">
-                  <FirewallStats />
-                  <IncidentRadar />
-                </div>
-              </>
-            )}
+            {/* Premium Features - Available to all early access users */}
+            <div className="mb-6">
+              <Card className="border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-accent/5">
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Sparkles className="h-5 w-5 text-primary" />
+                      <CardTitle className="text-lg">Premium Features</CardTitle>
+                    </div>
+                    <PlanBadge plan="Early Access" />
+                  </div>
+                  <CardDescription>
+                    Advanced monitoring and protection for your links
+                  </CardDescription>
+                </CardHeader>
+              </Card>
+            </div>
+            <div className="grid lg:grid-cols-2 gap-6 mb-8">
+              <FirewallStats />
+              <IncidentRadar />
+            </div>
           </>
         )}
 
@@ -887,12 +815,12 @@ export default function Dashboard() {
           <Card className="border hover:border-primary/30 transition-colors">
             <CardHeader className="pb-3">
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-primary/10 rounded-lg">
-                  <CreditCard className="h-4 w-4 text-primary" />
+                <div className="p-2 bg-green-500/10 rounded-lg">
+                  <Sparkles className="h-4 w-4 text-green-600" />
                 </div>
                 <div>
-                  <CardTitle className="text-base font-semibold">Subscription</CardTitle>
-                  <CardDescription className="text-xs">Current plan: {getPlanName()}</CardDescription>
+                  <CardTitle className="text-base font-semibold">Early Access</CardTitle>
+                  <CardDescription className="text-xs">Full access unlocked</CardDescription>
                 </div>
               </div>
             </CardHeader>
@@ -903,40 +831,13 @@ export default function Dashboard() {
                 size="sm"
                 onClick={() => navigate('/billing')}
               >
-                Manage billing
+                View Status
                 <ArrowRight className="h-3.5 w-3.5 ml-2" />
               </Button>
             </CardContent>
           </Card>
           </div>
         </div>
-
-        {/* Upgrade CTA for Free Users */}
-        {!isPaidUser() && (
-          <Card className="mt-8 border-2 border-primary/50 gradient-subtle">
-            <CardHeader className="text-center">
-              <CardTitle className="text-3xl font-heading font-bold mb-2">
-                Unlock the full potential
-              </CardTitle>
-              <CardDescription className="text-base">
-                Get unlimited links, 90-day analytics history, and remove branding
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="text-center">
-              <Button
-                size="lg"
-                onClick={() => navigate('/billing')}
-                className="gradient-primary shadow-elegant text-base px-8"
-              >
-                Upgrade to Pro
-                <ArrowRight className="h-5 w-5 ml-2" />
-              </Button>
-              <p className="text-sm text-muted-foreground mt-4">
-                From $9/month • No long-term commitment
-              </p>
-            </CardContent>
-          </Card>
-        )}
       </div>
     </div>
 
