@@ -15,18 +15,18 @@ export function HeroSection({ name, handle, tagline, avatarUrl, theme }: HeroSec
 
   const getAvatarSize = () => {
     switch (layout.avatarSize) {
-      case 'sm': return 'h-16 w-16';
-      case 'md': return 'h-20 w-20';
-      case 'lg': return 'h-24 w-24';
-      case 'xl': return 'h-32 w-32';
-      default: return 'h-24 w-24';
+      case 'sm': return 'h-14 w-14 md:h-16 md:w-16';
+      case 'md': return 'h-16 w-16 md:h-20 md:w-20';
+      case 'lg': return 'h-20 w-20 md:h-24 md:w-24';
+      case 'xl': return 'h-24 w-24 md:h-32 md:w-32';
+      default: return 'h-20 w-20 md:h-24 md:w-24';
     }
   };
 
   const getAvatarStyle = () => {
     switch (layout.avatarStyle) {
       case 'circle': return 'rounded-full';
-      case 'rounded': return 'rounded-2xl';
+      case 'rounded': return 'rounded-xl md:rounded-2xl';
       case 'square': return 'rounded-none';
       default: return 'rounded-full';
     }
@@ -51,13 +51,23 @@ export function HeroSection({ name, handle, tagline, avatarUrl, theme }: HeroSec
   };
 
   const avatarGlowStyle = cards.style === 'neon' ? {
-    boxShadow: `0 0 20px ${cards.glowColor || colors.primary}`,
+    boxShadow: `0 0 20px ${cards.glowColor || colors.primary}50`,
   } : {};
 
+  // Truncate name if too long
+  const displayName = name && name.length > 30 ? name.substring(0, 30) + '...' : name;
+  
+  // Truncate bio if too long
+  const displayBio = tagline && tagline.length > 200 ? tagline.substring(0, 200) + '...' : tagline;
+
   return (
-    <header className={cn("flex flex-col gap-4", getLayoutAlignment())}>
+    <header className={cn("flex flex-col gap-3 md:gap-4 w-full", getLayoutAlignment())}>
       <Avatar 
-        className={cn(getAvatarSize(), getAvatarStyle(), "ring-2 ring-offset-2 transition-transform hover:scale-105")}
+        className={cn(
+          getAvatarSize(), 
+          getAvatarStyle(), 
+          "ring-2 ring-offset-2 transition-transform hover:scale-105 flex-shrink-0"
+        )}
         style={{ 
           borderColor: colors.primary,
           ...avatarGlowStyle,
@@ -65,52 +75,57 @@ export function HeroSection({ name, handle, tagline, avatarUrl, theme }: HeroSec
       >
         <AvatarImage 
           src={avatarUrl} 
-          alt={`${name}'s profile`}
+          alt={`${displayName || 'User'}'s profile`}
           className="object-cover"
+          loading="lazy"
         />
         <AvatarFallback 
-          className="text-xl font-bold"
+          className="text-lg md:text-xl font-bold"
           style={{ 
             backgroundColor: colors.primary, 
             color: colors.cardBackground,
           }}
         >
-          {name?.substring(0, 2).toUpperCase() || 'LP'}
+          {displayName?.substring(0, 2).toUpperCase() || 'LP'}
         </AvatarFallback>
       </Avatar>
 
-      <div className="space-y-1">
+      <div className="space-y-0.5 md:space-y-1 min-w-0 max-w-full">
         <h1 
           className={cn(
-            "text-3xl md:text-4xl font-bold tracking-tight",
+            "text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight break-words",
             getTextAnimationClass()
           )}
           style={{ 
             fontFamily: typography.headingFont,
             fontWeight: typography.headingWeight,
             color: colors.text,
+            wordBreak: 'break-word',
+            overflowWrap: 'break-word',
           }}
         >
-          {name}
+          {displayName || 'Unknown'}
         </h1>
         <p 
-          className="text-sm md:text-base"
+          className="text-sm md:text-base truncate max-w-full"
           style={{ color: colors.textMuted }}
         >
-          @{handle}
+          @{handle || 'user'}
         </p>
       </div>
 
-      {tagline && (
+      {displayBio && (
         <p 
-          className="max-w-md text-base md:text-lg leading-relaxed"
+          className="max-w-xs md:max-w-md text-sm md:text-base lg:text-lg leading-relaxed break-words"
           style={{ 
             fontFamily: typography.bodyFont,
             fontWeight: typography.bodyWeight,
             color: colors.textMuted,
+            wordBreak: 'break-word',
+            overflowWrap: 'break-word',
           }}
         >
-          {tagline}
+          {displayBio}
         </p>
       )}
     </header>

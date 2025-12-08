@@ -1,4 +1,5 @@
 import { ThemePreset } from "@/lib/theme-presets";
+import { validateTheme, getOptimizedEffects, prefersReducedMotion } from "@/lib/theme-validation";
 import { HeroSection } from "./sections/HeroSection";
 import { LinkListSection } from "./sections/LinkListSection";
 import { SocialIconsSection } from "./sections/SocialIconsSection";
@@ -11,6 +12,7 @@ import { ParallaxBackground } from "./effects/ParallaxBackground";
 import { Tilt3DWrapper } from "./effects/Tilt3DWrapper";
 import { cn } from "@/lib/utils";
 import { Link } from "react-router-dom";
+import { useMemo, useState, useEffect } from "react";
 
 interface ProfileData {
   name: string;
@@ -38,13 +40,14 @@ type SectionType = 'hero' | 'links' | 'socials' | 'featured' | 'note' | 'divider
 interface Section {
   type: SectionType;
   config?: Record<string, unknown>;
+  visible?: boolean;
 }
 
 interface ThemeRendererV3Props {
   profile: ProfileData;
   links: LinkData[];
   socials?: SocialData[];
-  theme: ThemePreset;
+  theme: ThemePreset | Partial<ThemePreset> | null;
   onLinkClick?: (id: string, url: string) => void;
   note?: string;
   showFooter?: boolean;
@@ -56,29 +59,51 @@ export function ThemeRendererV3({
   profile, 
   links, 
   socials = [], 
-  theme, 
+  theme: rawTheme, 
   onLinkClick,
   note,
   showFooter = true,
   sections,
   enable3DTilt = false,
 }: ThemeRendererV3Props) {
-  const { background, colors, layout, effects } = theme;
+  // Validate theme with fallback - ensures we never crash
+  const theme = useMemo(() => validateTheme(rawTheme), [rawTheme]);
+  
+  // Track reduced motion preference
+  const [reducedMotion, setReducedMotion] = useState(false);
+  
+  useEffect(() => {
+    setReducedMotion(prefersReducedMotion());
+    
+    // Listen for preference changes
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const handler = (e: MediaQueryListEvent) => setReducedMotion(e.matches);
+    mediaQuery.addEventListener('change', handler);
+    return () => mediaQuery.removeEventListener('change', handler);
+  }, []);
+  
+  // Optimize effects based on device capabilities
+  const optimizedEffects = useMemo(
+    () => getOptimizedEffects(theme.effects),
+    [theme.effects]
+  );
+
+  const { background, colors, layout } = theme;
 
   // Default sections if none provided
   const defaultSections: Section[] = [
-    { type: 'hero' },
-    ...(socials.length > 0 ? [{ type: 'socials' as const }, { type: 'divider' as const }] : []),
-    { type: 'links' },
-    ...(note ? [{ type: 'divider' as const }, { type: 'note' as const }] : []),
+    { type: 'hero', visible: true },
+    ...(socials.length > 0 ? [{ type: 'socials' as const, visible: true }, { type: 'divider' as const, visible: true }] : []),
+    { type: 'links', visible: true },
+    ...(note ? [{ type: 'divider' as const, visible: true }, { type: 'note' as const, visible: true }] : []),
   ];
 
-  const activeSections = sections || defaultSections;
+  const activeSections = (sections || defaultSections).filter(s => s.visible !== false);
 
   const getBackgroundStyles = (): React.CSSProperties => {
     if (background.type === 'gradient') {
       return {
-        background: `linear-gradient(${background.gradientAngle || 135}deg, ${background.gradientFrom}, ${background.gradientTo})`,
+        background: `linear-gradient(${background.gradientAngle || 135}deg, ${background.gradientFrom || '#667eea'}, ${background.gradientTo || '#764ba2'})`,
       };
     }
     if (background.type === 'image' && background.imageUrl) {
@@ -103,9 +128,9 @@ export function ThemeRendererV3({
 
   const getSpacingClass = () => {
     switch (layout.spacing) {
-      case 'compact': return 'gap-6';
-      case 'relaxed': return 'gap-12';
-      default: return 'gap-8';
+      case 'compact': return 'gap-4 md:gap-6';
+      case 'relaxed': return 'gap-8 md:gap-12';
+      default: return 'gap-6 md:gap-8';
     }
   };
 
@@ -118,55 +143,62 @@ export function ThemeRendererV3({
   };
 
   const renderSection = (section: Section, index: number) => {
-    switch (section.type) {
-      case 'hero':
-        return (
-          <HeroSection
-            key={`section-${index}`}
-            name={profile.name}
-            handle={profile.handle}
-            tagline={profile.bio}
-            avatarUrl={profile.avatar_url}
-            theme={theme}
-          />
-        );
-      case 'socials':
-        return <SocialIconsSection key={`section-${index}`} socials={socials} theme={theme} />;
-      case 'divider':
-        return <DividerSection key={`section-${index}`} theme={theme} style="gradient" />;
-      case 'links':
-        return (
-          <Tilt3DWrapper 
-            key={`section-${index}`}
-            enabled={enable3DTilt && effects.parallax}
-            intensity={5}
-            glare
-            glareColor={`${colors.primary}30`}
-          >
-            <LinkListSection 
-              links={links} 
-              theme={theme} 
-              onLinkClick={onLinkClick}
+    const key = `section-${section.type}-${index}`;
+    
+    try {
+      switch (section.type) {
+        case 'hero':
+          return (
+            <HeroSection
+              key={key}
+              name={profile.name || 'Unknown'}
+              handle={profile.handle || 'user'}
+              tagline={profile.bio}
+              avatarUrl={profile.avatar_url}
+              theme={theme}
             />
-          </Tilt3DWrapper>
-        );
-      case 'note':
-        return note ? <NoteBlockSection key={`section-${index}`} content={note} theme={theme} /> : null;
-      default:
-        return null;
+          );
+        case 'socials':
+          return <SocialIconsSection key={key} socials={socials} theme={theme} />;
+        case 'divider':
+          return <DividerSection key={key} theme={theme} style="gradient" />;
+        case 'links':
+          return (
+            <Tilt3DWrapper 
+              key={key}
+              enabled={enable3DTilt && optimizedEffects.parallax && !reducedMotion}
+              intensity={5}
+              glare
+              glareColor={`${colors.primary}30`}
+            >
+              <LinkListSection 
+                links={links} 
+                theme={theme} 
+                onLinkClick={onLinkClick}
+              />
+            </Tilt3DWrapper>
+          );
+        case 'note':
+          return note ? <NoteBlockSection key={key} content={note} theme={theme} /> : null;
+        default:
+          return null;
+      }
+    } catch (error) {
+      console.error(`[ThemeEngine] Error rendering section ${section.type}:`, error);
+      return null;
     }
   };
 
   const mainContent = (
-    <div className={cn("w-full flex flex-col", getMaxWidthClass(), getSpacingClass())}>
+    <div className={cn("w-full flex flex-col px-4 md:px-0", getMaxWidthClass(), getSpacingClass())}>
       {activeSections.map((section, index) => renderSection(section, index))}
 
       {/* Footer */}
       {showFooter && (
-        <footer className="text-center pt-4">
+        <footer className="text-center pt-4 pb-8">
           <Link 
             to="/" 
-            className="text-sm opacity-50 hover:opacity-80 transition-opacity inline-flex items-center gap-1"
+            className="text-xs md:text-sm opacity-50 hover:opacity-80 transition-opacity inline-flex items-center gap-1"
             style={{ color: colors.textMuted }}
           >
             Create your own with <span className="font-semibold">LinkPeek</span>
@@ -181,14 +213,14 @@ export function ThemeRendererV3({
       className="min-h-screen w-full relative overflow-hidden"
       style={getBackgroundStyles()}
     >
-      {/* Background video */}
+      {/* Background video - only on desktop for performance */}
       {background.type === 'video' && background.videoUrl && (
         <video
           autoPlay
           muted
           loop
           playsInline
-          className="absolute inset-0 w-full h-full object-cover"
+          className="absolute inset-0 w-full h-full object-cover hidden md:block"
         >
           <source src={background.videoUrl} type="video/mp4" />
         </video>
@@ -202,8 +234,8 @@ export function ThemeRendererV3({
         />
       )}
 
-      {/* Aurora effect */}
-      {effects.aurora && (
+      {/* Aurora effect - disabled on mobile for performance */}
+      {optimizedEffects.aurora && !reducedMotion && (
         <AuroraBackground colors={colors} />
       )}
 
@@ -212,26 +244,26 @@ export function ThemeRendererV3({
         <NoiseOverlay opacity={background.noiseOpacity} />
       )}
 
-      {/* Enhanced Particle effects V3 */}
-      {effects.particles !== 'none' && (
+      {/* Enhanced Particle effects V3 - reduced on mobile */}
+      {optimizedEffects.particles !== 'none' && !reducedMotion && (
         <ParticleEffectV3 
-          type={effects.particles as any}
+          type={optimizedEffects.particles as any}
           color={colors.primary} 
           secondaryColor={colors.secondary}
-          intensity={1}
+          intensity={0.7}
         />
       )}
 
-      {/* Main content with optional parallax */}
+      {/* Main content with optional parallax - disabled on mobile */}
       <ParallaxBackground 
-        enabled={effects.parallax}
-        intensity={15}
+        enabled={optimizedEffects.parallax && !reducedMotion}
+        intensity={10}
         type="mouse"
       >
         <main 
           className={cn(
             "relative z-20 min-h-screen flex flex-col justify-center",
-            "px-6 py-12 md:py-16",
+            "px-4 py-8 md:px-6 md:py-16",
             getLayoutAlignment()
           )}
         >
@@ -258,12 +290,38 @@ export function ThemeRendererV3({
           }
         }
         
+        @keyframes wave-text {
+          0%, 100% { transform: translateY(0); }
+          25% { transform: translateY(-2px); }
+          75% { transform: translateY(2px); }
+        }
+        
         .animate-gradient-text {
           animation: gradient-shift 3s ease infinite;
         }
         
         .animate-glow-pulse {
           animation: glow-pulse 2s ease-in-out infinite;
+        }
+        
+        .animate-wave {
+          animation: wave-text 2s ease-in-out infinite;
+        }
+        
+        /* Reduced motion override */
+        @media (prefers-reduced-motion: reduce) {
+          .animate-gradient-text,
+          .animate-glow-pulse,
+          .animate-wave {
+            animation: none !important;
+          }
+        }
+        
+        /* Mobile optimizations */
+        @media (max-width: 768px) {
+          .animate-gradient-text {
+            animation-duration: 5s;
+          }
         }
       `}</style>
     </div>

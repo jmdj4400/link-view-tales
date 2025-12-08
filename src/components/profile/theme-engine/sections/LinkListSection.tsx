@@ -1,5 +1,5 @@
 import { ThemePreset } from "@/lib/theme-presets";
-import { LinkCard } from "./LinkCard";
+import { LinkCardV3 } from "./LinkCardV3";
 import { cn } from "@/lib/utils";
 
 interface Link {
@@ -17,23 +17,35 @@ interface LinkListSectionProps {
 }
 
 export function LinkListSection({ links, theme, onLinkClick }: LinkListSectionProps) {
-  const { layout } = theme;
+  const { layout, cards } = theme;
 
   const getSpacingClass = () => {
     switch (layout.spacing) {
-      case 'compact': return 'gap-2';
-      case 'relaxed': return 'gap-5';
-      default: return 'gap-3';
+      case 'compact': return 'gap-2 md:gap-2';
+      case 'relaxed': return 'gap-4 md:gap-5';
+      default: return 'gap-2.5 md:gap-3';
+    }
+  };
+
+  // Map theme card style to V3 card style
+  const getCardStyle = (): 'default' | 'hologram' | 'liquid' | 'glass' | 'neon' | 'minimal' | 'bold' => {
+    switch (cards.style) {
+      case 'neon': return 'neon';
+      case 'glass': return 'glass';
+      case 'gradient': return 'liquid';
+      case 'flat': return 'minimal';
+      case 'elevated': return 'bold';
+      default: return 'default';
     }
   };
 
   if (links.length === 0) {
     return (
       <div 
-        className="text-center py-12 opacity-60"
+        className="text-center py-8 md:py-12 opacity-60"
         style={{ color: theme.colors.textMuted }}
       >
-        <p>No links yet</p>
+        <p className="text-sm md:text-base">No links yet</p>
       </div>
     );
   }
@@ -49,7 +61,7 @@ export function LinkListSection({ links, theme, onLinkClick }: LinkListSectionPr
     >
       {/* Featured links first */}
       {featuredLinks.map((link, index) => (
-        <LinkCard
+        <LinkCardV3
           key={link.id}
           id={link.id}
           title={link.title}
@@ -59,12 +71,13 @@ export function LinkListSection({ links, theme, onLinkClick }: LinkListSectionPr
           theme={theme}
           onClick={onLinkClick}
           index={index}
+          cardStyle={getCardStyle()}
         />
       ))}
 
       {/* Regular links */}
       {regularLinks.map((link, index) => (
-        <LinkCard
+        <LinkCardV3
           key={link.id}
           id={link.id}
           title={link.title}
@@ -74,6 +87,7 @@ export function LinkListSection({ links, theme, onLinkClick }: LinkListSectionPr
           theme={theme}
           onClick={onLinkClick}
           index={index + featuredLinks.length}
+          cardStyle={getCardStyle()}
         />
       ))}
     </nav>
