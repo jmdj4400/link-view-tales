@@ -41,6 +41,10 @@ export function ButtonCardControls({
               <SelectItem value="glass">Glassmorphism</SelectItem>
               <SelectItem value="neon">Neon Glow</SelectItem>
               <SelectItem value="gradient">Gradient</SelectItem>
+              <SelectItem value="hologram">Hologram (V3)</SelectItem>
+              <SelectItem value="liquid">Liquid Gradient (V3)</SelectItem>
+              <SelectItem value="minimal">Minimal Outline (V3)</SelectItem>
+              <SelectItem value="bold">Bold Block (V3)</SelectItem>
             </SelectContent>
           </Select>
         </div>
