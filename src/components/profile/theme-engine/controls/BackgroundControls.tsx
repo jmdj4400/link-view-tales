@@ -4,6 +4,8 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Slider } from "@/components/ui/slider";
+import { Separator } from "@/components/ui/separator";
+import { AIBackgroundGenerator } from "./AIBackgroundGenerator";
 
 interface BackgroundControlsProps {
   background: ThemePreset['background'];
@@ -11,9 +13,38 @@ interface BackgroundControlsProps {
 }
 
 export function BackgroundControls({ background, onChange }: BackgroundControlsProps) {
+  const handleAIBackgroundGenerated = (url: string | null, gradient?: string) => {
+    if (gradient) {
+      // Parse gradient to extract colors
+      const gradientMatch = gradient.match(/linear-gradient\((\d+)deg,\s*([^,]+),\s*([^)]+)\)/);
+      if (gradientMatch) {
+        const [, angle, from, to] = gradientMatch;
+        onChange({
+          type: 'gradient',
+          gradientAngle: parseInt(angle),
+          gradientFrom: from.trim().split(' ')[0],
+          gradientTo: to.trim().split(' ')[0],
+        });
+      } else {
+        // Fallback for complex gradients - use as image
+        onChange({ type: 'gradient', gradientFrom: '#667eea', gradientTo: '#764ba2' });
+      }
+    } else if (url) {
+      onChange({ type: 'image', imageUrl: url });
+    }
+  };
+
   return (
     <div className="space-y-4">
       <h3 className="text-sm font-medium text-muted-foreground">Background</h3>
+      
+      {/* AI Background Generator */}
+      <AIBackgroundGenerator 
+        onBackgroundGenerated={handleAIBackgroundGenerated}
+        currentBackground={background.imageUrl || background.gradientFrom}
+      />
+
+      <Separator className="my-4" />
       
       {/* Background Type */}
       <div className="space-y-2">
@@ -127,6 +158,26 @@ export function BackgroundControls({ background, onChange }: BackgroundControlsP
             onChange={(e) => onChange({ videoUrl: e.target.value })}
             placeholder="https://..."
           />
+        </div>
+      )}
+
+      {/* Overlay for image/video */}
+      {(background.type === 'image' || background.type === 'video') && (
+        <div className="space-y-2">
+          <Label>Overlay Color</Label>
+          <div className="flex gap-2">
+            <Input
+              type="color"
+              value={background.overlay?.replace(/[^#\w]/g, '') || '#000000'}
+              onChange={(e) => onChange({ overlay: `${e.target.value}80` })}
+              className="w-12 h-10 p-1"
+            />
+            <Input
+              value={background.overlay || 'rgba(0,0,0,0.5)'}
+              onChange={(e) => onChange({ overlay: e.target.value })}
+              placeholder="rgba(0,0,0,0.5)"
+            />
+          </div>
         </div>
       )}
 
