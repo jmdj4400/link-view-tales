@@ -42,21 +42,42 @@ Theme Engine V3 is the most advanced customizable theme system for link-in-bio p
 Sections can be reordered via config:
 ```json
 [
-  { "type": "hero" },
-  { "type": "socials" },
-  { "type": "divider" },
-  { "type": "links" },
-  { "type": "note" }
+  { "type": "hero", "visible": true },
+  { "type": "socials", "visible": true },
+  { "type": "divider", "visible": true },
+  { "type": "links", "visible": true },
+  { "type": "note", "visible": false }
 ]
 ```
 
 ## Theme Presets (6 Premium Themes)
-1. **Cyber Neon** - Dark gradient, neon glow, matrix particles
-2. **Liquid Gradient** - Soft flowing gradients, bubble particles
-3. **Glass Aurora** - Glassmorphism panels, aurora effect, stars
-4. **Minimal Pro** - Clean white/black, sharp edges
-5. **Creator Pop** - Colorful, playful, confetti particles
-6. **Editorial** - Magazine layout, elegant typography
+
+| Preset | Style | Card Type | Particles | Effects |
+|--------|-------|-----------|-----------|---------|
+| **Cyber Neon** | Dark gradient, neon glow | Hologram | Matrix | 3D Tilt, Glow Pulse |
+| **Liquid Gradient** | Soft flowing gradients | Liquid | Bubbles | Parallax |
+| **Glass Aurora** | Glassmorphism panels | Glass | Stars | Aurora, 3D Tilt |
+| **Minimal Pro** | Clean white/black | Minimal | None | None |
+| **Creator Pop** | Colorful, playful | Bold | Confetti | None |
+| **Editorial** | Magazine layout | Outlined | None | None |
+
+## JSON Theme Files
+Presets are stored in `/public/themes/*.json`:
+- `cyber-neon.json`
+- `liquid-gradient.json`
+- `glass-aurora.json`
+- `minimal-pro.json`
+- `creator-pop.json`
+- `editorial.json`
+
+## Theme Schema (Zod Validation)
+Located in `src/lib/theme-schema.ts`:
+```typescript
+import { ThemePresetSchema, validateThemePreset } from "@/lib/theme-schema";
+
+// Validate a theme preset
+const validatedTheme = validateThemePreset(themeData);
+```
 
 ## File Structure
 ```
@@ -67,28 +88,67 @@ src/components/profile/theme-engine/
 ├── controls/
 │   ├── AIBackgroundGenerator.tsx  # AI background tool
 │   ├── BackgroundControls.tsx
+│   ├── ButtonCardControls.tsx     # V3 card styles
 │   ├── ColorControls.tsx
 │   ├── EffectsControls.tsx
+│   ├── PresetSelector.tsx
 │   └── ...
 ├── effects/
 │   ├── ParticleEffectV3.tsx   # Enhanced particles
 │   ├── Tilt3DWrapper.tsx      # 3D tilt effect
 │   ├── ParallaxBackground.tsx # Parallax effect
 │   ├── GlowPulse.tsx          # Glow animation
-│   └── AuroraBackground.tsx
+│   ├── AuroraBackground.tsx   # Aurora effect
+│   └── NoiseOverlay.tsx       # Noise texture
 └── sections/
     ├── LinkCardV3.tsx         # Advanced card styles
     ├── HeroSection.tsx
     ├── LinkListSection.tsx
-    └── ...
+    ├── SocialIconsSection.tsx
+    ├── DividerSection.tsx
+    └── NoteBlockSection.tsx
+
+public/themes/
+├── cyber-neon.json
+├── liquid-gradient.json
+├── glass-aurora.json
+├── minimal-pro.json
+├── creator-pop.json
+└── editorial.json
+
+src/lib/
+├── theme-presets.ts           # Preset definitions
+└── theme-schema.ts            # Zod validation schema
 ```
 
 ## Adding New Themes
-1. Add preset to `src/lib/theme-presets.ts`
-2. Define all required properties (background, colors, typography, cards, buttons, layout, effects, icons)
-3. Theme will automatically appear in preset selector
+1. Create a new JSON file in `/public/themes/`
+2. Follow the `ThemePresetSchema` structure
+3. Add the preset to `THEME_PRESETS` array in `src/lib/theme-presets.ts`
+4. Theme will automatically appear in preset selector
 
 ## Adding New Effects
 1. Create effect component in `effects/` folder
 2. Add toggle in `EffectsControls.tsx`
 3. Render conditionally in `ThemeRendererV3.tsx`
+4. Update `EffectsSchema` in `theme-schema.ts`
+
+## Adding New Section Types
+1. Create section component in `sections/` folder
+2. Add case in `renderSection()` switch in `ThemeRendererV3.tsx`
+3. Update `SectionSchema` enum in `theme-schema.ts`
+
+## Usage Example
+```tsx
+import { ThemeRendererV3 } from "@/components/profile/theme-engine/ThemeRendererV3";
+import { getPresetById } from "@/lib/theme-presets";
+
+const theme = getPresetById("cyber-neon");
+
+<ThemeRendererV3
+  profile={{ name: "Creator", handle: "creator", bio: "Hello!" }}
+  links={userLinks}
+  socials={userSocials}
+  theme={theme}
+/>
+```

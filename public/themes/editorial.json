@@ -1,0 +1,66 @@
+{
+  "id": "editorial",
+  "name": "Editorial",
+  "description": "Magazine layout with elegant typography",
+  "preview": "linear-gradient(180deg, #fef9ef 0%, #fdf6e9 100%)",
+  "background": {
+    "type": "solid",
+    "color": "#fef9ef",
+    "noise": true,
+    "noiseOpacity": 0.015
+  },
+  "colors": {
+    "primary": "#1a1a1a",
+    "secondary": "#4a4a4a",
+    "accent": "#e07a5f",
+    "text": "#1a1a1a",
+    "textMuted": "#666666",
+    "cardBackground": "#ffffff",
+    "cardBorder": "#1a1a1a"
+  },
+  "typography": {
+    "headingFont": "Playfair Display",
+    "bodyFont": "Inter",
+    "headingWeight": 700,
+    "bodyWeight": 400
+  },
+  "cards": {
+    "style": "outlined",
+    "borderRadius": 0,
+    "borderWidth": 2,
+    "shadow": "none"
+  },
+  "buttons": {
+    "shape": "sharp",
+    "style": "outline",
+    "hoverEffect": "slide"
+  },
+  "layout": {
+    "style": "asymmetric",
+    "maxWidth": "lg",
+    "spacing": "relaxed",
+    "avatarSize": "lg",
+    "avatarStyle": "square"
+  },
+  "effects": {
+    "particles": "none",
+    "textAnimation": "none",
+    "linkAnimation": "slide",
+    "parallax": false,
+    "glassmorphism": false,
+    "aurora": false,
+    "tilt3D": false,
+    "glowPulse": false
+  },
+  "icons": {
+    "style": "none",
+    "position": "none"
+  },
+  "sections": [
+    { "type": "hero", "visible": true },
+    { "type": "divider", "visible": true, "config": { "style": "gradient" } },
+    { "type": "links", "visible": true },
+    { "type": "divider", "visible": true },
+    { "type": "socials", "visible": true }
+  ]
+}
