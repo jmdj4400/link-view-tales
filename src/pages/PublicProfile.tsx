@@ -15,7 +15,7 @@ import { ProfileLayoutMinimal } from "@/components/profile/layouts/ProfileLayout
 import { ParticleEffect } from "@/components/profile/effects/ParticleEffect";
 import { AnimatedText } from "@/components/profile/effects/AnimatedText";
 import { BackgroundEffects } from "@/components/profile/BackgroundEffects";
-import { ThemeRenderer } from "@/components/profile/theme-engine/ThemeRenderer";
+import { ThemeRendererV3 } from "@/components/profile/theme-engine/ThemeRendererV3";
 import { getPresetById, ThemePreset } from "@/lib/theme-presets";
 
 interface Profile {
@@ -219,7 +219,7 @@ export default function PublicProfile() {
     const themePreset = getThemePreset();
     if (themePreset) {
       return (
-        <ThemeRenderer
+        <ThemeRendererV3
           profile={{
             name: profile.name,
             handle: profile.handle,
