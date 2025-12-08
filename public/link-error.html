@@ -4,12 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Link Error - LinkPeek</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -30,16 +28,18 @@
       text-align: center;
     }
     .icon {
-      width: 64px;
-      height: 64px;
+      width: 72px;
+      height: 72px;
       margin: 0 auto 24px;
-      background: #fee;
+      background: #fef3c7;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 32px;
+      font-size: 36px;
     }
+    .icon.error { background: #fee2e2; }
+    .icon.timeout { background: #dbeafe; }
     h1 {
       font-size: 24px;
       font-weight: 600;
@@ -54,69 +54,96 @@
     }
     .reasons {
       background: #f9fafb;
-      border-radius: 8px;
-      padding: 16px;
+      border-radius: 12px;
+      padding: 20px;
       margin-bottom: 24px;
       text-align: left;
     }
     .reasons h3 {
       font-size: 14px;
       font-weight: 600;
-      margin-bottom: 8px;
+      margin-bottom: 12px;
       color: #374151;
     }
     .reasons ul {
       list-style: none;
       font-size: 14px;
       color: #6b7280;
-      line-height: 1.8;
+      line-height: 2;
     }
     .reasons li:before {
-      content: "• ";
+      content: "→ ";
       color: #667eea;
       font-weight: bold;
       margin-right: 8px;
+    }
+    .actions {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
     }
     .button {
       display: inline-block;
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       color: white;
       text-decoration: none;
-      padding: 14px 32px;
+      padding: 14px 28px;
       border-radius: 8px;
       font-weight: 600;
-      font-size: 16px;
+      font-size: 15px;
       transition: transform 0.2s, box-shadow 0.2s;
       box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+      border: none;
+      cursor: pointer;
     }
     .button:hover {
       transform: translateY(-2px);
       box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
     }
+    .button.secondary {
+      background: white;
+      color: #667eea;
+      border: 2px solid #667eea;
+      box-shadow: none;
+    }
+    .button.secondary:hover {
+      background: #f3f4f6;
+    }
     .footer {
-      margin-top: 24px;
+      margin-top: 28px;
       font-size: 13px;
       color: #9ca3af;
     }
+    .footer a {
+      color: #667eea;
+      text-decoration: none;
+    }
+    .error-code {
+      font-family: monospace;
+      font-size: 11px;
+      color: #9ca3af;
+      margin-top: 16px;
+      padding: 8px;
+      background: #f9fafb;
+      border-radius: 4px;
+    }
     @media (max-width: 480px) {
-      .container {
-        padding: 32px 24px;
-      }
-      h1 {
-        font-size: 20px;
-      }
+      .container { padding: 32px 24px; }
+      h1 { font-size: 20px; }
+      .actions { flex-direction: column; }
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <div class="icon">⚠️</div>
-    <h1>This Link Couldn't Load</h1>
-    <p>We tried to send you to the destination, but something went wrong.</p>
+    <div class="icon" id="icon">⚠️</div>
+    <h1 id="title">This Link Couldn't Load</h1>
+    <p id="message">We tried to send you to the destination, but something went wrong.</p>
     
-    <div class="reasons">
-      <h3>Common causes:</h3>
-      <ul>
+    <div class="reasons" id="reasons">
+      <h3>What might have happened:</h3>
+      <ul id="reasons-list">
         <li>The destination website is temporarily down</li>
         <li>The URL is no longer valid</li>
         <li>Network timeout or connectivity issue</li>
@@ -124,24 +151,144 @@
       </ul>
     </div>
 
-    <a href="javascript:window.location.reload()" class="button">Try Again</a>
+    <div class="actions">
+      <button onclick="retry()" class="button">Try Again</button>
+      <a href="https://link-peek.org" class="button secondary">Go to LinkPeek</a>
+    </div>
+
+    <div class="error-code" id="error-code"></div>
 
     <div class="footer">
-      Powered by LinkPeek • Reliable link tracking
+      Powered by <a href="https://link-peek.org">LinkPeek</a> • Reliable link tracking
     </div>
   </div>
 
   <script>
-    // Auto-retry after 3 seconds
-    setTimeout(() => {
-      const params = new URLSearchParams(window.location.search);
-      const retryCount = parseInt(params.get('retry') || '0');
-      
-      if (retryCount < 2) {
-        params.set('retry', String(retryCount + 1));
-        window.location.search = params.toString();
+    // Parse reason from URL
+    const params = new URLSearchParams(window.location.search);
+    const reason = params.get('reason') || 'unknown';
+    const retryCount = parseInt(params.get('retry') || '0');
+    
+    const iconEl = document.getElementById('icon');
+    const titleEl = document.getElementById('title');
+    const messageEl = document.getElementById('message');
+    const reasonsListEl = document.getElementById('reasons-list');
+    const errorCodeEl = document.getElementById('error-code');
+    
+    // Customize based on reason
+    const reasonConfig = {
+      'rate_limit': {
+        icon: '⏱️',
+        iconClass: 'timeout',
+        title: 'Too Many Requests',
+        message: 'Please wait a moment before trying again.',
+        reasons: [
+          'Too many requests from your network',
+          'This link is receiving high traffic',
+          'Try again in a few seconds'
+        ]
+      },
+      'not_found': {
+        icon: '🔍',
+        iconClass: '',
+        title: 'Link Not Found',
+        message: 'This link doesn\'t exist or has been removed.',
+        reasons: [
+          'The link may have been deleted',
+          'The URL might be incorrect',
+          'The link owner may have removed it'
+        ]
+      },
+      'inactive': {
+        icon: '⏸️',
+        iconClass: '',
+        title: 'Link Deactivated',
+        message: 'This link has been temporarily deactivated by its owner.',
+        reasons: [
+          'The creator paused this link',
+          'The campaign may have ended',
+          'Contact the link owner for more info'
+        ]
+      },
+      'invalid_url': {
+        icon: '🚫',
+        iconClass: 'error',
+        title: 'Invalid Destination',
+        message: 'The destination URL is not valid or has security issues.',
+        reasons: [
+          'The destination URL is malformed',
+          'Security check failed',
+          'The link may need to be updated'
+        ]
+      },
+      'timeout': {
+        icon: '⏳',
+        iconClass: 'timeout',
+        title: 'Request Timed Out',
+        message: 'The destination took too long to respond.',
+        reasons: [
+          'The destination server is slow',
+          'Network connectivity issues',
+          'Try again in a moment'
+        ]
+      },
+      'server_error': {
+        icon: '🔧',
+        iconClass: 'error',
+        title: 'Server Error',
+        message: 'Something went wrong on our end. We\'re working on it.',
+        reasons: [
+          'Temporary service disruption',
+          'We\'ve been notified of this issue',
+          'Please try again shortly'
+        ]
       }
-    }, 3000);
+    };
+    
+    const config = reasonConfig[reason] || reasonConfig['unknown'] || {
+      icon: '⚠️',
+      iconClass: '',
+      title: 'This Link Couldn\'t Load',
+      message: 'We tried to send you to the destination, but something went wrong.',
+      reasons: [
+        'The destination website is temporarily down',
+        'The URL is no longer valid',
+        'Network timeout or connectivity issue',
+        'The link expired or was deactivated'
+      ]
+    };
+    
+    iconEl.textContent = config.icon;
+    if (config.iconClass) iconEl.classList.add(config.iconClass);
+    titleEl.textContent = config.title;
+    messageEl.textContent = config.message;
+    reasonsListEl.innerHTML = config.reasons.map(r => `<li>${r}</li>`).join('');
+    errorCodeEl.textContent = `Error: ${reason.toUpperCase()} | Retry: ${retryCount}/3`;
+    
+    function retry() {
+      if (retryCount < 3) {
+        const newParams = new URLSearchParams(window.location.search);
+        newParams.set('retry', String(retryCount + 1));
+        
+        // Go back to referrer if available
+        if (document.referrer && !document.referrer.includes('link-error')) {
+          window.location.href = document.referrer;
+        } else {
+          window.location.reload();
+        }
+      } else {
+        alert('Maximum retries reached. Please try again later or contact the link owner.');
+      }
+    }
+    
+    // Auto-retry once after 3 seconds for timeout errors
+    if (reason === 'timeout' && retryCount < 1) {
+      setTimeout(() => {
+        const newParams = new URLSearchParams(window.location.search);
+        newParams.set('retry', '1');
+        window.location.search = newParams.toString();
+      }, 3000);
+    }
   </script>
 </body>
 </html>
