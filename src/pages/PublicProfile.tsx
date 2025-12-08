@@ -16,7 +16,7 @@ import { ParticleEffect } from "@/components/profile/effects/ParticleEffect";
 import { AnimatedText } from "@/components/profile/effects/AnimatedText";
 import { BackgroundEffects } from "@/components/profile/BackgroundEffects";
 import { ThemeRenderer } from "@/components/profile/theme-engine/ThemeRenderer";
-import { themePresets, ThemePreset } from "@/lib/theme-presets";
+import { getPresetById, ThemePreset } from "@/lib/theme-presets";
 
 interface Profile {
   name: string;
@@ -207,8 +207,8 @@ export default function PublicProfile() {
   // Check if using new theme engine preset
   const getThemePreset = (): ThemePreset | null => {
     const presetName = profile.theme;
-    if (presetName && themePresets[presetName as keyof typeof themePresets]) {
-      return themePresets[presetName as keyof typeof themePresets];
+    if (presetName) {
+      return getPresetById(presetName) || null;
     }
     return null;
   };
