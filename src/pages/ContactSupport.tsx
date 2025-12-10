@@ -224,10 +224,10 @@ const ContactSupport = () => {
                 </CardHeader>
                 <CardContent>
                   <a
-                    href="mailto:support@linkpeek.com"
+                    href="mailto:support@link-peek.org"
                     className="text-primary hover:underline font-medium"
                   >
-                    support@linkpeek.com
+                    support@link-peek.org
                   </a>
                 </CardContent>
               </Card>

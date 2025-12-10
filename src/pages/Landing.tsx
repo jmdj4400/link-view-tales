@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
 import { format } from "date-fns";
 import logo from "@/assets/logo.png";
-import { LaunchCountdown } from "@/components/landing/LaunchCountdown";
+// LaunchCountdown removed - we're live!
 import { Testimonials } from "@/components/landing/Testimonials";
 import { TrustBadges } from "@/components/landing/TrustBadges";
 import { WaitlistCounter } from "@/components/landing/WaitlistCounter";
@@ -139,8 +139,8 @@ export default function Landing() {
   return (
     <>
       <SEOHead
-        title="LinkPeek - Link in Bio Tool with Real Traffic Analytics | Launching December 2025"
-        description="Create your link in bio page and see real delivered visits. Track in-app browser failures and recover lost clicks. Join the waitlist for early access."
+        title="LinkPeek - Link in Bio Tool with Real Traffic Analytics"
+        description="Create your link in bio page and see real delivered visits. Track in-app browser failures and recover lost clicks. Get started free today."
         canonicalUrl="https://link-peek.org/"
       />
       
@@ -312,8 +312,20 @@ export default function Landing() {
             </motion.div>
           </main>
 
-          {/* Launch Countdown - Moved higher */}
-          <LaunchCountdown />
+          {/* We're Live Banner */}
+          <section className="container mx-auto px-6 py-12 max-w-7xl">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="bg-gradient-to-r from-primary/20 via-accent/20 to-secondary/20 rounded-3xl p-8 text-center border border-primary/30"
+            >
+              <div className="text-4xl mb-3">🎉</div>
+              <h2 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent mb-2">
+                We're Live!
+              </h2>
+              <p className="text-muted-foreground">First 200 users get full access FREE</p>
+            </motion.div>
+          </section>
 
           {/* Featured In */}
           <FeaturedIn />
@@ -414,39 +426,23 @@ export default function Landing() {
                   ?
                 </h2>
                 <p className="text-muted-foreground max-w-xl mx-auto">
-                  Join thousands of creators who are tired of losing clicks to broken in-app browsers.
-                  Early access members get a 30% lifetime discount.
+                  Join creators who are tired of losing clicks to broken in-app browsers.
+                  Start tracking your real traffic today.
                 </p>
-                <form onSubmit={handleWaitlistSignup} className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
-                  {/* Honeypot field */}
-                  <input
-                    type="text"
-                    name="company"
-                    value={honeypot}
-                    onChange={(e) => setHoneypot(e.target.value)}
-                    className="absolute -left-[9999px] opacity-0"
-                    tabIndex={-1}
-                    autoComplete="off"
-                    aria-hidden="true"
-                  />
-                  <Input
-                    type="email"
-                    placeholder="your@email.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                    className="flex-1 h-12"
-                    aria-label="Email address for waitlist"
-                  />
-                  <Button 
-                    type="submit" 
-                    size="lg"
-                    disabled={isSubmitting}
-                    className="h-12 px-8"
-                  >
-                    {isSubmitting ? "Joining..." : "Get Early Access"}
-                  </Button>
-                </form>
+                <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                  <Link to="/auth">
+                    <Button 
+                      size="lg"
+                      className="h-14 px-10 text-lg bg-gradient-to-r from-primary to-accent hover:opacity-90 transition-opacity shadow-lg shadow-primary/25"
+                    >
+                      <Zap className="h-5 w-5 mr-2" />
+                      Get Started Free
+                    </Button>
+                  </Link>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  No credit card required • Free for early adopters
+                </p>
               </div>
             </motion.div>
           </section>
