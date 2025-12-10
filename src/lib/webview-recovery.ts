@@ -2,12 +2,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 export type RecoveryStrategy = 
-  | 'deep_link_ios' 
-  | 'deep_link_android' 
-  | 'intent_url' 
+  | 'intent_url_android' 
   | 'clipboard_copy' 
-  | 'manual_open'
-  | 'direct_redirect';
+  | 'manual_instructions';
 
 export interface RecoveryAttempt {
   linkId: string;
@@ -47,141 +44,67 @@ export class WebViewRecovery {
    * Main recovery method - tries strategies in order
    */
   async attemptRecovery(): Promise<boolean> {
-    const strategies: RecoveryStrategy[] = this.getStrategiesForPlatform();
-    
-    for (const strategy of strategies) {
-      const success = await this.tryStrategy(strategy);
-      await this.logAttempt(strategy, success);
-      
-      if (success) {
-        return true;
-      }
+    // On Android, try intent URL first (this actually works!)
+    if (this.device === 'Android') {
+      const success = this.tryIntentURLAndroid();
+      await this.logAttempt('intent_url_android', success);
+      if (success) return true;
     }
     
-    // If all strategies fail, use manual fallback
-    await this.logAttempt('manual_open', false);
+    // Always copy to clipboard as backup
+    const clipboardSuccess = await this.tryCopyToClipboard();
+    await this.logAttempt('clipboard_copy', clipboardSuccess);
+    
+    // Return false to show manual instructions UI
     return false;
   }
 
   /**
-   * Get recovery strategies based on platform and device
+   * Android Intent URL - actually opens external browser
    */
-  private getStrategiesForPlatform(): RecoveryStrategy[] {
-    if (this.device === 'iOS') {
-      if (this.browser === 'Instagram') {
-        return ['deep_link_ios', 'clipboard_copy'];
-      }
-      return ['deep_link_ios', 'clipboard_copy'];
-    }
-    
-    if (this.device === 'Android') {
-      if (this.browser === 'Instagram' || this.browser === 'TikTok') {
-        return ['intent_url', 'deep_link_android', 'clipboard_copy'];
-      }
-      return ['intent_url', 'clipboard_copy'];
-    }
-    
-    return ['clipboard_copy'];
-  }
-
-  /**
-   * Try a specific recovery strategy
-   */
-  private async tryStrategy(strategy: RecoveryStrategy): Promise<boolean> {
+  private tryIntentURLAndroid(): boolean {
     try {
-      switch (strategy) {
-        case 'deep_link_ios':
-          return this.tryDeepLinkiOS();
-        
-        case 'deep_link_android':
-          return this.tryDeepLinkAndroid();
-        
-        case 'intent_url':
-          return this.tryIntentURL();
-        
-        case 'clipboard_copy':
-          return await this.tryCopyToClipboard();
-        
-        default:
-          return false;
-      }
+      // Parse URL to get host and path
+      const url = new URL(this.destUrl);
+      const host = url.host;
+      const pathAndQuery = url.pathname + url.search + url.hash;
+      
+      // Intent URL format that opens in Chrome/default browser
+      const intentUrl = `intent://${host}${pathAndQuery}#Intent;scheme=https;action=android.intent.action.VIEW;end`;
+      
+      // Use location.replace to prevent back button issues
+      window.location.replace(intentUrl);
+      
+      return true;
     } catch (error) {
-      console.error(`Recovery strategy ${strategy} failed:`, error);
+      console.error('Intent URL failed:', error);
       return false;
     }
   }
 
   /**
-   * iOS deep link (works for Instagram, Safari)
-   */
-  private tryDeepLinkiOS(): boolean {
-    if (this.browser === 'Instagram') {
-      // Instagram-specific deep link
-      const deepLink = `instagram://browser/open?url=${encodeURIComponent(this.destUrl)}`;
-      window.location.href = deepLink;
-      
-      // Fallback to Safari if Instagram doesn't respond
-      setTimeout(() => {
-        window.location.href = `x-safari-${this.destUrl}`;
-      }, 500);
-      
-      return true;
-    }
-    
-    // Generic Safari deep link
-    window.location.href = `x-safari-${this.destUrl}`;
-    return true;
-  }
-
-  /**
-   * Android deep link
-   */
-  private tryDeepLinkAndroid(): boolean {
-    // Try to open in Chrome
-    const chromeIntent = `googlechrome://navigate?url=${encodeURIComponent(this.destUrl)}`;
-    window.location.href = chromeIntent;
-    
-    return true;
-  }
-
-  /**
-   * Android intent URL (most reliable for Android WebViews)
-   */
-  private tryIntentURL(): boolean {
-    const intentUrl = `intent://${this.destUrl.replace(/https?:\/\//, '')}#Intent;scheme=https;action=android.intent.action.VIEW;end`;
-    window.location.href = intentUrl;
-    
-    return true;
-  }
-
-  /**
-   * Copy URL to clipboard as fallback
+   * Copy URL to clipboard
    */
   private async tryCopyToClipboard(): Promise<boolean> {
     try {
       await navigator.clipboard.writeText(this.destUrl);
-      toast.success('Link copied!', {
-        description: 'Open your browser and paste the link to continue',
-      });
       return true;
     } catch (error) {
       // Fallback for browsers that don't support clipboard API
-      const textArea = document.createElement('textarea');
-      textArea.value = this.destUrl;
-      textArea.style.position = 'fixed';
-      textArea.style.left = '-999999px';
-      document.body.appendChild(textArea);
-      textArea.select();
-      
       try {
-        document.execCommand('copy');
+        const textArea = document.createElement('textarea');
+        textArea.value = this.destUrl;
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-999999px';
+        textArea.style.top = '-999999px';
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        
+        const success = document.execCommand('copy');
         document.body.removeChild(textArea);
-        toast.success('Link copied!', {
-          description: 'Open your browser and paste the link to continue',
-        });
-        return true;
+        return success;
       } catch (err) {
-        document.body.removeChild(textArea);
         return false;
       }
     }
@@ -221,4 +144,64 @@ export class WebViewRecovery {
     
     return platformMap[this.browser] || 'other';
   }
+}
+
+/**
+ * Get platform-specific instructions for opening in external browser
+ */
+export function getOpenInBrowserInstructions(browser: string, device: string): {
+  title: string;
+  steps: string[];
+  buttonText: string;
+} {
+  if (device === 'iOS') {
+    if (browser === 'Instagram') {
+      return {
+        title: 'Open in Safari',
+        steps: [
+          'Tap the ••• menu in the top right',
+          'Select "Open in Safari"',
+        ],
+        buttonText: 'Copy Link Instead',
+      };
+    }
+    if (browser === 'TikTok') {
+      return {
+        title: 'Open in Safari',
+        steps: [
+          'Tap the ••• menu',
+          'Select "Open in browser"',
+        ],
+        buttonText: 'Copy Link Instead',
+      };
+    }
+    if (browser === 'Facebook') {
+      return {
+        title: 'Open in Safari',
+        steps: [
+          'Tap the ••• menu at the bottom',
+          'Select "Open in Safari"',
+        ],
+        buttonText: 'Copy Link Instead',
+      };
+    }
+    return {
+      title: 'Open in Safari',
+      steps: [
+        'Look for a menu icon (•••)',
+        'Select "Open in Safari" or "Open in Browser"',
+      ],
+      buttonText: 'Copy Link Instead',
+    };
+  }
+  
+  // Android - intent URL usually works automatically
+  return {
+    title: 'Opening in Browser...',
+    steps: [
+      'If nothing happens, tap the ⋮ menu',
+      'Select "Open in Chrome" or "Open in Browser"',
+    ],
+    buttonText: 'Copy Link',
+  };
 }
