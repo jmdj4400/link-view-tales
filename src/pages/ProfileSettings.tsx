@@ -191,7 +191,7 @@ export default function ProfileSettings() {
               <Button 
                 variant="outline" 
                 size="sm"
-                onClick={() => window.open(`/@${profile.handle}`, '_blank')}
+                onClick={() => window.open(`/${profile.handle}`, '_blank')}
                 disabled={!profile.handle}
                 aria-label="View your public profile"
               >
