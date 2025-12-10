@@ -126,7 +126,31 @@ export default function PublicProfile() {
     }
   };
 
+  // Detect if user is in an in-app browser (Instagram, TikTok, Facebook, etc.)
+  const isInAppBrowser = (): boolean => {
+    const ua = navigator.userAgent || '';
+    return (
+      ua.includes('Instagram') ||
+      ua.includes('FBAN') ||        // Facebook App
+      ua.includes('FBAV') ||        // Facebook App
+      ua.includes('FB_IAB') ||      // Facebook In-App Browser
+      ua.includes('TikTok') ||
+      ua.includes('BytedanceWebview') ||
+      ua.includes('LinkedIn') ||
+      ua.includes('Snapchat') ||
+      ua.includes('Twitter') ||
+      ua.includes('Line/') ||
+      ua.includes('KAKAOTALK') ||
+      ua.includes('WeChat') ||
+      ua.includes('MicroMessenger') ||
+      // Generic WebView detection
+      (ua.includes('wv') && ua.includes('Android')) ||
+      (ua.includes('WebView') && ua.includes('iPhone'))
+    );
+  };
+
   const handleLinkClick = async (linkId: string, destUrl: string) => {
+    // Track click first (non-blocking)
     const { data: profileData } = await supabase
       .from('public_profiles')
       .select('id')
@@ -135,7 +159,8 @@ export default function PublicProfile() {
 
     if (profileData) {
       const userAgentHash = await hashUserAgent(navigator.userAgent);
-      await supabase.from('events').insert({
+      // Fire and forget - don't await
+      supabase.from('events').insert({
         user_id: profileData.id,
         link_id: linkId,
         event_type: 'click',
@@ -144,7 +169,14 @@ export default function PublicProfile() {
       });
     }
 
-    window.open(destUrl, '_blank');
+    // Check if in in-app browser - redirect through WebView recovery handler
+    if (isInAppBrowser()) {
+      // Use the redirect handler which has proper WebView recovery mechanisms
+      window.location.href = `/r/${linkId}`;
+    } else {
+      // Normal browser - open directly
+      window.open(destUrl, '_blank');
+    }
   };
 
   if (loading) {
