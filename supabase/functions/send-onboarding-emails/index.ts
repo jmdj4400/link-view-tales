@@ -66,6 +66,12 @@ serve(async (req) => {
               </div>
               
               <div class="content">
+                <div style="background: #FEF3C7; border: 1px solid #FCD34D; border-radius: 12px; padding: 16px; margin-bottom: 24px;">
+                  <p style="margin: 0; font-size: 14px; color: #92400E;">
+                    📬 <strong>Vigtigt:</strong> Du vil modtage en separat email med et bekræftelseslink. Klik på det link først for at aktivere din konto!
+                  </p>
+                </div>
+
                 <p style="margin: 0 0 24px; font-size: 16px; color: #374151;">
                   Hey ${profile.name || 'there'} 👋
                 </p>
@@ -88,9 +94,12 @@ serve(async (req) => {
                 </p>
 
                 <div style="text-align: center;">
-                  <a href="${appUrl}/auth?redirect=/dashboard" class="cta-button">
-                    Go to Dashboard →
+                  <a href="${appUrl}" class="cta-button">
+                    Visit LinkPeek →
                   </a>
+                  <p style="font-size: 12px; color: #9CA3AF; margin-top: 12px;">
+                    Husk at bekræfte din email først for at få fuld adgang til dit dashboard
+                  </p>
                 </div>
 
                 <p style="font-size: 14px; color: #6B7280; margin-top: 32px; padding-top: 24px; border-top: 1px solid #e5e7eb;">
