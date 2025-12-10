@@ -15,6 +15,16 @@ interface ContactEmailRequest {
   message: string;
 }
 
+// HTML escape function to prevent XSS/HTML injection
+function escapeHtml(text: string): string {
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
 const handler = async (req: Request): Promise<Response> => {
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
@@ -50,6 +60,13 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
+    // Escape all user inputs to prevent HTML injection
+    const safeName = escapeHtml(name);
+    const safeCategory = escapeHtml(category);
+    const safeSubject = escapeHtml(subject);
+    const safeMessage = escapeHtml(message);
+    const safeEmail = escapeHtml(email);
+
     const resend = getResendClient();
 
     // Send confirmation email to user
@@ -77,21 +94,21 @@ const handler = async (req: Request): Promise<Response> => {
                 <h1 style="margin: 0;">Thank You for Contacting Us!</h1>
               </div>
               <div class="content">
-                <p>Hi ${name},</p>
+                <p>Hi ${safeName},</p>
                 <p>We have received your message and our support team will get back to you as soon as possible.</p>
                 
                 <div class="message-box">
                   <p><strong>Your Message Details:</strong></p>
-                  <p><strong>Category:</strong> ${category}</p>
-                  <p><strong>Subject:</strong> ${subject}</p>
+                  <p><strong>Category:</strong> ${safeCategory}</p>
+                  <p><strong>Subject:</strong> ${safeSubject}</p>
                   <p><strong>Message:</strong></p>
-                  <p>${message.replace(/\n/g, '<br>')}</p>
+                  <p>${safeMessage.replace(/\n/g, '<br>')}</p>
                 </div>
                 
                 <p><strong>What happens next?</strong></p>
                 <ul>
                   <li>Our team will review your message within 24 hours</li>
-                  <li>You'll receive a response at ${email}</li>
+                  <li>You'll receive a response at ${safeEmail}</li>
                   <li>For urgent issues, we typically respond within 2-4 hours</li>
                 </ul>
                 
@@ -127,7 +144,7 @@ const handler = async (req: Request): Promise<Response> => {
       from: "LinkPeek Contact Form <noreply@link-peek.org>",
       to: ["support@link-peek.org"],
       replyTo: email,
-      subject: `[${category.toUpperCase()}] ${subject}`,
+      subject: `[${safeCategory.toUpperCase()}] ${safeSubject}`,
       html: `
         <!DOCTYPE html>
         <html>
@@ -145,18 +162,18 @@ const handler = async (req: Request): Promise<Response> => {
               <h2>New Contact Form Submission</h2>
               
               <div class="info-box">
-                <p><span class="label">From:</span> ${name} (${email})</p>
-                <p><span class="label">Category:</span> ${category}</p>
-                <p><span class="label">Subject:</span> ${subject}</p>
+                <p><span class="label">From:</span> ${safeName} (${safeEmail})</p>
+                <p><span class="label">Category:</span> ${safeCategory}</p>
+                <p><span class="label">Subject:</span> ${safeSubject}</p>
                 <p><span class="label">Received:</span> ${new Date().toLocaleString()}</p>
               </div>
               
               <div class="message-box">
                 <h3>Message:</h3>
-                <p>${message.replace(/\n/g, '<br>')}</p>
+                <p>${safeMessage.replace(/\n/g, '<br>')}</p>
               </div>
               
-              <p><em>Reply directly to this email to respond to ${name}.</em></p>
+              <p><em>Reply directly to this email to respond to ${safeName}.</em></p>
             </div>
           </body>
         </html>

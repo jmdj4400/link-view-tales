@@ -62,9 +62,20 @@ export default function Auth() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
+  // Validate redirect URL to prevent open redirect attacks
+  const getSafeRedirect = (redirectParam: string | null): string => {
+    const fallback = '/dashboard';
+    if (!redirectParam) return fallback;
+    // Only allow relative paths starting with / (not //)
+    if (redirectParam.startsWith('/') && !redirectParam.startsWith('//')) {
+      return redirectParam;
+    }
+    return fallback;
+  };
+
   useEffect(() => {
     if (user) {
-      const redirect = searchParams.get('redirect') || '/dashboard';
+      const redirect = getSafeRedirect(searchParams.get('redirect'));
       navigate(redirect);
     }
   }, [user, navigate, searchParams]);
@@ -123,7 +134,7 @@ export default function Auth() {
       toast.error(error.message);
     } else {
       toast.success("Welcome back! 👋");
-      const redirect = searchParams.get('redirect') || '/dashboard';
+      const redirect = getSafeRedirect(searchParams.get('redirect'));
       navigate(redirect);
     }
     setIsLoading(false);
